@@ -41,7 +41,9 @@ command_color = list(''.join(dict.fromkeys(identities_string)))
 
 print(f'\nCommander Color Identity: {command_color}\n')
 
-color_conditions = ' AND '.join([f"coloridentity LIKE '%%{color}%%'" for color in command_color])
+color_conditions = 'AND ' + ' AND '.join([f"coloridentity LIKE '%%{color}%%'" for color in command_color])
+if color_conditions == 'AND ':
+    color_conditions = ''
 
 query = f"""
     SELECT DISTINCT name, edhrecrank, coloridentity, type, text, uuid 
@@ -51,10 +53,9 @@ query = f"""
         WHERE id in (select min(id) from cards group by name)
     ) unique_names
     WHERE type LIKE '%%Legendary%%Creature%%' 
-        AND {color_conditions}
+        {color_conditions}
         AND edhrecrank >= 0
     ORDER BY edhrecrank
-    LIMIT 100
     """
 
 # Execute the query and store the results in a dataframe
@@ -69,24 +70,28 @@ def score(creature_name):
     response = requests.get(url)
     if response.status_code == 200:
         json_data = response.json()
-        scoring_cards = []  # List to store entered cards that increased the score
-        for entered_card in items:
-            for edhrec_card in json_data['cardlist']:
-                if entered_card == edhrec_card['name']:
-                    score += 1
-                    if edhrec_card['synergy'] >= 0.3:
+        if 'cardlist' in json_data:
+            scoring_cards = []  # List to store entered cards that increased the score
+            for entered_card in items:
+                for edhrec_card in json_data['cardlist']:
+                    if entered_card == edhrec_card['name']:
                         score += 1
-                    if edhrec_card['num_decks'] / edhrec_card['potential_decks'] >= 0.4:
-                        score += 1
-                    scoring_cards.append(entered_card)  # Add entered card to the list
-        return score, scoring_cards
+                        if edhrec_card['synergy'] >= 0.3:
+                            score += 1
+                        if edhrec_card['num_decks'] / edhrec_card['potential_decks'] >= 0.4:
+                            score += 1
+                        scoring_cards.append(entered_card)  # Add entered card to the list
+            return score, scoring_cards
+        else:
+            return 0, []
     else:
         return 0, []
 
 
 print('Scoring cards...')
 commander_df['score'], commander_df['makesGoodUseOf'] = zip(*commander_df['name'].apply(score))
+commander_df['wholeness'] = commander_df['makesGoodUseOf'].apply(lambda x: len(x))
 
-commander_df = commander_df.sort_values(['score', 'edhrecrank'], ascending=[False, True]).reset_index(drop=True)
-top_10_df = commander_df[['score', 'edhrecrank', 'name', 'type', 'coloridentity', 'makesGoodUseOf']].head(10)
+commander_df = commander_df.sort_values(['wholeness', 'score', 'edhrecrank'], ascending=[False, False, True]).reset_index(drop=True)
+top_10_df = commander_df[['score', 'edhrecrank', 'name', 'type', 'coloridentity', 'makesGoodUseOf',]].head(10)
 print(top_10_df)
