@@ -4,6 +4,8 @@ import psycopg2
 import pandas as pd
 from sqlalchemy import create_engine
 import requests
+from thefuzz import process
+
 
 def db_connect():
     # Load environment variables
@@ -27,30 +29,37 @@ def db_connect():
 def user_input():
     # Enter list of cards to match to a commander
     while True:
-        item = input("Enter a card (exact spelling) or 'done' to finish: ")
-        if item.lower() == 'done':
+        item = input("Enter a card or press return to begin search: ")
+        if item == '':
             break
-        items.append(item.strip())
-    return items
+        entries.append(item.strip())
+    return entries
 
-def get_commanders(connection, items):
+def fuzzy_search_cleanup(connection, entries):
+    #clean_entries is established globally because of a later use in the score() function
+    query = f"SELECT name FROM cards"
+    df = pd.read_sql(query, connection)
+    all_cards = df['name'].astype(str).values.tolist()
+    for entry in entries:
+        better_entry = process.extractOne(entry, all_cards)
+        if better_entry[1] > 80:
+            clean_entries.append(better_entry[0].replace("'", "''"))
+            print(f'Found {better_entry[0]} for "{entry}"')
+        else:
+            print(f'No results for "{entry}".')
+
+def get_commanders(connection, clean_entries):
     # Retrieve the cards and report
-    items_str = "', '".join(items)
-    query = f"SELECT DISTINCT name, coloridentity FROM cards WHERE name IN ('{items_str}');"
-    result_df = pd.read_sql(query, connection)
-    if len(items) == len(result_df):
-        print('All items found')
-    else:
-        valid_items = [item for item in result_df["name"]]
-        invalid_items = [item for item in items if item not in valid_items]
+    clean_entries_str = "', '".join(clean_entries)
 
-        print(f'Items found: {valid_items}')
-        print(f'Ignoring invalid items: {invalid_items}')
+    query = f"SELECT DISTINCT name, coloridentity FROM cards WHERE name IN ('{clean_entries_str}');"
+    result_df = pd.read_sql(query, connection)
 
     identities = [x.replace(',', '').replace(' ', '') for x in result_df['coloridentity'] if x is not None]
     identities_string = ''.join(identities)
     command_color = list(''.join(dict.fromkeys(identities_string)))
-
+    
+    print(f"\nSearching on {clean_entries}")
     print(f'\nCommander Color Identity: {", ".join(sorted(command_color))}\n')
 
     # Some SQL hackery to grab multiple values
@@ -76,6 +85,7 @@ def get_commanders(connection, items):
     return commander_df
 
 def score(creature_name):
+
     creature_name = creature_name.lower().replace('[^a-zA-Z0-9]', '').replace(' ', '-').replace(',', '').replace("'", '')
     score = 0
     url = f"https://json.edhrec.com/pages/commanders/{creature_name}.json"
@@ -84,31 +94,46 @@ def score(creature_name):
         json_data = response.json()
         if 'cardlist' in json_data:
             scoring_cards = []
-            for entered_card in items:
+            for entered_card in clean_entries:
+                if entered_card == creature_name:
+                    score += 4
                 for edhrec_card in json_data['cardlist']:
-                    if entered_card == edhrec_card['name']:
-                        score += 1
+                    if entered_card.replace("''", "'") == edhrec_card['name']:
+                        score += 2
                         if edhrec_card['synergy'] >= 0.3:
                             score += 1
                         if edhrec_card['num_decks'] / edhrec_card['potential_decks'] >= 0.4:
                             score += 1
                         scoring_cards.append(entered_card)
-            return score, scoring_cards
+            return round(score/len(clean_entries)*2.5), scoring_cards
         else:
             return 0, []
     else:
         return 0, []
 
 def poll_edhrec(commander_df):
-    # All the calculations happen here
-    print('Scoring cards...')
+
+    print('Scoring cards...\n')
     commander_df['score'], commander_df['makesGoodUseOf'] = zip(*commander_df['name'].apply(score))
     commander_df['wholeness'] = commander_df['makesGoodUseOf'].apply(lambda x: len(x))
 
     commander_df = commander_df.sort_values(['wholeness', 'score', 'edhrecrank'], ascending=[False, False, True]).reset_index(drop=True)
-    top_10_df = commander_df[['score', 'name', 'coloridentity', 'wholeness',]].head(10)
-    print(top_10_df)
+    return commander_df
 
-items = []
-user_input()
-poll_edhrec(get_commanders(db_connect(), items))
+def output(commander_df):
+
+    for index, row in commander_df.head(10).iterrows():
+        formatted_name = row['name'].lower().replace('[^a-zA-Z0-9]', '').replace(' ', '-').replace(',', '').replace("'", '')
+        web_direct = f"edhrec.com/commanders/{formatted_name}"
+
+        print(f"""{row['name']} || {row['coloridentity']} || Overall Score: {row['score']}/10
+        Makes good use of: {row['makesGoodUseOf']}
+        {web_direct}
+        """
+        )
+
+if __name__ == "__main__":
+    entries = []
+    clean_entries = []
+    fuzzy_search_cleanup(db_connect(), user_input())
+    output(poll_edhrec(get_commanders(db_connect(), clean_entries)))
