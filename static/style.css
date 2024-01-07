@@ -1,0 +1,21 @@
+* {
+  margin: 0;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  margin: 5% 40%;
+  gap: 10px;
+}
+
+input {
+  display: flex;
+  border: 0;
+  border-radius: 5px;
+  background-color: lightgrey;
+}
+
+#input-section {
+  display: flex;
+}
