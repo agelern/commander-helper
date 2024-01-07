@@ -6,6 +6,9 @@ from sqlalchemy import create_engine
 import requests
 from thefuzz import process
 
+# find partners on initial search << future fix
+
+# initial get request should populate name database for fuzzy search
 
 def db_connect():
     # Load environment variables
@@ -34,6 +37,12 @@ def user_input():
             break
         entries.append(item.strip())
     return entries
+
+def fetch_card_names(connection): # for flask route
+    query = "SELECT name FROM cards"
+    df = pd.read_sql(query, connection)
+    all_cards = df['name'].astype(str).values.tolist()
+    return all_cards
 
 def fuzzy_search_cleanup(connection, entries):
     #clean_entries is established globally because of a later use in the score() function
@@ -86,16 +95,16 @@ def get_commanders(connection, clean_entries):
 
 def score(creature_name):
 
-    creature_name = creature_name.lower().replace('[^a-zA-Z0-9]', '').replace(' ', '-').replace(',', '').replace("'", '')
+    formatted_name = creature_name.lower().replace('[^a-zA-Z0-9]', '').replace(' ', '-').replace(',', '').replace("'", '')
     score = 0
-    url = f"https://json.edhrec.com/pages/commanders/{creature_name}.json"
+    url = f"https://json.edhrec.com/pages/commanders/{formatted_name}.json"
     response = requests.get(url)
     if response.status_code == 200:
         json_data = response.json()
         if 'cardlist' in json_data:
             scoring_cards = []
             for entered_card in clean_entries:
-                if entered_card == creature_name:
+                if entered_card.replace("''", "'") == creature_name:
                     score += 4
                 for edhrec_card in json_data['cardlist']:
                     if entered_card.replace("''", "'") == edhrec_card['name']:
