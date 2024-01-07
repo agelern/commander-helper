@@ -58,7 +58,6 @@ def fuzzy_search_cleanup(connection, entries):
             print(f'No results for "{entry}".')
 
 def get_commanders(connection, clean_entries):
-    # Retrieve the cards and report
     clean_entries_str = "', '".join(clean_entries)
 
     query = f"SELECT DISTINCT name, coloridentity FROM cards WHERE name IN ('{clean_entries_str}');"
