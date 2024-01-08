@@ -16,7 +16,7 @@ def get_card_names():
 @app.route('/', methods=['POST'])
 def process_form():
     card_list = request.form.get('listOfNames')
-    return output(poll_edhrec(get_commanders(db_connect(), card_list)))
+    return online_output(poll_edhrec(get_commanders(db_connect(), card_list)))
 
 if __name__ == '__main__':
     app.run(port=5000, host="0.0.0.0")
