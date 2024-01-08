@@ -19,4 +19,4 @@ def process_form():
     return output(poll_edhrec(get_commanders(db_connect(), card_list)))
 
 if __name__ == '__main__':
-    app.run()
+    app.run(port=5000, host="0.0.0.0")
