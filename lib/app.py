@@ -58,6 +58,9 @@ def fuzzy_search_cleanup(connection, entries):
             print(f'No results for "{entry}".')
 
 def get_commanders(connection, clean_entries):
+    if clean_entries is None:
+        raise ValueError("Card list cannot be None.")
+        
     clean_entries_str = "', '".join(clean_entries)
 
     query = f"SELECT DISTINCT name, coloridentity FROM cards WHERE name IN ('{clean_entries_str}');"
@@ -127,6 +130,20 @@ def poll_edhrec(commander_df):
 
     commander_df = commander_df.sort_values(['wholeness', 'score', 'edhrecrank'], ascending=[False, False, True]).reset_index(drop=True)
     return commander_df
+
+def online_output(commander_df):
+    formatted_list = []
+    for index, row in commander_df.head(10).iterrows():
+        formatted_name = row['name'].lower().replace('[^a-zA-Z0-9]', '').replace(' ', '-').replace(',', '').replace("'", '')
+        web_direct = f"edhrec.com/commanders/{formatted_name}"
+
+        formatted_return = f"""{row['name']} || {row['coloridentity']} || Overall Score: {row['score']}/10
+        Makes good use of: {row['makesGoodUseOf']}
+        {web_direct}
+        """
+
+        formatted_list.append(formatted_return)
+    return formatted_list
 
 def output(commander_df):
 
