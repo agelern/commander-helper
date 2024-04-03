@@ -3,7 +3,7 @@
   
 Also, partner-type commanders are mostly implemented now. Doctors and backgrounds are next.
 
-**First Commit**  
+**Jan 07, 2024**  
 This tool assumes a locally installed database of MTG cards, which must contain at least names and color identities.
 render_db_upload.py and routes.py are WIP documents for webapp version.
 app.py contains some unnecessary functions currently being written for the webapp version.
