@@ -1,3 +1,7 @@
+##Apr 03, 2024
+Worked a lot offline in spare minutes here and there. My original intent with the project was to showcase my assorted data skills with things like AWS services and general data warehousing. As I continued tinkering, it became obvious that there was a much simpler implementation that did less showcasing but was a far better end-product. THEREFORE, I've begun creating a second version that is totally serverless and simply handles 2 APIs, performing transformations in between. This will likely be what feeds the webapp version which I'll be "finishing" "soon."
+
+##First Commit
 This tool assumes a locally installed database of MTG cards, which must contain at least names and color identities.
 render_db_upload.py and routes.py are WIP documents for webapp version.
 app.py contains some unnecessary functions currently being written for the webapp version.
@@ -8,4 +12,4 @@ Running a search for only colorless cards will work, but it takes a very long ti
 
 Partner commanders are not yet implemented. (I forgot about them, oops.)
 
--- Running app.py in the command line starts the command line tool. --
+Running app.py in the command line starts the command line tool.
