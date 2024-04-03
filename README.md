@@ -1,5 +1,5 @@
 **Apr 03, 2024**  
-  Worked a lot offline in spare minutes here and there. My original intent with the project was to showcase my assorted data skills with things like AWS services and general data warehousing. As I continued tinkering, it became obvious that there was a much simpler implementation that did less showcasing but was a far better end-product. THEREFORE, I've begun creating a second version that is totally serverless and simply handles 2 APIs, performing transformations in between. This will likely be what feeds the webapp version which I'll be "finishing" "soon."
+  Worked a lot offline in spare minutes here and there. My original intent with the project was to showcase my assorted data skills with things like AWS services and general data warehousing. As I continued tinkering, it became obvious that there was a much simpler implementation that did less showcasing but was a far better end-product. THEREFORE, I've begun creating a second version that does not require a local database (therefore serverless) and simply handles 2 APIs, performing transformations in between. This will likely be what feeds the webapp version which I'll be "finishing" "soon."
   
 Also, partner-type commanders are mostly implemented now. Doctors and backgrounds are next.
 
