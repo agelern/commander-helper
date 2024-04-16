@@ -18,5 +18,50 @@ input {
 
 #input-section {
   display: flex;
-  gap:10px;
+  gap: 10px;
+}
+
+#entered-cards {
+  text-align: left;
+}
+
+#image-container {
+  position: absolute; /* Position the element absolutely */
+  bottom: 50px; /* Align the element to the bottom of the page and 50px up */
+  display: flex;
+  justify-content: flex-start;
+  height: 50vh;
+  width: 100vw;
+  overflow: visible;
+}
+
+#image-container img {
+  max-height: 100%; /* Scale the images to fit inside the #image-container */
+  margin-right: -10px; /* Add a negative margin to make the images overlap */
+  transition: transform 0.3s ease-in-out, z-index 0.3s ease-in-out; /* Add a transition for the transform and z-index properties */
+}
+
+.close-button {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(2);
+  display: none;
+  background-color: white;
+  opacity: 0;
+  transition: opacity 0.5s ease-in;
+}
+
+a {
+  position: relative;
+}
+
+a:hover .close-button {
+  display: block;
+  opacity: 1;
+}
+
+a:hover img {
+  transform: scale(1.1);
+  z-index: 1;
 }
