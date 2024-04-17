@@ -8,14 +8,40 @@
     <script src="{{url_for('static', filename='index.js')}}"></script>
   </head>
   <body>
-    <form action="/" method="POST">
-      <div id="input-section">
-        <input id="search-bar" type="search" />
-        <input id="add" onclick="addItem()" type="button" value="Add" />
-        <input type="submit" value="Submit" />
+    <div id="logo-container">
+      <img src="../static/images/snakebird-03.png" alt="Logo" />
+    </div>
+    <div id="main-content">
+      <div id="image-container">
+        <form action="/" method="POST">
+          <div id="input-section">
+            <div id="search-add-container">
+              <input id="search-bar" type="search" />
+              <input
+                id="add"
+                onclick="addItem()"
+                type="button"
+                value="Add to List"
+              />
+            </div>
+            <div id="submit-container">
+              <input
+                id="submit"
+                onclick="outputWinners(cards)"
+                type="button"
+                value="Calculate Best Commanders!"
+              />
+            </div>
+            <!-- <input
+            id="print-commanders"
+            onclick="printCommanders()"
+            type="button"
+            value="Print Commanders"
+          /> -->
+          </div>
+          <div id="error-message"></div>
+        </form>
       </div>
-      <div id="error-message"></div>
-    </form>
-    <div id="image-container"></div>
+    </div>
   </body>
 </html>

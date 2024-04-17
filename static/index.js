@@ -15,8 +15,25 @@ window.onresize = function () {
   adjustImageMargin();
 };
 
-var colorIdentities = [];
+window.addEventListener("DOMContentLoaded", function () {
+  document.getElementById("submit").addEventListener("click", function () {
+    var imageContainer = document.getElementById("image-container");
+    imageContainer.style.maxWidth = "40vw";
+    imageContainer.style.marginRight = "auto";
+    imageContainer.style.marginLeft = "0";
+    adjustImageMargin();
+  });
+});
+
 var cards = {};
+var returned_commanders = {};
+
+match_base_value = 2;
+card_is_commander_value = 2;
+high_synergy_value = 1;
+high_inclusion_value = 1;
+
+debug = true;
 
 function adjustImageMargin() {
   var container = document.getElementById("image-container");
@@ -40,7 +57,6 @@ function adjustImageMargin() {
     images[i].style.marginRight = margin + "px";
   }
 }
-
 function addItem() {
   var card_name = document.getElementById("search-bar").value;
 
@@ -62,6 +78,9 @@ function addItem() {
 
       cards[data.name] = data;
 
+      var container = document.createElement("div");
+      container.classList.add("container");
+
       var img = document.createElement("img");
       img.src = data["image_uris"]["png"];
       img.setAttribute("data-name", data.name);
@@ -77,13 +96,16 @@ function addItem() {
       closeButton.classList.add("close-button");
       closeButton.onclick = function (event) {
         event.preventDefault();
-        link.remove();
+        container.remove();
         delete cards[img.getAttribute("data-name")];
+        adjustImageMargin();
         console.log(cards);
       };
-      link.appendChild(closeButton);
 
-      document.getElementById("image-container").appendChild(link);
+      container.appendChild(link);
+      container.appendChild(closeButton);
+
+      document.getElementById("image-container").appendChild(container);
 
       document.getElementById("search-bar").value = "";
     })
@@ -94,4 +116,194 @@ function addItem() {
       errorMessageDiv.style.textAlign = "center"; // Center the text
     });
   console.log(cards);
+}
+async function get_solo_commanders_from_scryfall(colors) {
+  const solo_url = `https://api.scryfall.com/cards/search?q=id%3E%3D${colors}%20t%3Alegend%20t%3Acreature`;
+  const response = await fetch(solo_url);
+  if (response.status !== 200) {
+    throw new Error(`Solo request failed with status code ${response.status}`);
+  }
+
+  const possible_commanders = await response.json();
+  if (!possible_commanders.data) {
+    throw new Error("No 'data' key in the solo response");
+  }
+
+  for (const commander of possible_commanders.data) {
+    if (commander.legalities.commander === "legal") {
+      returned_commanders[commander.name] = { data: commander, score: 0 };
+    }
+  }
+}
+// async function get_partner_commanders_from_scryfall(colors) {
+//   const identity = colors.join(',');
+//   const partners_url = `https://api.scryfall.com/cards/search?q=id%3A${identity}%20t%3Alegend%20t%3Acreature%20o%3A%22Partner%22%20%2Do%3A%22Partner%20with%22`;
+//   const partner_response = await fetch(partners_url);
+//   if (partner_response.status !== 200) {
+//       throw new Error(`Partner request failed with status code ${partner_response.status}`);
+//   }
+
+//   const possible_partners = await partner_response.json();
+//   if (!possible_partners.data) {
+//       throw new Error("No 'data' key in the partner response");
+//   }
+
+//   for (const first_partner of possible_partners.data) {
+//       if (first_partner.legalities.commander === 'legal') {
+//           const deficit = colors.filter(color => !first_partner.color_identity.includes(color));
+//           for (const second_partner of possible_partners.data) {
+//               if (deficit.every(color => second_partner.color_identity.includes(color)) && second_partner.legalities.commander === 'legal') {
+//                   const name_list = [first_partner.name, second_partner.name];
+//                   const joined_name = name_list.sort().join(' + ');
+//                   returned_commanders[joined_name] = {data: [first_partner, second_partner], score: 0};
+//               }
+//           }
+//       }
+//   }
+// }
+function format_name_for_edhrec(name) {
+  const specials = "àáâãäåèéêëìíîïòóôõöùúûüýÿñç ";
+  const replacements = "aaaaaaeeeeiiiiooooouuuuyync-";
+  const removals = ",'.\"";
+
+  let formatted_name = name
+    .split("/")[0]
+    .replace(" + ", " ")
+    .trim()
+    .toLowerCase();
+
+  for (let i = 0; i < specials.length; i++) {
+    formatted_name = formatted_name.replace(
+      new RegExp(specials[i], "g"),
+      replacements[i]
+    );
+  }
+
+  for (let char of removals) {
+    formatted_name = formatted_name.replace(new RegExp("\\" + char, "g"), "");
+  }
+
+  return formatted_name;
+}
+async function get_score_from_edhrec(commander_name, formatted_name, cards) {
+  let score = 0;
+  const url = `https://json.edhrec.com/pages/commanders/${formatted_name}.json`;
+
+  const response = await fetch(url);
+  if (response.status === 200) {
+    const json_data = await response.json();
+    if (json_data.cardlist) {
+      const scored_cards = [];
+
+      for (const card of cards) {
+        if (card.name === commander_name) {
+          score += card_is_commander_value;
+        }
+
+        for (const edhrec_card of json_data.cardlist) {
+          if (card.name === edhrec_card.name) {
+            score += match_base_value;
+
+            if (edhrec_card.synergy >= 0.3) {
+              score += high_synergy_value;
+            }
+            if (edhrec_card.num_decks / edhrec_card.potential_decks >= 0.4) {
+              score += high_inclusion_value;
+            }
+
+            scored_cards.push(card.name);
+          }
+        }
+      }
+
+      returned_commanders[commander_name].score = Math.round(
+        (score / cards.length) * 2.5
+      );
+      await new Promise((resolve) => setTimeout(resolve, 50));
+    } else {
+      if (debug) {
+        console.log(
+          `No data found for ${formatted_name} in return from EDHREC`
+        );
+      }
+    }
+  } else {
+    if (debug) {
+      console.log(`${formatted_name} not found at EDHREC.`);
+    }
+  }
+}
+function getUniqueColorIdentities(cards) {
+  const colorIdentities = new Set();
+  for (const card in cards) {
+    if (cards.hasOwnProperty(card)) {
+      for (const color of cards[card].color_identity) {
+        colorIdentities.add(color);
+      }
+    }
+  }
+  console.log([...colorIdentities].join(""));
+  return [...colorIdentities].join("");
+}
+async function outputWinners(cards) {
+  await get_solo_commanders_from_scryfall(getUniqueColorIdentities(cards));
+
+  await Promise.all(
+    Object.keys(returned_commanders).map(async (commander) => {
+      await get_score_from_edhrec(
+        returned_commanders[commander].data.name,
+        format_name_for_edhrec(returned_commanders[commander].data.name),
+        Object.values(cards)
+      );
+    })
+  );
+
+  const sortedCommanders = Object.entries(returned_commanders)
+    .sort((a, b) => b[1].score - a[1].score)
+    .slice(0, 10)
+    .map(([commander, data]) => ({ commander, data }));
+
+  console.log(sortedCommanders);
+  const container = document.createElement("div");
+  container.style.width = "50%";
+  container.style.position = "absolute";
+  container.style.right = "0";
+  container.style.top = "0";
+  container.style.height = "100vh";
+  container.style.overflowY = "auto";
+  document.body.appendChild(container);
+
+  // Create a new image container for each commander
+  for (const { commander, data } of sortedCommanders) {
+    // Create a new div element
+    const div = document.createElement("div");
+    div.style.position = "relative";
+
+    // Create a new img element
+    const img = document.createElement("img");
+    img.style.transform = "scale(0.5)";
+
+    // Check for the existence of card_faces in data.data
+    if (data.data.card_faces) {
+      // If card_faces exists, set img.src to data.data.card_faces[0].image_uris.png
+      img.src = data.data.card_faces[0].image_uris.png;
+    } else {
+      // Otherwise, set img.src to data.data.image_uris.png
+      img.src = data.data.image_uris.png;
+    }
+
+    // Create a new p element and set its text to the commander's score
+    const p = document.createElement("p");
+    p.textContent = `Score: ${data.score}`;
+
+    // Append the img and p elements to the div
+    div.appendChild(img);
+    div.appendChild(p);
+
+    // Append the div to the body of the document
+    container.appendChild(div);
+  }
+}
+function printCommanders() {
+  console.log(returned_commanders);
 }

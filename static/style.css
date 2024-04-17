@@ -2,11 +2,37 @@
   margin: 0;
 }
 
+body {
+  background-image: url("images/swirlbg-03.png");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-attachment: fixed;
+}
+
+#logo-container {
+  display: flex;
+  justify-content: left;
+  width: 20vw;
+}
+
+#logo-container img {
+  width: 100%;
+  height: auto;
+}
+
 form {
   display: flex;
   flex-direction: column;
-  margin: 5% 40%;
-  gap: 10px;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+}
+
+#main-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5vw;
 }
 
 input {
@@ -18,6 +44,28 @@ input {
 
 #input-section {
   display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#search-bar {
+  background-color: white;
+  color: black;
+}
+
+#add,
+#submit {
+  background-color: #c57742;
+  color: black;
+}
+
+#submit-container {
+  margin-top: 20px; /* adjust as needed */
+}
+
+#search-add-container {
+  display: flex;
+  justify-content: center;
   gap: 10px;
 }
 
@@ -26,42 +74,69 @@ input {
 }
 
 #image-container {
-  position: absolute; /* Position the element absolutely */
-  bottom: 50px; /* Align the element to the bottom of the page and 50px up */
+  position: relative; /* Position the element absolutely */
+  bottom: 2vh; /* Align the element to the bottom of the page and 50px up */
   display: flex;
   justify-content: flex-start;
   height: 50vh;
   width: 100vw;
   overflow: visible;
+  padding: 10px;
+  box-sizing: border-box;
 }
 
 #image-container img {
+  position: relative;
   max-height: 100%; /* Scale the images to fit inside the #image-container */
-  margin-right: -10px; /* Add a negative margin to make the images overlap */
   transition: transform 0.3s ease-in-out, z-index 0.3s ease-in-out; /* Add a transition for the transform and z-index properties */
 }
 
 .close-button {
   position: absolute;
   top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) scale(2);
+  right: 50%;
+  transform: translate(-50%, -50%);
   display: none;
   background-color: white;
   opacity: 0;
-  transition: opacity 0.5s ease-in;
+  cursor: pointer;
 }
-
-a {
+.container {
+  max-height: 80%;
   position: relative;
 }
 
-a:hover .close-button {
+.container:hover .close-button {
   display: block;
   opacity: 1;
+  transition: opacity 0.5s ease-in;
+  z-index: 2;
 }
 
-a:hover img {
+img {
+  position: relative;
+}
+
+.container:hover img {
   transform: scale(1.1);
   z-index: 1;
+}
+
+form button {
+  position: relative;
+  z-index: 3;
+}
+
+#container div {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+#container div img {
+  width: 100%;
+  object-fit: cover;
 }
