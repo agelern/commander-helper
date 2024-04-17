@@ -75,7 +75,9 @@ input {
 
 #image-container {
   position: relative; /* Position the element absolutely */
-  bottom: 2vh; /* Align the element to the bottom of the page and 50px up */
+  bottom: 0; /* Align the element to the bottom of the page and 50px up */
+  top: 0;
+  margin: auto;
   display: flex;
   justify-content: flex-start;
   height: 50vh;
@@ -127,16 +129,16 @@ form button {
   z-index: 3;
 }
 
-#container div {
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 1;
-  width: 100%;
-  box-sizing: border-box;
+#right-side-container {
+  position: absolute; /* Attach to the right side of the screen */
+  right: 0; /* Position at the right edge of the screen */
+  top: 0; /* Position at the top edge of the screen */
+  width: 50vw; /* Set the width to 50% of the viewport width */
+  height: 100vh; /* Set the height to 100% of the viewport height */
+  overflow: auto; /* Add scrollbars if the content overflows */
 }
 
-#container div img {
-  width: 100%;
-  object-fit: cover;
+#right-side-container img {
+  max-width: 90%; /* The image will not be wider than the container */
+  max-height: 90%; /* The height will scale proportionally to the width */
 }

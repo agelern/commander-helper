@@ -245,6 +245,44 @@ function getUniqueColorIdentities(cards) {
   console.log([...colorIdentities].join(""));
   return [...colorIdentities].join("");
 }
+
+function displayCommanders(sortedCommanders) {
+  const container = document.getElementById("right-side-container");
+  container.innerHTML = ""; // Clear the container
+
+  let clickCount = 0; // Initialize click count
+
+  sortedCommanders.forEach((commanderData, index) => {
+    const img = document.createElement("img");
+
+    if (commanderData.data.data.card_faces) {
+      img.src = commanderData.data.data.card_faces[0].image_uris.png;
+    } else {
+      img.src = commanderData.data.data.image_uris.png;
+    }
+
+    img.style.position = "absolute";
+    img.style.right = "0";
+    img.style.zIndex = `${sortedCommanders.length - index}`; // Set initial z-index
+
+    // Add event listener to the image
+    img.addEventListener("click", function () {
+      this.style.zIndex = "0"; // Decrease z-index by 1
+      clickCount++; // Increment click count
+
+      // If all cards have been clicked, reset z-index values and click count
+      if (clickCount === sortedCommanders.length) {
+        Array.from(container.children).forEach((img, i) => {
+          img.style.zIndex = `${sortedCommanders.length - i}`;
+        });
+        clickCount = 0; // Reset click count
+      }
+    });
+
+    container.appendChild(img);
+  });
+}
+
 async function outputWinners(cards) {
   await get_solo_commanders_from_scryfall(getUniqueColorIdentities(cards));
 
@@ -258,52 +296,15 @@ async function outputWinners(cards) {
     })
   );
 
-  const sortedCommanders = Object.entries(returned_commanders)
+  sortedCommanders = Object.entries(returned_commanders)
     .sort((a, b) => b[1].score - a[1].score)
     .slice(0, 10)
     .map(([commander, data]) => ({ commander, data }));
 
   console.log(sortedCommanders);
-  const container = document.createElement("div");
-  container.style.width = "50%";
-  container.style.position = "absolute";
-  container.style.right = "0";
-  container.style.top = "0";
-  container.style.height = "100vh";
-  container.style.overflowY = "auto";
-  document.body.appendChild(container);
-
-  // Create a new image container for each commander
-  for (const { commander, data } of sortedCommanders) {
-    // Create a new div element
-    const div = document.createElement("div");
-    div.style.position = "relative";
-
-    // Create a new img element
-    const img = document.createElement("img");
-    img.style.transform = "scale(0.5)";
-
-    // Check for the existence of card_faces in data.data
-    if (data.data.card_faces) {
-      // If card_faces exists, set img.src to data.data.card_faces[0].image_uris.png
-      img.src = data.data.card_faces[0].image_uris.png;
-    } else {
-      // Otherwise, set img.src to data.data.image_uris.png
-      img.src = data.data.image_uris.png;
-    }
-
-    // Create a new p element and set its text to the commander's score
-    const p = document.createElement("p");
-    p.textContent = `Score: ${data.score}`;
-
-    // Append the img and p elements to the div
-    div.appendChild(img);
-    div.appendChild(p);
-
-    // Append the div to the body of the document
-    container.appendChild(div);
-  }
+  displayCommanders(sortedCommanders);
 }
+
 function printCommanders() {
   console.log(returned_commanders);
 }
