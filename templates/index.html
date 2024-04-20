@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href="../static/style.css" rel="stylesheet" />
     <title>SnakeBird Reverse Commander Search</title>
-    <script src="{{url_for('static', filename='index.js')}}"></script>
   </head>
   <body>
     <div id="logo-container">
@@ -26,12 +25,7 @@
               />
             </div>
             <div id="submit-container">
-              <input
-                id="submit"
-                onclick="outputWinners(cards)"
-                type="button"
-                value="Calculate"
-              />
+              <input id="submit" type="button" value="Calculate" />
             </div>
             <!-- <input
             id="print-commanders"
@@ -44,5 +38,6 @@
         </form>
       </div>
     </div>
+    <script src="{{url_for('static', filename='index.js')}}"></script>
   </body>
 </html>
