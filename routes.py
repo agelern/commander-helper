@@ -15,9 +15,6 @@ def index():
 def submit():
     data = request.get_json()
     commanders = run(data)
-    print(type(run))
-    print(run.__dict__)
-    print(commanders)
     return jsonify(commanders)
 
 if __name__ == '__main__':
