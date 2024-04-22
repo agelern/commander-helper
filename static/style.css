@@ -115,10 +115,6 @@ input {
   z-index: 2;
 }
 
-img {
-  position: relative;
-}
-
 .container:hover img {
   transform: scale(1.1);
   z-index: 1;
@@ -139,6 +135,6 @@ form button {
 }
 
 #right-side-container img {
-  max-width: 90%; /* The image will not be wider than the container */
-  max-height: 90%; /* The height will scale proportionally to the width */
+  max-width: 90%;
+  max-height: 90%;
 }

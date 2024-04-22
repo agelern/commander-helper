@@ -219,6 +219,7 @@ async def get_score(session, commander, data):
     await asyncio.sleep(0.05)  # 50 ms delay to respect rate limit
     cards = [card for name,card in data.items()]
     score = await get_score_from_edhrec(session, commander, format_name_for_edhrec(commander), cards)
+    print(f"get_score output: {commander, score}")
     return commander, score
 
 async def main(data, commanders):
@@ -229,11 +230,10 @@ async def main(data, commanders):
             tasks.append(task)
         results = await asyncio.gather(*tasks)
 
-    scoring_commanders = {}
     for commander, score in results:
-        scoring_commanders[commander] = {"score": score}
-
-    return scoring_commanders
+        commanders[commander]["score"] = score
+    
+    return commanders
 
 async def get_commanders(colors):
     async with aiohttp.ClientSession() as scryfall_session:
@@ -258,9 +258,9 @@ def run(data):
 
     for commander in total_commanders:
         commanders.update(commander)
-
+    # print(commanders)
     scored_commanders = asyncio.run(main(data, commanders))
-    print(scored_commanders)
+    # print(scored_commanders)
     return scored_commanders
 
 if __name__ == "__main__":
