@@ -15,10 +15,18 @@ window.onresize = adjustImageMargin;
 
 window.addEventListener("DOMContentLoaded", function () {
   document.getElementById("submit").addEventListener("click", function () {
+    var rightContainer = document.getElementById("right-side-container");
+    rightContainer.style.display = "flex";
+    rightContainer.style.justifyContent = "center";
+    rightContainer.style.alignItems = "center";
+    rightContainer.innerHTML =
+      '<img src="../static/images/search-spinner.gif" alt="Loading..." style="width:100px; height: 100px;">';
+
     var imageContainer = document.getElementById("image-container");
     imageContainer.style.maxWidth = "40vw";
     imageContainer.style.marginRight = "auto";
     imageContainer.style.marginLeft = "0";
+
     adjustImageMargin();
   });
 });
@@ -135,94 +143,116 @@ function addItem() {
   console.log(cards);
 }
 
+function createImageContainer(commanderData) {
+  const imgContainer = document.createElement("div");
+
+  if (commanderData.data.data.card_faces) {
+    imgContainer.appendChild(createDoubleContainer(commanderData));
+  } else if (commanderData.commander.includes("+")) {
+    imgContainer.appendChild(createPartnerContainer(commanderData));
+  } else {
+    imgContainer.appendChild(createSingleContainer(commanderData));
+  }
+
+  const scoreDiv = document.createElement("div");
+  scoreDiv.textContent = `Score: ${commanderData.data.score}/10`;
+  imgContainer.appendChild(scoreDiv);
+
+  return imgContainer;
+}
+
+function createDoubleContainer(commanderData) {
+  const doubleContainer = document.createElement("div");
+  doubleContainer.style.position = "relative";
+  doubleContainer.style.maxWidth = "90%";
+  doubleContainer.style.left = "0";
+
+  const sizeHolder = createImage(
+    commanderData.data.data.card_faces[0].image_uris.png,
+    { opacity: "0" }
+  );
+  doubleContainer.appendChild(sizeHolder);
+
+  const img1 = createImage(
+    commanderData.data.data.card_faces[0].image_uris.png,
+    { position: "absolute", left: "0", bottom: "0", zIndex: "3" }
+  );
+  doubleContainer.appendChild(img1);
+
+  const img2 = createImage(
+    commanderData.data.data.card_faces[1].image_uris.png,
+    { position: "absolute", right: "0", top: "0", zIndex: "2" }
+  );
+  img2.onmouseover = function () {
+    this.style.zIndex = "4";
+  };
+  img2.onmouseout = function () {
+    this.style.zIndex = "2";
+  };
+  doubleContainer.appendChild(img2);
+
+  return doubleContainer;
+}
+
+function createPartnerContainer(commanderData) {
+  const partnerContainer = document.createElement("div");
+  partnerContainer.style.position = "relative";
+  partnerContainer.style.maxWidth = "90%";
+  partnerContainer.style.left = "0";
+
+  const partnerSizeHolder = createImage(
+    commanderData.data.data[0].image_uris.png,
+    { opacity: "0" }
+  );
+  partnerContainer.appendChild(partnerSizeHolder);
+
+  const img1 = createImage(commanderData.data.data[0].image_uris.png, {
+    position: "absolute",
+    left: "0",
+    bottom: "0",
+    zIndex: "3",
+  });
+  partnerContainer.appendChild(img1);
+
+  const img2 = createImage(commanderData.data.data[1].image_uris.png, {
+    position: "absolute",
+    right: "0",
+    top: "0",
+    zIndex: "2",
+  });
+  img2.onmouseover = function () {
+    this.style.zIndex = "4";
+  };
+  img2.onmouseout = function () {
+    this.style.zIndex = "2";
+  };
+  partnerContainer.appendChild(img2);
+
+  return partnerContainer;
+}
+
+function createSingleContainer(commanderData) {
+  const singleContainer = document.createElement("div");
+  const img = createImage(commanderData.data.data.image_uris.png);
+  singleContainer.appendChild(img);
+  return singleContainer;
+}
+
+function createImage(src, styles = {}) {
+  const img = document.createElement("img");
+  img.src = src;
+  Object.assign(img.style, styles);
+  return img;
+}
+
 function displayCommanders(top_10_commanders) {
   const container = document.getElementById("right-side-container");
   container.innerHTML = "";
+  container.style = "";
   container.style.overflowY = "scroll";
 
   top_10_commanders.forEach((commanderData) => {
-    const imgContainer = document.createElement("div");
-
-    if (commanderData.data.data.card_faces) {
-      const doubleContainer = document.createElement("div");
-      doubleContainer.style.position = "relative";
-      doubleContainer.style.maxWidth = "90%";
-      doubleContainer.style.left = "0";
-
-      const sizeHolder = document.createElement("img");
-      sizeHolder.src = commanderData.data.data.card_faces[0].image_uris.png;
-      sizeHolder.style.opacity = "0";
-      doubleContainer.appendChild(sizeHolder);
-
-      const img1 = document.createElement("img");
-      img1.src = commanderData.data.data.card_faces[0].image_uris.png;
-      img1.style.position = "absolute";
-      img1.style.left = "0";
-      img1.style.bottom = "0";
-      img1.style.zIndex = "3";
-      doubleContainer.appendChild(img1);
-
-      const img2 = document.createElement("img");
-      img2.src = commanderData.data.data.card_faces[1].image_uris.png;
-      img2.style.position = "absolute";
-      img2.style.right = "0";
-      img2.style.top = "0";
-      img2.style.zIndex = "2";
-      img2.onmouseover = function () {
-        this.style.zIndex = "4";
-      };
-      img2.onmouseout = function () {
-        this.style.zIndex = "2";
-      };
-      doubleContainer.appendChild(img2);
-
-      imgContainer.appendChild(doubleContainer);
-    } else if (commanderData.commander.includes("+")) {
-      const partnerContainer = document.createElement("div");
-      partnerContainer.style.position = "relative";
-      partnerContainer.style.maxWidth = "90%";
-      partnerContainer.style.left = "0";
-
-      const partnerSizeHolder = document.createElement("img");
-      partnerSizeHolder.src = commanderData.data.data[0].image_uris.png;
-      partnerSizeHolder.style.opacity = "0";
-      partnerContainer.appendChild(partnerSizeHolder);
-
-      const img1 = document.createElement("img");
-      img1.src = commanderData.data.data[0].image_uris.png;
-      img1.style.position = "absolute";
-      img1.style.left = "0";
-      img1.style.bottom = "0";
-      img1.style.zIndex = "3";
-      partnerContainer.appendChild(img1);
-
-      const img2 = document.createElement("img");
-      img2.src = commanderData.data.data[1].image_uris.png;
-      img2.style.position = "absolute";
-      img2.style.right = "0";
-      img2.style.top = "0";
-      img2.style.zIndex = "2";
-      img2.onmouseover = function () {
-        this.style.zIndex = "4";
-      };
-      img2.onmouseout = function () {
-        this.style.zIndex = "2";
-      };
-      partnerContainer.appendChild(img2);
-
-      imgContainer.appendChild(partnerContainer);
-    } else {
-      const singleContainer = document.createElement("div");
-      const img = document.createElement("img");
-      img.src = commanderData.data.data.image_uris.png;
-      singleContainer.appendChild(img);
-      imgContainer.appendChild(singleContainer);
-    }
-
-    const scoreDiv = document.createElement("div");
-    scoreDiv.textContent = `Score: ${commanderData.data.score}/10`;
-    imgContainer.appendChild(scoreDiv);
-
+    const imgContainer = createImageContainer(commanderData);
     container.appendChild(imgContainer);
   });
 }
