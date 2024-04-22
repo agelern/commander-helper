@@ -3,6 +3,8 @@ import requests
 import json
 import aiohttp
 import asyncio
+from urllib.parse import quote
+from itertools import combinations
 
 
 def get_full_color_identity(cards):
@@ -10,12 +12,15 @@ def get_full_color_identity(cards):
     for name, card in cards.items():
         for color in card['color_identity']:
             colors.add(color.upper())
-    return ''.join(colors)
+    return colors
     
-async def get_solo_commanders_from_scryfall(scryfall_session,colors):
+async def get_solo_commanders(session,colors):
     commanders = {}
-    solo_url = f"https://api.scryfall.com/cards/search?q=id%3E%3D{colors}%20t%3Alegend%20t%3Acreature"
-    async with scryfall_session.get(solo_url) as response:
+    colors = ''.join(colors)
+    query = f'id>={colors} is:commander'
+    encoded_query = quote(query)
+    url = f"https://api.scryfall.com/cards/search?q={encoded_query}"
+    async with session.get(url) as response:
         if response.status != 200:
             raise Exception(f"Solo request failed with status code {response.status}")
 
@@ -23,107 +28,142 @@ async def get_solo_commanders_from_scryfall(scryfall_session,colors):
         if 'data' not in possible_commanders:
             raise Exception("No 'data' key in the solo response")
         
-        print(f"{len(possible_commanders['data'])} solo commanders found")
+        print(f"{len(possible_commanders['data'])} solo commanders found.")
 
         for commander in possible_commanders["data"]:
-            if commander["legalities"]["commander"] == 'legal':
-                commanders[commander["name"]] = {"data": commander, "score": 0}
+            commanders[commander["name"]] = {"data": commander, "score": 0}
         return commanders
 
-async def get_partner_commanders_from_scryfall(scryfall_session,colors):
+async def get_partner_commanders(session, colors):
     commanders = {}
-    partners_url = f"https://api.scryfall.com/cards/search?q=id%3A{colors}%20t%3Alegend%20t%3Acreature%20o%3A%22Partner%22%20%2Do%3A%22Partner%20with%22"
-    async with scryfall_session.get(partners_url) as partner_response:
-        if partner_response.status != 200:
-            raise Exception(f"Partner request failed with status code {partner_response.status}")
+    query = ''
+    for color in colors:
+        query += f'is:commander o:"Partner" -o:"Partner with" id>={color} OR '
+    encoded_query = quote(query[:-4])
+    url = f"https://api.scryfall.com/cards/search?q={encoded_query}"
+    async with session.get(url) as response:
+        if response.status != 200:
+            raise Exception(f"Partner request failed with status code {response.status}.")
         
-        possible_partners = await partner_response.json()
-        if 'data' not in possible_partners:
-            raise Exception("No 'data' key in the partner response")
+        partners = await response.json()
+        if 'data' not in partners:
+            raise Exception("No data key in the partner response.")
+        partners_data = partners['data']
         
-        print(f"{len(possible_partners['data'])} partner commanders found")
+        print(f"{len(partners_data)} partner commanders found.")
 
-        for first_partner in possible_partners["data"]:
-            if first_partner["legalities"]["commander"] == 'legal':
-                deficit = [color for color in colors if color not in first_partner["color_identity"]]
-                for second_partner in possible_partners["data"]:
-                    if all(color in second_partner["color_identity"] for color in deficit) and second_partner["legalities"]["commander"] == 'legal':
-                        name_list = [first_partner['name'], second_partner['name']]
-                        joined_name = ' + '.join(sorted(name_list))
-                        commanders[joined_name] = {"data": [first_partner, second_partner], "score": 0}
+        partner_combos = combinations(partners_data, 2)
+        matching_combos = [combo for combo in partner_combos if colors.issubset(set(combo[0]['color_identity'] + combo[1]['color_identity']))]
+        for combo in matching_combos:
+            first_partner = combo[0]
+            second_partner = combo[1]
+            names = sorted([first_partner["name"], second_partner["name"]])
+            joined_name = ' + '.join(names)
+            commanders[joined_name] = {"data": [first_partner, second_partner], "score": 0}
         return commanders
-async def get_partner_with_commanders_from_scryfall(scryfall_session,colors):
+    
+
+async def get_partner_with_commanders(session,colors):
     commanders = {}
-    partner_with_url = f"https://api.scryfall.com/cards/search?q=id%3A{colors}%20t%3Alegend%20o%3A%22Partner%20with%20%22"
-    async with scryfall_session.get(partner_with_url) as partner_with_response:
-        if partner_with_response.status != 200:
-            raise Exception(f"'Partner with...' request failed with status code {partner_with_response.status}")
+    query = ''
+    for color in colors:
+        query += f'is:commander o:"Partner with" id>={color} OR '
+    encoded_query = quote(query[:-4])
+    url = f"https://api.scryfall.com/cards/search?q={encoded_query}"
+    async with session.get(url) as response:
+        if response.status != 200:
+            raise Exception(f"'Partner with...' request failed with status code {response.status}")
         
-        possible_partner_withs = await partner_with_response.json()
-        if 'data' not in possible_partner_withs:
+        possible_commanders = await response.json()
+        if 'data' not in possible_commanders:
             raise Exception("No 'data' key in the 'partner with...' response")
-        
-        print(f"{len(possible_partner_withs['data'])} pwith commanders found")
+        possible_commander_data = possible_commanders["data"]
 
-        for first_partner in possible_partner_withs["data"]:
-            if first_partner["legalities"]["commander"] == 'legal':
-                color_id = first_partner["color_identity"]
+        print(f"{len(possible_commander_data)} pwith commanders found.")
 
-                for part in first_partner["all_parts"]:
-                    if part["object"] == "related_card" and part["name"] != first_partner["name"] and 'Legendary Creature' in part["type_line"]:
-                        second_partner_name = part["name"]
+        partner_data = {}
+        for partner in possible_commander_data:
+            partner_data[partner["name"]] = {
+                "data": partner,
+                "color_identity": partner["color_identity"],
+            }
 
-                for second_partner in possible_partner_withs["data"]:
-                    if second_partner["name"] == second_partner_name and second_partner["legalities"]["commander"] == 'legal':
-                        for color in second_partner["color_identity"]:
-                            if color not in color_id:
-                                color_id.append(color)
+        for first_partner in possible_commander_data:
+            for part in first_partner["all_parts"]:
+                if part["object"] == "related_card" and part["name"] != first_partner["name"] and 'Legendary' in part["type_line"]:
+                    second_partner_name = part["name"]
+            if second_partner_name in partner_data:
+                color_id = set(partner_data[first_partner["name"]]["color_identity"] + partner_data[second_partner_name]["color_identity"])
+                if colors.issubset(color_id):
+                    name_list = sorted([first_partner["name"], second_partner_name])
+                    joined_name = ' + '.join(name_list)
+                    commanders[joined_name] = {"data": [first_partner, partner_data[second_partner_name]["data"]], "score": 0}
 
-                        if all(color in color_id for color in colors):
-                            name_list = [first_partner["name"], second_partner["name"]]
-                            joined_name = ' + '.join(sorted(name_list))
-                            commanders[joined_name] = {"data": [first_partner, second_partner], "score": 0}
         return commanders
-
-async def get_doctor_who_commanders_from_scryfall(scryfall_session,colors):
+    
+async def get_doctor_who_commanders(session,colors):
     commanders = {}
-    companion_url = f"https://api.scryfall.com/cards/search?q=id%3A{colors}%20t%3Acreature%20o%3A%22Doctor%27s%20companion%22"
-    doctor_url = f"https://api.scryfall.com/cards/search?q=id%3A{colors}%20t%3Atime%20t%3Alord%20t%3Adoctor"
 
-    async with scryfall_session.get(companion_url) as companions_response:
+    companion_query = ''
+    for color in colors:
+        companion_query += f'is:commander o:"Doctor\'s companion" id>={color} OR '
+    encoded_companion_query = quote(companion_query[:-4])
+    companion_url = f"https://api.scryfall.com/cards/search?q={encoded_companion_query}"
+
+    doctor_query = ''
+    for color in colors:
+        doctor_query += f'is:commander t:"Time Lord Doctor" id>={color} OR '
+    encoded_doctor_query = quote(doctor_query[:-4])
+    doctor_url = f"https://api.scryfall.com/cards/search?q={encoded_doctor_query}"
+
+    async with session.get(companion_url) as companions_response:
         if companions_response.status != 200:
             raise Exception(f"Companion request failed with status code {companions_response.status}")
         companions = await companions_response.json()
-    async with scryfall_session.get(doctor_url) as doctors_response:
+
+    async with session.get(doctor_url) as doctors_response:
         if doctors_response.status != 200:
-            raise Exception(f"Doctor request failed with status code {doctors_response.status}")
+            raise Exception(f"Doctor request failed with status code {doctors_response.status} colors: {colors} doctorurl: {doctor_url}")
         doctors = await doctors_response.json()
 
     if 'data' not in companions or 'data' not in doctors:
         raise Exception("No 'data' key in the 'doctor/companion' responses")
     
-    print(f"{len(doctors['data'])} doctor commanders found")
+    doctor_data = doctors["data"]
+    companion_data = companions["data"]
 
-    for doctor in doctors['data']:
-        if doctor["legalities"]["commander"] == 'legal':
-            deficit = [color for color in colors if color not in doctor["color_identity"]]
-            for companion in companions["data"]:
-                if all(color in companion["color_identity"] for color in deficit) and companion["legalities"]["commander"] == 'legal':
-                    name_list = [doctor['name'], companion['name']]
-                    joined_name = ' + '.join(name_list)
-                    commanders[joined_name] = {"data": [doctor, companion], "score": 0}
+    print(f"{len(doctors['data'])} doctor commanders found.")
+
+    for doctor in doctor_data:
+        for companion in companion_data:
+            combined_colors = set(doctor['color_identity'] + companion['color_identity'])
+            if colors.issubset(combined_colors):
+                joined_name = f'{doctor["name"]} + {companion["name"]}'
+                commanders[joined_name] = {"data": [doctor, companion], "score": 0}
+
     return commanders
 
-async def get_background_commanders_from_scryfall(scryfall_session,colors):
+async def get_background_commanders(session,colors):
     commanders = {}
-    creature_url = f"https://api.scryfall.com/cards/search?q=id%3A{colors}%20t%3Acreature%20t%3Alegend%20o%3A%22Choose%20a%20Background%22"
-    background_url = f"https://api.scryfall.com/cards/search?q=id%3A{colors}%20t%3Aenchantment%20t%3Alegend%20t%3ABackground"
 
-    async with scryfall_session.get(creature_url) as creature_response:
+    creature_query = ''
+    for color in colors:
+        creature_query += f'is:commander o:"Choose a Background" id>={color} OR '
+    encoded_creature_query = quote(creature_query[:-4])
+    creature_url = f"https://api.scryfall.com/cards/search?q={encoded_creature_query}"
+
+    background_query = ''
+    for color in colors:
+        background_query += f't:background id>={color} OR '
+    encoded_background_query = quote(background_query[:-4])
+    background_url = f"https://api.scryfall.com/cards/search?q={encoded_background_query}"
+
+    async with session.get(creature_url) as creature_response:
         if creature_response.status != 200:
             raise Exception(f"Creature(background) request failed with status code {creature_response.status}")
         creatures = await creature_response.json()
-    async with scryfall_session.get(background_url) as background_response:
+
+    async with session.get(background_url) as background_response:
         if background_response.status != 200:
             raise Exception(f"Background request failed with status code {background_response.status}")
         backgrounds = await background_response.json()
@@ -133,34 +173,43 @@ async def get_background_commanders_from_scryfall(scryfall_session,colors):
     
     print(f"{len(creatures['data'])} bg commanders found")
 
-    for creature in creatures['data']:
-        if creature["legalities"]["commander"] == 'legal':
-            deficit = [color for color in colors if color not in creature["color_identity"]]
-            for background in backgrounds["data"]:
-                if all(color in background["color_identity"] for color in deficit) and background["legalities"]["commander"] == 'legal':
-                    name_list = [creature['name'], background['name']]
-                    joined_name = ' + '.join(name_list)
-                    commanders[joined_name] = {"data": [creature, background], "score": 0}
+    creature_data = creatures["data"]
+    background_data = backgrounds["data"]
+
+    for creature in creature_data:
+        creature_colors = set(creature["color_identity"])
+        deficit = colors - creature_colors
+        valid_backgrounds = filter(lambda bg: deficit.issubset(bg["color_identity"]), background_data)
+        for background in valid_backgrounds:
+            name_list = [creature['name'], background['name']]
+            joined_name = ' + '.join(name_list)
+            commanders[joined_name] = {"data": [creature, background], "score": 0}
     return commanders
 
-async def get_friends_forever_commanders_from_scryfall(scryfall_session,colors):
+async def get_friends_forever_commanders(session,colors):
     commanders = {}
-    friends_url = f"https://api.scryfall.com/cards/search?q=id%3A{colors}%20t%3Alegend%20t%3Acreature%20o%3A%22Friends%20forever%22"
-    async with scryfall_session.get(friends_url) as friends_response:
-        if friends_response.status == 200:
+    query = ''
+    for color in colors:
+        query += f'is:commander o:"Friends forever" id>={color} OR '
+    encoded_query = quote(query[:-4])
+    url = f"https://api.scryfall.com/cards/search?q={encoded_query}"
+    async with session.get(url) as response:
+        if response.status == 200:
             
-            friends = await friends_response.json()
+            friends = await response.json()
             
             print(f"{len(friends['data'])} friends forever commanders found")
 
-            for first_friend in friends["data"]:
-                if first_friend["legalities"]["commander"] == 'legal':
-                    deficit = [color for color in colors if color not in first_friend["color_identity"]]
-                    for second_friend in friends["data"]:
-                        if all(color in second_friend["color_identity"] for color in deficit) and second_friend["legalities"]["commander"] == 'legal':
-                            name_list = [first_friend['name'], second_friend['name']]
-                            joined_name = ' + '.join(sorted(name_list))
-                            commanders[joined_name] = {"data": [first_friend, second_friend], "score": 0}
+            friends_data = friends["data"]
+            friend_combos = combinations(friends_data, 2)
+            matching_combos = [combo for combo in friend_combos if colors.issubset(set(combo[0]['color_identity'] + combo[1]['color_identity']))]
+            for combo in matching_combos:
+                first_friend = combo[0]
+                second_friend = combo[1]
+                names = sorted([first_friend["name"], second_friend["name"]])
+                joined_name = ' + '.join(names)
+                commanders[joined_name] = {"data": [first_friend, second_friend], "score": 0}
+        
         else:
             print(f"No color matches in Friends Forever")
     return commanders
@@ -219,10 +268,9 @@ async def get_score(session, commander, data):
     await asyncio.sleep(0.05)  # 50 ms delay to respect rate limit
     cards = [card for name,card in data.items()]
     score = await get_score_from_edhrec(session, commander, format_name_for_edhrec(commander), cards)
-    print(f"get_score output: {commander, score}")
     return commander, score
 
-async def main(data, commanders):
+async def score_commanders(data, commanders):
     async with aiohttp.ClientSession() as session:
         tasks = []
         for commander in commanders:
@@ -238,30 +286,27 @@ async def main(data, commanders):
 async def get_commanders(colors):
     async with aiohttp.ClientSession() as scryfall_session:
         tasks =[ 
-            asyncio.create_task(get_solo_commanders_from_scryfall(scryfall_session,colors)),
-            asyncio.create_task(get_partner_commanders_from_scryfall(scryfall_session,colors)),
-            asyncio.create_task(get_partner_with_commanders_from_scryfall(scryfall_session,colors)),
-            asyncio.create_task(get_background_commanders_from_scryfall(scryfall_session,colors)),
-            asyncio.create_task(get_friends_forever_commanders_from_scryfall(scryfall_session,colors)),
-            asyncio.create_task(get_doctor_who_commanders_from_scryfall(scryfall_session,colors))
+            asyncio.create_task(get_solo_commanders(scryfall_session,colors)),
+            asyncio.create_task(get_partner_commanders(scryfall_session,colors)),
+            asyncio.create_task(get_partner_with_commanders(scryfall_session,colors)),
+            asyncio.create_task(get_background_commanders(scryfall_session,colors)),
+            asyncio.create_task(get_friends_forever_commanders(scryfall_session,colors)),
+            asyncio.create_task(get_doctor_who_commanders(scryfall_session,colors))
         ]
-        total_commanders = await asyncio.gather(*tasks)
-    return total_commanders
+        commanders = await asyncio.gather(*tasks)
+    return commanders
 
-def run(data):
+def run(user_entries):
 
-    colors = get_full_color_identity(data)
+    colors = get_full_color_identity(user_entries)
     print(colors)
 
     commanders = {}
-    total_commanders = asyncio.run(get_commanders(colors))
+    commanders_list = asyncio.run(get_commanders(colors))
 
-    for commander in total_commanders:
+    for commander in commanders_list:
         commanders.update(commander)
-    # print(commanders)
-    scored_commanders = asyncio.run(main(data, commanders))
-    # print(scored_commanders)
-    return scored_commanders
 
-if __name__ == "__main__":
-    run(data)
+    scored_commanders = asyncio.run(score_commanders(user_entries, commanders))
+
+    return scored_commanders
