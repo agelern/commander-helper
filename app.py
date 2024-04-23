@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, jsonify
 import json
-from lib.web_snakebird import *
+from web_snakebird import run
 import aiohttp
 import asyncio
 
