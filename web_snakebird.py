@@ -17,7 +17,7 @@ def get_full_color_identity(cards):
 async def get_solo_commanders(session,colors):
     commanders = {}
     colors = ''.join(colors)
-    query = f'id>={colors} is:commander'
+    query = f'id>={colors} f:commander'
     encoded_query = quote(query)
     url = f"https://api.scryfall.com/cards/search?q={encoded_query}"
     async with session.get(url) as response:
@@ -38,7 +38,7 @@ async def get_partner_commanders(session, colors):
     commanders = {}
     query = ''
     for color in colors:
-        query += f'is:commander o:"Partner" -o:"Partner with" id>={color} OR '
+        query += f'f:commander o:"Partner" -o:"Partner with" id>={color} OR '
     encoded_query = quote(query[:-4])
     url = f"https://api.scryfall.com/cards/search?q={encoded_query}"
     async with session.get(url) as response:
@@ -67,7 +67,7 @@ async def get_partner_with_commanders(session,colors):
     commanders = {}
     query = ''
     for color in colors:
-        query += f'is:commander o:"Partner with" id>={color} OR '
+        query += f'f:commander o:"Partner with" id>={color} OR '
     encoded_query = quote(query[:-4])
     url = f"https://api.scryfall.com/cards/search?q={encoded_query}"
     async with session.get(url) as response:
@@ -106,13 +106,13 @@ async def get_doctor_who_commanders(session,colors):
 
     companion_query = ''
     for color in colors:
-        companion_query += f'is:commander o:"Doctor\'s companion" id>={color} OR '
+        companion_query += f'f:commander o:"Doctor\'s companion" id>={color} OR '
     encoded_companion_query = quote(companion_query[:-4])
     companion_url = f"https://api.scryfall.com/cards/search?q={encoded_companion_query}"
 
     doctor_query = ''
     for color in colors:
-        doctor_query += f'is:commander t:"Time Lord Doctor" id>={color} OR '
+        doctor_query += f'f:commander t:"Time Lord Doctor" id>={color} OR '
     encoded_doctor_query = quote(doctor_query[:-4])
     doctor_url = f"https://api.scryfall.com/cards/search?q={encoded_doctor_query}"
 
@@ -148,7 +148,7 @@ async def get_background_commanders(session,colors):
 
     creature_query = ''
     for color in colors:
-        creature_query += f'is:commander o:"Choose a Background" id>={color} OR '
+        creature_query += f'f:commander o:"Choose a Background" id>={color} OR '
     encoded_creature_query = quote(creature_query[:-4])
     creature_url = f"https://api.scryfall.com/cards/search?q={encoded_creature_query}"
 
@@ -190,7 +190,7 @@ async def get_friends_forever_commanders(session,colors):
     commanders = {}
     query = ''
     for color in colors:
-        query += f'is:commander o:"Friends forever" id>={color} OR '
+        query += f'f:commander o:"Friends forever" id>={color} OR '
     encoded_query = quote(query[:-4])
     url = f"https://api.scryfall.com/cards/search?q={encoded_query}"
     async with session.get(url) as response:
@@ -231,7 +231,7 @@ def format_name_for_edhrec(name):
 
 async def get_score_from_edhrec(session, commander_name, formatted_name, cards): 
     match_base_value = 2
-    card_is_commander_value = 2
+    card_is_commander_value = 4
     high_synergy_value = 1
     high_inclusion_value = 1
 

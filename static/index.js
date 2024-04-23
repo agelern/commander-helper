@@ -82,64 +82,93 @@ function adjustImageMargin() {
   }
 }
 
-function addItem() {
-  var card_name = document.getElementById("search-bar").value;
+function getCardUrl(cardName) {
+  return (
+    "https://api.scryfall.com/cards/named?fuzzy=" + encodeURIComponent(cardName)
+  );
+}
 
-  var url =
-    "https://api.scryfall.com/cards/named?fuzzy=" +
-    encodeURIComponent(card_name);
-
-  fetch(url)
+function fetchCardData(url) {
+  return fetch(url)
     .then((response) => {
       if (!response.ok) {
-        throw new Error(`No card found for \"${card_name}\".`);
+        throw new Error(`No card found for \"${cardName}\".`);
       }
       return response.json();
     })
     .then((data) => {
       if (!data || Object.keys(data).length === 0) {
-        throw new Error(`No card found for \"${card_name}\".`);
+        throw new Error(`No card found for \"${cardName}\".`);
       }
+      if (!data["legalities"]["commander"]) {
+        throw new Error(`\"${cardName}\" not legal in commander.`);
+      }
+      return data;
+    });
+}
 
+function createCardContainer(data) {
+  var container = document.createElement("div");
+  container.classList.add("container");
+
+  var img = createCardImage(data);
+  var link = createCardLink(data, img);
+  var closeButton = createCloseButton(container, img);
+
+  container.appendChild(link);
+  container.appendChild(closeButton);
+
+  return container;
+}
+
+function createCardImage(data) {
+  var img = document.createElement("img");
+  img.src = data["image_uris"]["png"];
+  img.setAttribute("data-name", data.name);
+  img.onload = adjustImageMargin;
+  return img;
+}
+
+function createCardLink(data, img) {
+  var link = document.createElement("a");
+  link.href = data["scryfall_uri"];
+  link.target = "_blank";
+  link.appendChild(img);
+  return link;
+}
+
+function createCloseButton(container, img) {
+  var closeButton = document.createElement("span");
+  closeButton.textContent = "X";
+  closeButton.classList.add("close-button");
+  closeButton.onclick = function (event) {
+    event.preventDefault();
+    container.remove();
+    delete cards[img.getAttribute("data-name")];
+    adjustImageMargin();
+    console.log(cards);
+  };
+  return closeButton;
+}
+
+function addItem() {
+  var cardName = document.getElementById("search-bar").value;
+  var url = getCardUrl(cardName);
+
+  fetchCardData(url)
+    .then((data) => {
       cards[data.name] = data;
-
-      var container = document.createElement("div");
-      container.classList.add("container");
-
-      var img = document.createElement("img");
-      img.src = data["image_uris"]["png"];
-      img.setAttribute("data-name", data.name);
-      img.onload = adjustImageMargin;
-
-      var link = document.createElement("a");
-      link.href = data["scryfall_uri"];
-      link.target = "_blank";
-      link.appendChild(img);
-
-      var closeButton = document.createElement("span");
-      closeButton.textContent = "X";
-      closeButton.classList.add("close-button");
-      closeButton.onclick = function (event) {
-        event.preventDefault();
-        container.remove();
-        delete cards[img.getAttribute("data-name")];
-        adjustImageMargin();
-        console.log(cards);
-      };
-
-      container.appendChild(link);
-      container.appendChild(closeButton);
-
+      var container = createCardContainer(data);
       document.getElementById("image-container").appendChild(container);
-
       document.getElementById("search-bar").value = "";
     })
     .catch((error) => {
       console.error("Error:", error);
-      var errorMessageDiv = document.getElementById("error-message"); // Get the div
-      errorMessageDiv.textContent = error.message; // Set the text content of the div to the error message
-      errorMessageDiv.style.textAlign = "center"; // Center the text
+      var errorMessageDiv = document.getElementById("error-message");
+      errorMessageDiv.textContent = error.message;
+      errorMessageDiv.style.textAlign = "center";
     });
+
   console.log(cards);
 }
 
