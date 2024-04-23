@@ -89,60 +89,63 @@ async def get_partner_with_commanders(session,colors):
             }
         print(pwith_data)
         for first_partner in pwith_possible_commander_data:
-            for part in first_partner["all_parts"]:
-                if part["object"] == "related_card" and part["name"] != first_partner["name"] and 'Legendary' in part["type_line"]:
-                    second_pwith_partner_name = part["name"]
-            if second_pwith_partner_name in pwith_data:
-                pwith_color_id = set(pwith_data[first_partner["name"]]["color_identity"] + pwith_data[second_pwith_partner_name]["color_identity"])
-                if colors.issubset(pwith_color_id):
-                    pwith_name_list = sorted([first_partner["name"], second_pwith_partner_name])
-                    pwith_joined_name = ' + '.join(pwith_name_list)
-                    pwith_commanders[pwith_joined_name] = {"data": [first_partner, pwith_data[second_pwith_partner_name]["data"]], "score": 0}
-
+            try:
+                for part in first_partner["all_parts"]:
+                    if part["object"] == "related_card" and part["name"] != first_partner["name"] and 'Legendary' in part["type_line"]:
+                        second_pwith_partner_name = part["name"]
+                if second_pwith_partner_name in pwith_data:
+                    pwith_color_id = set(pwith_data[first_partner["name"]]["color_identity"] + pwith_data[second_pwith_partner_name]["color_identity"])
+                    if colors.issubset(pwith_color_id):
+                        pwith_name_list = sorted([first_partner["name"], second_pwith_partner_name])
+                        pwith_joined_name = ' + '.join(pwith_name_list)
+                        pwith_commanders[pwith_joined_name] = {"data": [first_partner, pwith_data[second_pwith_partner_name]["data"]], "score": 0}
+            except:
+                print(f"Bad partner: {first_partner['name']}")
         return pwith_commanders
     
 async def get_doctor_who_commanders(session,colors):
     doctor_commanders = {}
+    try:
+        companion_query = ''
+        for color in colors:
+            companion_query += f'f:commander o:"Doctor\'s companion" id>={color} OR '
+        encoded_companion_query = quote(companion_query[:-4])
+        companion_url = f"https://api.scryfall.com/cards/search?q={encoded_companion_query}"
 
-    companion_query = ''
-    for color in colors:
-        companion_query += f'f:commander o:"Doctor\'s companion" id>={color} OR '
-    encoded_companion_query = quote(companion_query[:-4])
-    companion_url = f"https://api.scryfall.com/cards/search?q={encoded_companion_query}"
+        doctor_query = ''
+        for color in colors:
+            doctor_query += f'f:commander t:"Time Lord Doctor" id>={color} OR '
+        encoded_doctor_query = quote(doctor_query[:-4])
+        doctor_url = f"https://api.scryfall.com/cards/search?q={encoded_doctor_query}"
 
-    doctor_query = ''
-    for color in colors:
-        doctor_query += f'f:commander t:"Time Lord Doctor" id>={color} OR '
-    encoded_doctor_query = quote(doctor_query[:-4])
-    doctor_url = f"https://api.scryfall.com/cards/search?q={encoded_doctor_query}"
+        async with session.get(companion_url) as companions_response:
+            if companions_response.status != 200:
+                raise Exception(f"Companion request failed with status code {companions_response.status}")
+            companions = await companions_response.json()
 
-    async with session.get(companion_url) as companions_response:
-        if companions_response.status != 200:
-            raise Exception(f"Companion request failed with status code {companions_response.status}")
-        companions = await companions_response.json()
+        async with session.get(doctor_url) as doctors_response:
+            if doctors_response.status != 200:
+                raise Exception(f"Doctor request failed with status code {doctors_response.status} colors: {colors} doctorurl: {doctor_url}")
+            doctors = await doctors_response.json()
 
-    async with session.get(doctor_url) as doctors_response:
-        if doctors_response.status != 200:
-            raise Exception(f"Doctor request failed with status code {doctors_response.status} colors: {colors} doctorurl: {doctor_url}")
-        doctors = await doctors_response.json()
+        if 'data' not in companions or 'data' not in doctors:
+            raise Exception("No 'data' key in the 'doctor/companion' responses")
+        
+        doctor_data = doctors["data"]
+        companion_data = companions["data"]
 
-    if 'data' not in companions or 'data' not in doctors:
-        raise Exception("No 'data' key in the 'doctor/companion' responses")
-    
-    doctor_data = doctors["data"]
-    companion_data = companions["data"]
+        print(f"{len(doctors['data'])} doctor commanders found.")
 
-    print(f"{len(doctors['data'])} doctor commanders found.")
+        for doctor in doctor_data:
+            for companion in companion_data:
+                doctor_combined_colors = set(doctor['color_identity'] + companion['color_identity'])
+                if colors.issubset(doctor_combined_colors):
+                    doctor_joined_name = f'{doctor["name"]} + {companion["name"]}'
+                    doctor_commanders[doctor_joined_name] = {"data": [doctor, companion], "score": 0}
 
-    for doctor in doctor_data:
-        for companion in companion_data:
-            doctor_combined_colors = set(doctor['color_identity'] + companion['color_identity'])
-            if colors.issubset(doctor_combined_colors):
-                doctor_joined_name = f'{doctor["name"]} + {companion["name"]}'
-                doctor_commanders[doctor_joined_name] = {"data": [doctor, companion], "score": 0}
-
-    return doctor_commanders
-
+        return doctor_commanders
+    except:
+        print("Doctor search failed.")
 async def get_background_commanders(session,colors):
     bg_commanders = {}
 
@@ -303,7 +306,8 @@ def run(user_entries):
 
     commanders = {}
     commanders_list = asyncio.run(get_commanders(colors))
-
+    commanders_list = [commander for commander in commanders_list if commander is not None]
+    
     for commander in commanders_list:
         commanders.update(commander)
 
