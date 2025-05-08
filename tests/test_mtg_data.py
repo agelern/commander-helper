@@ -2,6 +2,7 @@ import pytest
 from unittest.mock import Mock, patch, AsyncMock
 import aiohttp
 from src.mtg_data import MTGDataHandler
+import urllib.parse
 
 @pytest.fixture
 def mock_aiohttp_session():
@@ -161,3 +162,126 @@ async def test_rate_limiting(mtg_handler, mock_aiohttp_session, mock_scryfall_re
 
     # Verify that get was called the correct number of times
     assert mock_aiohttp_session.get.call_count == 3 
+
+@pytest.mark.asyncio
+async def test_malicious_input_handling(mtg_handler, mock_aiohttp_session):
+    """Test handling of malicious input in card names."""
+    malicious_inputs = [
+        "'; DROP TABLE cards; --",
+        "../../../etc/passwd",
+        "<script>alert('xss')</script>",
+        "Test Commander' OR '1'='1",
+        "Test Commander; rm -rf /",
+        "Test Commander && cat /etc/passwd"
+    ]
+    
+    for malicious_input in malicious_inputs:
+        # Should not raise any exceptions
+        await mtg_handler.get_commander_info(malicious_input)
+        
+        # Verify the input was properly encoded in the URL
+        call_args = mock_aiohttp_session.get.call_args[0][0]
+        encoded_input = urllib.parse.quote(malicious_input)
+        assert encoded_input in call_args
+
+@pytest.mark.asyncio
+async def test_rate_limiting_exhaustion(mtg_handler, mock_aiohttp_session, mock_scryfall_response):
+    """Test rate limiting exhaustion and backoff behavior."""
+    mock_session = AsyncMock()
+    mock_session.get.return_value.__aenter__.return_value.json = AsyncMock(return_value=mock_scryfall_response)
+    mock_aiohttp_session.get.return_value.__aenter__.return_value = mock_session
+
+    # Simulate rapid requests
+    for _ in range(100):  # Exceed normal rate limit
+        await mtg_handler.get_commander_info('Test Commander')
+    
+    # Verify that requests were properly spaced
+    call_times = [call[1]['timeout'] for call in mock_aiohttp_session.get.call_args_list]
+    assert all(timeout >= 0.1 for timeout in call_times)  # Minimum delay between requests
+
+@pytest.mark.asyncio
+async def test_error_message_sanitization(mtg_handler, mock_aiohttp_session):
+    """Test that error messages don't leak sensitive information."""
+    # Simulate various error scenarios
+    error_scenarios = [
+        (aiohttp.ClientError("Internal server error: API key invalid"), "API request failed"),
+        (aiohttp.ClientError("Database error: connection refused"), "API request failed"),
+        (aiohttp.ClientError("Authentication failed: invalid credentials"), "API request failed")
+    ]
+    
+    for error, expected_message in error_scenarios:
+        mock_aiohttp_session.get.side_effect = error
+        with pytest.raises(aiohttp.ClientError) as exc_info:
+            await mtg_handler.get_commander_info('Test Commander')
+        assert str(exc_info.value) == expected_message
+
+@pytest.mark.asyncio
+async def test_session_timeout(mtg_handler, mock_aiohttp_session):
+    """Test session timeout handling."""
+    mock_aiohttp_session.get.side_effect = aiohttp.ClientError("Timeout")
+    
+    async with mtg_handler as handler:
+        with pytest.raises(aiohttp.ClientError):
+            await handler.get_commander_info('Test Commander')
+    
+    # Verify session was properly closed
+    mock_aiohttp_session.close.assert_called_once()
+
+@pytest.mark.asyncio
+async def test_url_injection_prevention(mtg_handler, mock_aiohttp_session):
+    """Test prevention of URL injection attacks."""
+    injection_attempts = [
+        "Test Commander?api_key=123",
+        "Test Commander&redirect=http://malicious.com",
+        "Test Commander#<script>alert(1)</script>",
+        "Test Commander/../../../etc/passwd"
+    ]
+    
+    for attempt in injection_attempts:
+        await mtg_handler.get_commander_info(attempt)
+        call_args = mock_aiohttp_session.get.call_args[0][0]
+        # Verify the URL is properly encoded and doesn't contain the raw injection
+        assert attempt not in call_args
+        assert urllib.parse.quote(attempt) in call_args
+
+@pytest.mark.asyncio
+async def test_concurrent_request_handling(mtg_handler, mock_aiohttp_session, mock_scryfall_response):
+    """Test handling of concurrent requests to prevent race conditions."""
+    import asyncio
+    
+    mock_session = AsyncMock()
+    mock_session.get.return_value.__aenter__.return_value.json = AsyncMock(return_value=mock_scryfall_response)
+    mock_aiohttp_session.get.return_value.__aenter__.return_value = mock_session
+    
+    # Simulate multiple concurrent requests
+    async def make_request():
+        return await mtg_handler.get_commander_info('Test Commander')
+    
+    # Make 10 concurrent requests
+    tasks = [make_request() for _ in range(10)]
+    results = await asyncio.gather(*tasks)
+    
+    # Verify all requests were handled properly
+    assert len(results) == 10
+    assert all(result['name'] == 'Test Commander' for result in results)
+    
+    # Verify rate limiting was maintained
+    call_times = [call[1]['timeout'] for call in mock_aiohttp_session.get.call_args_list]
+    assert all(timeout >= 0.1 for timeout in call_times)
+
+@pytest.mark.asyncio
+async def test_resource_cleanup(mtg_handler, mock_aiohttp_session):
+    """Test proper cleanup of resources even when errors occur."""
+    mock_aiohttp_session.get.side_effect = Exception("Test error")
+    
+    try:
+        async with mtg_handler as handler:
+            await handler.get_commander_info('Test Commander')
+    except Exception:
+        pass
+    
+    # Verify session was properly closed even after error
+    mock_aiohttp_session.close.assert_called_once()
+    
+    # Verify no lingering connections
+    assert not mock_aiohttp_session._closed 
