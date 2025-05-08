@@ -14,12 +14,14 @@ class MTGDataHandler:
         self._min_request_interval = 0.1  # 100ms minimum between requests
 
     async def __aenter__(self):
-        self.session = aiohttp.ClientSession()
+        if not self.session:
+            self.session = aiohttp.ClientSession()
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         if self.session:
             await self.session.close()
+            self.session = None
 
     def _validate_card_name(self, card_name: str) -> str:
         """Validate and sanitize card name input."""
@@ -46,6 +48,10 @@ class MTGDataHandler:
         """Sanitize error messages to prevent information leakage."""
         if isinstance(error, aiohttp.ClientError):
             return "API request failed"
+        if isinstance(error, RuntimeError):
+            return str(error)
+        if isinstance(error, TypeError):
+            return "Invalid session state"
         return "An error occurred"
 
     def _format_name_for_edhrec(self, name: str) -> str:
@@ -67,7 +73,54 @@ class MTGDataHandler:
         # Ensure proper URL encoding
         return quote(formatted)
 
-    async def get_commander_info(self, commander_name: str) -> Dict:
+    async def _get_scryfall_data(self, card_name: str) -> Optional[Dict]:
+        """Get card data from Scryfall API."""
+        if not self.session:
+            raise RuntimeError("Session not initialized. Use async with context manager.")
+
+        url = f"{self.scryfall_base_url}/cards/named?fuzzy={quote(card_name)}"
+        try:
+            response = await self.session.get(url)
+            if response.status == 200:
+                data = await response.json()
+                if data.get('legalities', {}).get('commander') == 'legal':
+                    return data
+            return None
+        except aiohttp.ClientError as e:
+            raise aiohttp.ClientError(self._sanitize_error(e))
+        except TypeError as e:
+            raise RuntimeError(self._sanitize_error(e))
+        except Exception as e:
+            raise RuntimeError(self._sanitize_error(e))
+
+    async def _get_edhrec_data(self, commander_name: str) -> Optional[Dict]:
+        """Get commander data from EDHREC API."""
+        if not self.session:
+            raise RuntimeError("Session not initialized. Use async with context manager.")
+
+        formatted_name = self._format_name_for_edhrec(commander_name)
+        url = f"{self.edhrec_base_url}/{formatted_name}.json"
+        
+        try:
+            response = await self.session.get(url)
+            if response.status == 200:
+                data = await response.json()
+                if 'cardlist' in data:
+                    return {
+                        'rank': data.get('rank', 0),
+                        'synergies': data.get('cardlist', []),
+                        'average_decks': data.get('average_decks', 0),
+                        'potential_decks': data.get('potential_decks', 0)
+                    }
+            return None
+        except aiohttp.ClientError as e:
+            raise aiohttp.ClientError(self._sanitize_error(e))
+        except TypeError as e:
+            raise RuntimeError(self._sanitize_error(e))
+        except Exception as e:
+            raise RuntimeError(self._sanitize_error(e))
+
+    async def get_commander_info(self, commander_name: str) -> Optional[Dict]:
         """Get comprehensive information about a commander from both Scryfall and EDHREC."""
         try:
             # Validate and sanitize input
@@ -75,7 +128,7 @@ class MTGDataHandler:
             
             # Check rate limit
             self._check_rate_limit()
-            
+
             # Get basic card info from Scryfall
             scryfall_data = await self._get_scryfall_data(commander_name)
             if not scryfall_data:
@@ -83,7 +136,7 @@ class MTGDataHandler:
 
             # Check rate limit before EDHREC request
             self._check_rate_limit()
-            
+
             # Get EDHREC data
             edhrec_data = await self._get_edhrec_data(commander_name)
             
@@ -100,47 +153,12 @@ class MTGDataHandler:
                 'average_decks': edhrec_data.get('average_decks', 0) if edhrec_data else 0,
                 'potential_decks': edhrec_data.get('potential_decks', 0) if edhrec_data else 0
             }
-        except Exception as e:
+        except aiohttp.ClientError as e:
             raise aiohttp.ClientError(self._sanitize_error(e))
-
-    async def _get_scryfall_data(self, card_name: str) -> Optional[Dict]:
-        """Get card data from Scryfall API."""
-        if not self.session:
-            raise RuntimeError("Session not initialized. Use async with context manager.")
-
-        url = f"{self.scryfall_base_url}/cards/named?fuzzy={quote(card_name)}"
-        try:
-            async with self.session.get(url) as response:
-                if response.status == 200:
-                    data = await response.json()
-                    if data.get('legalities', {}).get('commander') == 'legal':
-                        return data
-                return None
+        except TypeError as e:
+            raise RuntimeError(self._sanitize_error(e))
         except Exception as e:
-            raise aiohttp.ClientError(self._sanitize_error(e))
-
-    async def _get_edhrec_data(self, commander_name: str) -> Optional[Dict]:
-        """Get commander data from EDHREC API."""
-        if not self.session:
-            raise RuntimeError("Session not initialized. Use async with context manager.")
-
-        formatted_name = self._format_name_for_edhrec(commander_name)
-        url = f"{self.edhrec_base_url}/{formatted_name}.json"
-        
-        try:
-            async with self.session.get(url) as response:
-                if response.status == 200:
-                    data = await response.json()
-                    if 'cardlist' in data:
-                        return {
-                            'rank': data.get('rank', 0),
-                            'synergies': data.get('cardlist', []),
-                            'average_decks': data.get('average_decks', 0),
-                            'potential_decks': data.get('potential_decks', 0)
-                        }
-                return None
-        except Exception as e:
-            raise aiohttp.ClientError(self._sanitize_error(e))
+            raise RuntimeError(self._sanitize_error(e))
 
     async def find_synergies(self, card_name: str) -> List[Dict]:
         """Find synergistic cards for a given card."""
@@ -166,22 +184,26 @@ class MTGDataHandler:
             formatted_name = self._format_name_for_edhrec(card_name)
             url = f"{self.edhrec_base_url}/{formatted_name}.json"
             
-            async with self.session.get(url) as response:
-                if response.status == 200:
-                    data = await response.json()
-                    if 'cardlist' in data:
-                        return [
-                            {
-                                'name': card['name'],
-                                'synergy_score': card.get('synergy', 0),
-                                'inclusion_rate': card.get('num_decks', 0) / card.get('potential_decks', 1)
-                            }
-                            for card in data['cardlist']
-                            if card.get('synergy', 0) >= 0.3  # Only include high synergy cards
-                        ]
-                return []
-        except Exception as e:
+            response = await self.session.get(url)
+            if response.status == 200:
+                data = await response.json()
+                if 'cardlist' in data:
+                    return [
+                        {
+                            'name': card['name'],
+                            'synergy_score': card.get('synergy', 0),
+                            'inclusion_rate': card.get('num_decks', 0) / card.get('potential_decks', 1)
+                        }
+                        for card in data['cardlist']
+                        if card.get('synergy', 0) >= 0.3  # Only include high synergy cards
+                    ]
+            return []
+        except aiohttp.ClientError as e:
             raise aiohttp.ClientError(self._sanitize_error(e))
+        except TypeError as e:
+            raise RuntimeError(self._sanitize_error(e))
+        except Exception as e:
+            raise RuntimeError(self._sanitize_error(e))
 
     async def get_budget_suggestions(self, commander_name: str, budget: float) -> List[Dict]:
         """Get budget-friendly card suggestions for a commander."""
@@ -201,27 +223,31 @@ class MTGDataHandler:
             formatted_name = self._format_name_for_edhrec(commander_name)
             url = f"{self.edhrec_base_url}/{formatted_name}.json"
             
-            async with self.session.get(url) as response:
-                if response.status == 200:
-                    data = await response.json()
-                    if 'cardlist' in data:
-                        # Filter and sort cards by price and synergy
-                        budget_cards = [
-                            {
-                                'name': card['name'],
-                                'price': card.get('price', 0),
-                                'synergy': card.get('synergy', 0),
-                                'inclusion_rate': card.get('num_decks', 0) / card.get('potential_decks', 1)
-                            }
-                            for card in data['cardlist']
-                            if card.get('price', 0) <= budget
-                        ]
-                        # Sort by synergy and inclusion rate
-                        return sorted(
-                            budget_cards,
-                            key=lambda x: (x['synergy'], x['inclusion_rate']),
-                            reverse=True
-                        )
-                return []
+            response = await self.session.get(url)
+            if response.status == 200:
+                data = await response.json()
+                if 'cardlist' in data:
+                    # Filter and sort cards by price and synergy
+                    budget_cards = [
+                        {
+                            'name': card['name'],
+                            'price': card.get('price', 0),
+                            'synergy': card.get('synergy', 0),
+                            'inclusion_rate': card.get('num_decks', 0) / card.get('potential_decks', 1)
+                        }
+                        for card in data['cardlist']
+                        if card.get('price', 0) <= budget
+                    ]
+                    # Sort by synergy and inclusion rate
+                    return sorted(
+                        budget_cards,
+                        key=lambda x: (x['synergy'], x['inclusion_rate']),
+                        reverse=True
+                    )
+            return []
+        except aiohttp.ClientError as e:
+            raise aiohttp.ClientError(self._sanitize_error(e))
+        except TypeError as e:
+            raise RuntimeError(self._sanitize_error(e))
         except Exception as e:
-            raise aiohttp.ClientError(self._sanitize_error(e)) 
+            raise RuntimeError(self._sanitize_error(e)) 

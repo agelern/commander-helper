@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Any
 from collections import deque
 import re
 
@@ -10,6 +10,9 @@ class ConversationHandler:
 
     def _extract_card_name(self, text: str) -> Optional[str]:
         """Extract card name from text using regex patterns."""
+        if text is None:
+            return None
+            
         # Look for quoted card names first
         quoted = re.search(r'"([^"]+)"', text)
         if quoted:

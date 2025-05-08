@@ -2,9 +2,9 @@ import os
 import discord
 from discord.ext import commands
 from dotenv import load_dotenv
-from src.mtg_data import MTGDataHandler
-from src.llm_handler import LLMHandler
-from src.conversation_handler import ConversationHandler
+from mtg_data import MTGDataHandler
+from llm_handler import LLMHandler
+from conversation_handler import ConversationHandler
 
 # Load environment variables
 load_dotenv()
@@ -15,13 +15,23 @@ intents.message_content = True
 intents.members = True
 
 bot = commands.Bot(command_prefix='!', intents=intents)
-mtg_handler = MTGDataHandler()
+mtg_handler = None  # Will be initialized in on_ready
 llm_handler = LLMHandler()
 conversation_handler = ConversationHandler()
 
 @bot.event
 async def on_ready():
+    global mtg_handler
     print(f'{bot.user} has connected to Discord!')
+    # Initialize MTG handler with session
+    mtg_handler = MTGDataHandler()
+    await mtg_handler.__aenter__()
+
+@bot.event
+async def on_disconnect():
+    global mtg_handler
+    if mtg_handler:
+        await mtg_handler.__aexit__(None, None, None)
 
 @bot.event
 async def on_message(message):

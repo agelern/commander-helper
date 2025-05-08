@@ -1,7 +1,9 @@
 import ollama
+import asyncio
+from concurrent.futures import ThreadPoolExecutor
 from typing import Dict, List, Optional
-from .config import OLLAMA_HOST, OLLAMA_MODEL
-from .mtg_data import MTGDataHandler
+from config import OLLAMA_HOST, OLLAMA_MODEL
+from mtg_data import MTGDataHandler
 
 class LLMHandler:
     def __init__(self, model_name: str = OLLAMA_MODEL):
@@ -15,18 +17,30 @@ class LLMHandler:
         # Configure Ollama client
         self.client = ollama.Client(host=OLLAMA_HOST)
         self.mtg_handler = MTGDataHandler()
+        self.executor = ThreadPoolExecutor(max_workers=4)  # Limit concurrent requests
+
+    def _generate_in_thread(self, prompt: str) -> Dict:
+        """Run the Ollama generate call in a separate thread."""
+        return self.client.generate(
+            model=self.model_name,
+            prompt=prompt,
+            options={
+                "temperature": 0.5,
+                "num_predict": 1000
+            }
+        )
 
     async def generate_response(self, user_input: str, conversation_history: List[Dict[str, str]]) -> str:
         """Generate a natural response based on user input and conversation history."""
         # Build the prompt with conversation history
         prompt = self._build_conversation_prompt(user_input, conversation_history)
         
-        # Generate response
-        response = await self.client.generate(
-            model=self.model_name,
-            prompt=prompt,
-            temperature=0.5,  # Lower temperature for more focused responses
-            max_tokens=1000
+        # Run the generate call in a separate thread
+        loop = asyncio.get_event_loop()
+        response = await loop.run_in_executor(
+            self.executor,
+            self._generate_in_thread,
+            prompt
         )
         
         return response['response']
@@ -37,8 +51,9 @@ class LLMHandler:
         
         # Add conversation history
         for message in conversation_history[-5:]:  # Only include last 5 messages for context
-            role = "User" if message["role"] == "user" else "Assistant"
-            prompt += f"{role}: {message['content']}\n"
+            if isinstance(message, dict) and "role" in message and "content" in message:
+                role = "User" if message["role"] == "user" else "Assistant"
+                prompt += f"{role}: {message['content']}\n"
         
         # Add current user input
         prompt += f"User: {user_input}\nAssistant:"
@@ -68,10 +83,11 @@ Provide a structured analysis covering:
 
 Keep the analysis clear and focused on practical deck building decisions."""
 
-        response = await self.client.generate(
-            model=self.model_name,
-            prompt=prompt,
-            temperature=0.5
+        loop = asyncio.get_event_loop()
+        response = await loop.run_in_executor(
+            self.executor,
+            self._generate_in_thread,
+            prompt
         )
         
         return response['response']
@@ -91,10 +107,11 @@ Provide a structured analysis of:
 
 Focus on practical card choices and their strategic applications."""
 
-        response = await self.client.generate(
-            model=self.model_name,
-            prompt=prompt,
-            temperature=0.5
+        loop = asyncio.get_event_loop()
+        response = await loop.run_in_executor(
+            self.executor,
+            self._generate_in_thread,
+            prompt
         )
         
         return response['response']
@@ -114,10 +131,11 @@ Include:
 
 Focus on maximizing strategic value within budget constraints."""
 
-        response = await self.client.generate(
-            model=self.model_name,
-            prompt=prompt,
-            temperature=0.5
+        loop = asyncio.get_event_loop()
+        response = await loop.run_in_executor(
+            self.executor,
+            self._generate_in_thread,
+            prompt
         )
         
         return response['response']
@@ -134,10 +152,11 @@ Include:
 
 Focus on practical insights for competitive play."""
 
-        response = await self.client.generate(
-            model=self.model_name,
-            prompt=prompt,
-            temperature=0.5
+        loop = asyncio.get_event_loop()
+        response = await loop.run_in_executor(
+            self.executor,
+            self._generate_in_thread,
+            prompt
         )
         
         return response['response'] 
