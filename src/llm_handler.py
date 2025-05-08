@@ -1,13 +1,17 @@
 import ollama
 from typing import Dict, List, Optional
+from .config import OLLAMA_HOST, OLLAMA_MODEL
 
 class LLMHandler:
-    def __init__(self, model_name: str = "mistral"):
+    def __init__(self, model_name: str = OLLAMA_MODEL):
         self.model = model_name
         self.system_prompt = """You are an expert Magic: The Gathering Commander deck brewer. 
         You have extensive knowledge of card synergies, meta strategies, and budget options.
         Provide detailed, accurate, and helpful responses about deck building and card interactions.
         Always consider the commander's color identity and strategy when making recommendations."""
+        
+        # Configure Ollama client
+        ollama.set_host(OLLAMA_HOST)
 
     async def analyze_commander(self, commander_info: Dict) -> str:
         """Analyze a commander and provide brewing suggestions"""
