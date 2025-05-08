@@ -1,27 +1,47 @@
-## Reverse EDHREC 2.0
+# MTG Commander Deck Brewer Bot
 
-CLI tool that accepts any number of entered cards, scores them against possible commanders (via deck usage stats and the "synergy" scores) on EDHREC and returns the top 10 commanders to hold the entered cards.
+A Discord bot that helps users brew Magic: The Gathering Commander decks by providing suggestions, synergies, and meta analysis.
 
----
----
+## Features
 
+- Deck brewing suggestions for specific commanders
+- Card synergy analysis
+- Budget deck recommendations
+- Meta analysis for commanders
 
+## Setup
 
-Changelog/Journal
----
-**Apr 03, 2024**  
-  Worked a lot offline in spare minutes here and there. My original intent with the project was to showcase my assorted data skills with things like AWS services and general data warehousing. As I continued tinkering, it became obvious that there was a much simpler implementation that did less showcasing but was a far better end-product. THEREFORE, I've begun creating a second version that does not require a local database (therefore serverless) and simply handles 2 APIs, performing transformations in between. This will likely be what feeds the webapp version which I'll be "finishing" "soon."
-  
-Also, partner-type commanders are mostly implemented now. Doctors and backgrounds are next.
+1. Clone this repository
+2. Create a `.env` file in the root directory with your Discord bot token:
+   ```
+   DISCORD_TOKEN=your_discord_bot_token_here
+   ```
+3. Build and run the Docker container:
+   ```bash
+   docker build -t commander-brewer .
+   docker run commander-brewer
+   ```
 
----
-**Jan 07, 2024**  
-This tool assumes a locally installed database of MTG cards, which must contain at least names and color identities.
-render_db_upload.py and routes.py are WIP documents for webapp version.
-app.py contains some unnecessary functions currently being written for the webapp version.
-I've left Jupyter in requirements as I use it for some testing, but it is not needed for any functionality.
+## Commands
 
-This tool hooks into what seems to be a vestigial JSON endpoint at EDHREC. I found it on an ancient reddit comment. If anyone knows more about this, I'd love to hear about it.
-Running a search for only colorless cards will work, but it takes a very long time to poll effectively every legendary creature on EDHREC.
+- `!help_brew` - Display help information
+- `!brew <commander>` - Get deck brewing suggestions
+- `!synergy <card>` - Find synergistic cards
+- `!budget <commander> <budget>` - Get budget deck suggestions
+- `!meta <commander>` - Get meta analysis
 
-Partner commanders are not yet implemented.
+## Development
+
+1. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+2. Run the bot locally:
+   ```bash
+   python src/bot.py
+   ```
+
+## Contributing
+
+Feel free to submit issues and enhancement requests! 
