@@ -13,7 +13,7 @@ class LLMHandler:
         Consider color identity, mana curve, and win conditions in your analysis."""
         
         # Configure Ollama client
-        ollama.set_host(OLLAMA_HOST)
+        self.client = ollama.Client(host=OLLAMA_HOST)
         self.mtg_handler = MTGDataHandler()
 
     async def generate_response(self, user_input: str, conversation_history: List[Dict[str, str]]) -> str:
@@ -22,7 +22,7 @@ class LLMHandler:
         prompt = self._build_conversation_prompt(user_input, conversation_history)
         
         # Generate response
-        response = ollama.generate(
+        response = await self.client.generate(
             model=self.model_name,
             prompt=prompt,
             temperature=0.5,  # Lower temperature for more focused responses
@@ -68,7 +68,7 @@ Provide a structured analysis covering:
 
 Keep the analysis clear and focused on practical deck building decisions."""
 
-        response = ollama.generate(
+        response = await self.client.generate(
             model=self.model_name,
             prompt=prompt,
             temperature=0.5
@@ -91,7 +91,7 @@ Provide a structured analysis of:
 
 Focus on practical card choices and their strategic applications."""
 
-        response = ollama.generate(
+        response = await self.client.generate(
             model=self.model_name,
             prompt=prompt,
             temperature=0.5
@@ -114,7 +114,7 @@ Include:
 
 Focus on maximizing strategic value within budget constraints."""
 
-        response = ollama.generate(
+        response = await self.client.generate(
             model=self.model_name,
             prompt=prompt,
             temperature=0.5
@@ -134,7 +134,7 @@ Include:
 
 Focus on practical insights for competitive play."""
 
-        response = ollama.generate(
+        response = await self.client.generate(
             model=self.model_name,
             prompt=prompt,
             temperature=0.5

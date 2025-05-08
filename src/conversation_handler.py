@@ -3,26 +3,26 @@ from collections import deque
 import re
 
 class ConversationHandler:
-    def __init__(self, max_history: int = 5):
+    def __init__(self, max_history: int = 3):
+        """Initialize conversation handler."""
         self.max_history = max_history
-        self.conversations: Dict[int, deque] = {}  # channel_id -> conversation history
-        
+        self.conversations = {}
+
     def _extract_card_name(self, text: str) -> Optional[str]:
-        """Extract card names from text using common patterns."""
-        # Look for card names in quotes
-        quoted = re.findall(r'"([^"]*)"', text)
+        """Extract card name from text using regex patterns."""
+        # Look for quoted card names first
+        quoted = re.search(r'"([^"]+)"', text)
         if quoted:
-            return quoted[0]
-            
-        # Look for card names after common phrases
+            return quoted.group(1)
+        
+        # Look for card names in specific patterns
         patterns = [
-            r"(?:commander|card|deck)\s+(?:called|named|is|about)\s+([A-Za-z0-9\s,']+)",
-            r"(?:build|brew|make)\s+(?:a|an)\s+(?:deck|commander)\s+(?:with|using)\s+([A-Za-z0-9\s,']+)",
-            r"(?:find|get)\s+(?:synergies|suggestions)\s+(?:for|with)\s+([A-Za-z0-9\s,']+)"
+            r'(?:with|for|called|build|using)\s+([A-Z][a-zA-Z\s,\']+)(?:\s|$)',
+            r'(?:synergize with|meta like for)\s+([A-Z][a-zA-Z\s,\']+)(?:\s|$)'
         ]
         
         for pattern in patterns:
-            match = re.search(pattern, text.lower())
+            match = re.search(pattern, text)
             if match:
                 return match.group(1).strip()
         
@@ -31,47 +31,54 @@ class ConversationHandler:
     def _extract_budget(self, text: str) -> Optional[float]:
         """Extract budget amount from text."""
         # Look for dollar amounts
-        match = re.search(r'\$(\d+(?:\.\d{1,2})?)', text)
+        match = re.search(r'\$(\d+(?:\.\d{2})?)', text)
         if match:
-            return float(match.group(1))
+            try:
+                return float(match.group(1))
+            except ValueError:
+                return None
         return None
 
     def _get_conversation_history(self, channel_id: int) -> str:
         """Get formatted conversation history."""
         if channel_id not in self.conversations:
             return ""
-            
-        history = []
-        for msg in self.conversations[channel_id]:
-            history.append(f"{msg['role']}: {msg['content']}")
-        return "\n".join(history)
+        
+        return "\n".join([
+            f"{msg['role']}: {msg['content']}"
+            for msg in self.conversations[channel_id]
+        ])
 
-    def add_message(self, channel_id: int, role: str, content: str):
-        """Add a message to the conversation history."""
+    def add_message(self, channel_id: int, role: str, content: str) -> None:
+        """Add message to conversation history."""
         if channel_id not in self.conversations:
-            self.conversations[channel_id] = deque(maxlen=self.max_history)
-            
+            self.conversations[channel_id] = []
+        
         self.conversations[channel_id].append({
             'role': role,
             'content': content
         })
+        
+        # Trim history if needed
+        if len(self.conversations[channel_id]) > self.max_history:
+            self.conversations[channel_id] = self.conversations[channel_id][-self.max_history:]
 
-    def process_message(self, text: str) -> Dict:
-        """Process a message and extract relevant information."""
+    def process_message(self, text: str) -> Dict[str, Any]:
+        """Process message and determine query type and parameters."""
         card_name = self._extract_card_name(text)
         budget = self._extract_budget(text)
         
-        # Determine the type of query
+        # Determine query type
         query_type = None
-        if any(word in text.lower() for word in ['synergy', 'synergize', 'work with']):
-            query_type = 'synergy'
-        elif any(word in text.lower() for word in ['budget', 'cheap', 'affordable', 'cost']):
+        if 'budget' in text.lower():
             query_type = 'budget'
-        elif any(word in text.lower() for word in ['meta', 'popular', 'trend']):
+        elif 'synergize' in text.lower() or 'synergy' in text.lower():
+            query_type = 'synergy'
+        elif 'meta' in text.lower():
             query_type = 'meta'
-        elif any(word in text.lower() for word in ['build', 'brew', 'make', 'deck']):
+        else:
             query_type = 'brew'
-            
+        
         return {
             'type': query_type,
             'card_name': card_name,
@@ -79,7 +86,6 @@ class ConversationHandler:
             'original_text': text
         }
 
-    def clear_history(self, channel_id: int):
+    def clear_history(self, channel_id: int) -> None:
         """Clear conversation history for a channel."""
-        if channel_id in self.conversations:
-            self.conversations[channel_id].clear() 
+        self.conversations[channel_id] = [] 

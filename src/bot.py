@@ -2,9 +2,9 @@ import os
 import discord
 from discord.ext import commands
 from dotenv import load_dotenv
-from mtg_data import MTGDataHandler
-from llm_handler import LLMHandler
-from conversation_handler import ConversationHandler
+from src.mtg_data import MTGDataHandler
+from src.llm_handler import LLMHandler
+from src.conversation_handler import ConversationHandler
 
 # Load environment variables
 load_dotenv()
@@ -177,5 +177,9 @@ async def meta_analysis(ctx, *, commander_name):
     """Get meta analysis for a commander"""
     await handle_meta_query(ctx.message, {'card_name': commander_name})
 
-# Run the bot
-bot.run(os.getenv('DISCORD_TOKEN')) 
+def main():
+    """Run the bot."""
+    bot.run(os.getenv('DISCORD_TOKEN'))
+
+if __name__ == '__main__':
+    main() 

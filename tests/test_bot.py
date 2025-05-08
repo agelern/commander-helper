@@ -1,23 +1,32 @@
 import pytest
 from unittest.mock import Mock, patch, AsyncMock
 import discord
-from src.bot import bot, handle_conversation, handle_brew_query, handle_synergy_query, handle_budget_query, handle_meta_query
+from src.bot import handle_conversation, handle_brew_query, handle_synergy_query, handle_budget_query, handle_meta_query
+
+# Mock the bot initialization
+@pytest.fixture(autouse=True)
+def mock_discord_bot():
+    with patch('src.bot.commands.Bot') as mock:
+        mock.return_value = AsyncMock()
+        mock.return_value.event = lambda x: x
+        mock.return_value.command = lambda *args, **kwargs: lambda x: x
+        yield mock
 
 @pytest.fixture
 def mock_message():
-    message = Mock(spec=discord.Message)
+    message = AsyncMock(spec=discord.Message)
     message.author = Mock()
     message.author.bot = False
-    message.channel = Mock()
+    message.channel = AsyncMock()
     message.channel.id = 123
     message.content = "Test message"
     return message
 
 @pytest.fixture
 def mock_ctx():
-    ctx = Mock()
-    ctx.message = Mock(spec=discord.Message)
-    ctx.message.channel = Mock()
+    ctx = AsyncMock()
+    ctx.message = AsyncMock(spec=discord.Message)
+    ctx.message.channel = AsyncMock()
     ctx.message.channel.id = 123
     return ctx
 
@@ -51,6 +60,7 @@ def mock_llm_handler():
 def mock_conversation_handler():
     with patch('src.bot.conversation_handler') as mock:
         mock.add_message = Mock()
+        mock._get_conversation_history = Mock(return_value=[])
         mock.process_message = Mock()
         mock.process_message.return_value = {
             'type': 'brew',
@@ -72,9 +82,9 @@ async def test_handle_conversation_brew(mock_message, mock_mtg_handler, mock_llm
     
     await handle_conversation(mock_message)
     
-    mock_mtg_handler.get_commander_info.assert_called_once_with('Test Commander')
-    mock_llm_handler.analyze_commander.assert_called_once()
-    mock_message.channel.send.assert_called()
+    mock_mtg_handler.get_commander_info.assert_awaited_once_with('Test Commander')
+    mock_llm_handler.analyze_commander.assert_awaited_once()
+    mock_message.channel.send.assert_awaited()
 
 @pytest.mark.asyncio
 async def test_handle_conversation_synergy(mock_message, mock_mtg_handler, mock_llm_handler, mock_conversation_handler):
@@ -88,9 +98,9 @@ async def test_handle_conversation_synergy(mock_message, mock_mtg_handler, mock_
     
     await handle_conversation(mock_message)
     
-    mock_mtg_handler.get_commander_info.assert_called_once_with('Test Card')
-    mock_llm_handler.find_synergies.assert_called_once()
-    mock_message.channel.send.assert_called()
+    mock_mtg_handler.get_commander_info.assert_awaited_once_with('Test Card')
+    mock_llm_handler.find_synergies.assert_awaited_once()
+    mock_message.channel.send.assert_awaited()
 
 @pytest.mark.asyncio
 async def test_handle_conversation_budget(mock_message, mock_mtg_handler, mock_llm_handler, mock_conversation_handler):
@@ -104,9 +114,9 @@ async def test_handle_conversation_budget(mock_message, mock_mtg_handler, mock_l
     
     await handle_conversation(mock_message)
     
-    mock_mtg_handler.get_commander_info.assert_called_once_with('Test Commander')
-    mock_llm_handler.get_budget_suggestions.assert_called_once()
-    mock_message.channel.send.assert_called()
+    mock_mtg_handler.get_commander_info.assert_awaited_once_with('Test Commander')
+    mock_llm_handler.get_budget_suggestions.assert_awaited_once()
+    mock_message.channel.send.assert_awaited()
 
 @pytest.mark.asyncio
 async def test_handle_conversation_meta(mock_message, mock_mtg_handler, mock_llm_handler, mock_conversation_handler):
@@ -120,8 +130,8 @@ async def test_handle_conversation_meta(mock_message, mock_mtg_handler, mock_llm
     
     await handle_conversation(mock_message)
     
-    mock_llm_handler.analyze_meta.assert_called_once_with('Test Commander')
-    mock_message.channel.send.assert_called()
+    mock_llm_handler.analyze_meta.assert_awaited_once_with('Test Commander')
+    mock_message.channel.send.assert_awaited()
 
 @pytest.mark.asyncio
 async def test_handle_conversation_general(mock_message, mock_llm_handler, mock_conversation_handler):
@@ -135,8 +145,8 @@ async def test_handle_conversation_general(mock_message, mock_llm_handler, mock_
     
     await handle_conversation(mock_message)
     
-    mock_llm_handler.generate_response.assert_called_once()
-    mock_message.channel.send.assert_called()
+    mock_llm_handler.generate_response.assert_awaited_once()
+    mock_message.channel.send.assert_awaited()
 
 @pytest.mark.asyncio
 async def test_handle_brew_query(mock_message, mock_mtg_handler, mock_llm_handler, mock_conversation_handler):
@@ -148,9 +158,9 @@ async def test_handle_brew_query(mock_message, mock_mtg_handler, mock_llm_handle
     
     await handle_brew_query(mock_message, result)
     
-    mock_mtg_handler.get_commander_info.assert_called_once_with('Test Commander')
-    mock_llm_handler.analyze_commander.assert_called_once()
-    mock_message.channel.send.assert_called()
+    mock_mtg_handler.get_commander_info.assert_awaited_once_with('Test Commander')
+    mock_llm_handler.analyze_commander.assert_awaited_once()
+    mock_message.channel.send.assert_awaited()
 
 @pytest.mark.asyncio
 async def test_handle_synergy_query(mock_message, mock_mtg_handler, mock_llm_handler, mock_conversation_handler):
@@ -162,9 +172,9 @@ async def test_handle_synergy_query(mock_message, mock_mtg_handler, mock_llm_han
     
     await handle_synergy_query(mock_message, result)
     
-    mock_mtg_handler.get_commander_info.assert_called_once_with('Test Card')
-    mock_llm_handler.find_synergies.assert_called_once()
-    mock_message.channel.send.assert_called()
+    mock_mtg_handler.get_commander_info.assert_awaited_once_with('Test Card')
+    mock_llm_handler.find_synergies.assert_awaited_once()
+    mock_message.channel.send.assert_awaited()
 
 @pytest.mark.asyncio
 async def test_handle_budget_query(mock_message, mock_mtg_handler, mock_llm_handler, mock_conversation_handler):
@@ -176,9 +186,9 @@ async def test_handle_budget_query(mock_message, mock_mtg_handler, mock_llm_hand
     
     await handle_budget_query(mock_message, result)
     
-    mock_mtg_handler.get_commander_info.assert_called_once_with('Test Commander')
-    mock_llm_handler.get_budget_suggestions.assert_called_once()
-    mock_message.channel.send.assert_called()
+    mock_mtg_handler.get_commander_info.assert_awaited_once_with('Test Commander')
+    mock_llm_handler.get_budget_suggestions.assert_awaited_once()
+    mock_message.channel.send.assert_awaited()
 
 @pytest.mark.asyncio
 async def test_handle_meta_query(mock_message, mock_llm_handler, mock_conversation_handler):
@@ -190,8 +200,8 @@ async def test_handle_meta_query(mock_message, mock_llm_handler, mock_conversati
     
     await handle_meta_query(mock_message, result)
     
-    mock_llm_handler.analyze_meta.assert_called_once_with('Test Commander')
-    mock_message.channel.send.assert_called()
+    mock_llm_handler.analyze_meta.assert_awaited_once_with('Test Commander')
+    mock_message.channel.send.assert_awaited()
 
 @pytest.mark.asyncio
 async def test_command_brew(mock_ctx, mock_mtg_handler, mock_llm_handler):
@@ -200,9 +210,9 @@ async def test_command_brew(mock_ctx, mock_mtg_handler, mock_llm_handler):
     
     await brew_deck(mock_ctx, commander_name='Test Commander')
     
-    mock_mtg_handler.get_commander_info.assert_called_once_with('Test Commander')
-    mock_llm_handler.analyze_commander.assert_called_once()
-    mock_ctx.message.channel.send.assert_called()
+    mock_mtg_handler.get_commander_info.assert_awaited_once_with('Test Commander')
+    mock_llm_handler.analyze_commander.assert_awaited_once()
+    mock_ctx.message.channel.send.assert_awaited()
 
 @pytest.mark.asyncio
 async def test_command_synergy(mock_ctx, mock_mtg_handler, mock_llm_handler):
@@ -211,9 +221,9 @@ async def test_command_synergy(mock_ctx, mock_mtg_handler, mock_llm_handler):
     
     await find_synergy(mock_ctx, card_name='Test Card')
     
-    mock_mtg_handler.get_commander_info.assert_called_once_with('Test Card')
-    mock_llm_handler.find_synergies.assert_called_once()
-    mock_ctx.message.channel.send.assert_called()
+    mock_mtg_handler.get_commander_info.assert_awaited_once_with('Test Card')
+    mock_llm_handler.find_synergies.assert_awaited_once()
+    mock_ctx.message.channel.send.assert_awaited()
 
 @pytest.mark.asyncio
 async def test_command_budget(mock_ctx, mock_mtg_handler, mock_llm_handler):
@@ -222,9 +232,9 @@ async def test_command_budget(mock_ctx, mock_mtg_handler, mock_llm_handler):
     
     await budget_deck(mock_ctx, commander_name='Test Commander', budget=100.0)
     
-    mock_mtg_handler.get_commander_info.assert_called_once_with('Test Commander')
-    mock_llm_handler.get_budget_suggestions.assert_called_once()
-    mock_ctx.message.channel.send.assert_called()
+    mock_mtg_handler.get_commander_info.assert_awaited_once_with('Test Commander')
+    mock_llm_handler.get_budget_suggestions.assert_awaited_once()
+    mock_ctx.message.channel.send.assert_awaited()
 
 @pytest.mark.asyncio
 async def test_command_meta(mock_ctx, mock_llm_handler):
@@ -233,8 +243,8 @@ async def test_command_meta(mock_ctx, mock_llm_handler):
     
     await meta_analysis(mock_ctx, commander_name='Test Commander')
     
-    mock_llm_handler.analyze_meta.assert_called_once_with('Test Commander')
-    mock_ctx.message.channel.send.assert_called()
+    mock_llm_handler.analyze_meta.assert_awaited_once_with('Test Commander')
+    mock_ctx.message.channel.send.assert_awaited()
 
 @pytest.mark.asyncio
 async def test_command_help(mock_ctx):
@@ -243,7 +253,7 @@ async def test_command_help(mock_ctx):
     
     await help_brew(mock_ctx)
     
-    mock_ctx.send.assert_called_once()
+    mock_ctx.send.assert_awaited_once()
     help_text = mock_ctx.send.call_args[0][0]
     assert 'Commands' in help_text
     assert 'Natural Language' in help_text 

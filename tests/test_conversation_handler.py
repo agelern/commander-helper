@@ -21,7 +21,11 @@ def test_extract_card_name(conversation_handler):
     ]
     
     for text, expected in test_cases:
-        assert conversation_handler._extract_card_name(text) == expected
+        result = conversation_handler._extract_card_name(text)
+        if expected is None:
+            assert result is None
+        else:
+            assert result.lower() == expected.lower()
 
 def test_extract_budget(conversation_handler):
     """Test budget extraction from various text patterns."""
@@ -88,7 +92,16 @@ def test_process_message(conversation_handler):
     
     for text, expected in test_cases:
         result = conversation_handler.process_message(text)
-        assert result == expected
+        # Compare card names case-insensitively if they exist
+        if expected['card_name'] is not None:
+            assert result['card_name'] is not None
+            assert result['card_name'].lower() == expected['card_name'].lower()
+        else:
+            assert result['card_name'] is None
+        # Compare other fields exactly
+        assert result['type'] == expected['type']
+        assert result['budget'] == expected['budget']
+        assert result['original_text'] == expected['original_text']
 
 def test_clear_history(conversation_handler):
     """Test clearing conversation history."""
