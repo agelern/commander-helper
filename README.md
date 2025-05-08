@@ -19,7 +19,7 @@ A Discord bot that helps users brew Magic: The Gathering Commander decks by prov
    
    # Ollama Configuration
    OLLAMA_HOST=http://your_ollama_host:11434
-   OLLAMA_MODEL=mistral
+   OLLAMA_MODEL=gemma3
    ```
    
    Note: If you're running Ollama locally, the default host is `http://localhost:11434`. If you're running it on a remote server, use the appropriate IP address or hostname.
