@@ -4,6 +4,8 @@ from discord.ui import Button, View
 from src.commands.base import Command
 from src.data.card_data import CardData
 from fuzzywuzzy import process
+import aiohttp
+from datetime import datetime
 
 class CardSuggestionView(View):
     def __init__(self, card_data, suggestions):
@@ -39,6 +41,31 @@ class CardInfoCommand(Command):
     
     def __init__(self, card_data):
         self.card_data = card_data
+        self.session = None
+    
+    async def _get_rulings(self, card: dict) -> List[dict]:
+        """Fetch rulings for a card from Scryfall's API."""
+        if not card.get('rulings_uri'):
+            return []
+            
+        if not self.session:
+            self.session = aiohttp.ClientSession()
+            
+        try:
+            async with self.session.get(card['rulings_uri']) as response:
+                if response.status == 200:
+                    data = await response.json()
+                    return data.get('data', [])
+                return []
+        except Exception as e:
+            print(f"Error fetching rulings: {e}")
+            return []
+    
+    def _format_ruling(self, ruling: dict) -> str:
+        """Format a single ruling with its date."""
+        date = datetime.fromisoformat(ruling['published_at'].replace('Z', '+00:00'))
+        formatted_date = date.strftime('%B %d, %Y')
+        return f"**{formatted_date}**: {ruling['comment']}"
     
     @property
     def name(self) -> str:
@@ -136,6 +163,12 @@ class CardInfoCommand(Command):
         # Add rarity if available
         if 'rarity' in card:
             embed.add_field(name="Rarity", value=card['rarity'].title(), inline=True)
+        
+        # Add rulings if available
+        rulings = await self._get_rulings(card)
+        if rulings:
+            rulings_text = "\n\n".join(self._format_ruling(ruling) for ruling in rulings)
+            embed.add_field(name="Rulings", value=rulings_text, inline=False)
         
         # Add image if available
         if 'image_uris' in card and 'normal' in card['image_uris']:

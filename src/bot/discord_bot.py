@@ -56,6 +56,8 @@ class CommanderBot(commands.Bot):
         
     async def setup_hook(self):
         """Set up the bot's commands and sync them with Discord."""
+        print("Setting up bot commands...")
+        
         # Check and update card data
         await self._check_and_update_data()
         
@@ -72,12 +74,33 @@ class CommanderBot(commands.Bot):
                     await interaction.followup.send(embed=embed)
         
         # Sync commands with Discord
-        await self.tree.sync()
+        print("Syncing commands with Discord...")
+        try:
+            synced = await self.tree.sync()
+            print(f"Successfully synced {len(synced)} commands:")
+            for cmd in synced:
+                print(f"- /{cmd.name}")
+        except Exception as e:
+            print(f"Error syncing commands: {e}")
     
     async def on_ready(self):
         """Called when the bot is ready and connected to Discord."""
         print(f"Logged in as {self.user.name} (ID: {self.user.id})")
         print("------")
+        
+        # Generate invite link with correct permissions
+        invite_link = discord.utils.oauth_url(
+            self.user.id,
+            permissions=discord.Permissions(
+                send_messages=True,
+                embed_links=True,
+                attach_files=True,
+                read_messages=True,
+                read_message_history=True
+            ),
+            scopes=("bot", "applications.commands")
+        )
+        print(f"\nInvite link with correct permissions:\n{invite_link}\n")
 
 def run_bot():
     """Run the Discord bot."""
