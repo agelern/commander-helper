@@ -28,31 +28,9 @@ class CommanderBot(commands.Bot):
         # Create data directory if it doesn't exist
         self.data_dir.mkdir(exist_ok=True)
         
-        # Check if we need to download new data
-        should_download = False
-        
-        if not self.last_download_file.exists():
-            should_download = True
-        else:
-            try:
-                with open(self.last_download_file, 'r') as f:
-                    last_download = json.load(f)
-                    last_date = datetime.fromisoformat(last_download['date'])
-                    if datetime.now() - last_date > timedelta(days=30):
-                        should_download = True
-            except Exception as e:
-                print(f"Error reading last download date: {e}")
-                should_download = True
-        
-        if should_download:
-            print("Downloading updated card data...")
-            downloader = CardDataDownloader()
-            await downloader.download()
-            
-            # Update last download date
-            with open(self.last_download_file, 'w') as f:
-                json.dump({'date': datetime.now().isoformat()}, f)
-            print("Card data update complete!")
+        # Use CardDataDownloader to check and update data
+        downloader = CardDataDownloader()
+        await downloader.download()
         
     async def setup_hook(self):
         """Set up the bot's commands and sync them with Discord."""

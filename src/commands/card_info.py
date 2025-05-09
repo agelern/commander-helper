@@ -164,11 +164,52 @@ class CardInfoCommand(Command):
         if 'rarity' in card:
             embed.add_field(name="Rarity", value=card['rarity'].title(), inline=True)
         
+        # Add EDHREC data if available
+        # if 'edhrec_data' in card:
+        #     edhrec = card['edhrec_data']
+            
+        #     # Format card name for EDHREC URL
+        #     formatted_name = card['name'].lower().replace(' ', '-').replace(',', '').replace("'", '')
+        #     edhrec_url = f"https://edhrec.com/cards/{formatted_name}"
+            
+        #     # Add EDHREC link
+        #     embed.add_field(name="EDHREC", value=f"[View on EDHREC]({edhrec_url})", inline=True)
+            
+        #     # Add rank if available
+        #     if edhrec.get('rank'):
+        #         embed.add_field(name="EDHREC Rank", value=f"#{edhrec['rank']}", inline=True)
+            
+        #     # Add deck statistics if available
+        #     if edhrec.get('average_decks') or edhrec.get('potential_decks'):
+        #         deck_stats = []
+        #         if edhrec.get('average_decks'):
+        #             deck_stats.append(f"Average Decks: {edhrec['average_decks']}")
+        #         if edhrec.get('potential_decks'):
+        #             deck_stats.append(f"Potential Decks: {edhrec['potential_decks']}")
+        #         if deck_stats:
+        #             embed.add_field(name="Deck Statistics", value="\n".join(deck_stats), inline=True)
+            
+        #     # Add top synergies if available
+        #     if edhrec.get('top_cards'):
+        #         top_cards = []
+        #         for card_data in edhrec['top_cards'][:5]:  # Show top 5 synergies
+        #             synergy = card_data.get('synergy', 0)
+        #             inclusion = card_data.get('inclusion_rate', 0)
+        #             top_cards.append(f"• {card_data['name']} (Synergy: {synergy:.2f}, Inclusion: {inclusion:.1%})")
+        #         if top_cards:
+        #             embed.add_field(name="Top Synergies", value="\n".join(top_cards), inline=False)
+        
         # Add rulings if available
         rulings = await self._get_rulings(card)
         if rulings:
             rulings_text = "\n\n".join(self._format_ruling(ruling) for ruling in rulings)
-            embed.add_field(name="Rulings", value=rulings_text, inline=False)
+            if len(rulings_text) > 1024:
+                # Construct the Scryfall URL for the card's rulings page
+                formatted_name = card['name'].lower().replace(' ', '-').replace(',', '').replace("'", '')
+                scryfall_url = f"https://scryfall.com/card/{card['set']}/{card['collector_number']}#{card['set']}-rulings"
+                embed.add_field(name="Rulings", value=f"[View Rulings on Scryfall]({scryfall_url})", inline=False)
+            else:
+                embed.add_field(name="Rulings", value=rulings_text, inline=False)
         
         # Add image if available
         if 'image_uris' in card and 'normal' in card['image_uris']:

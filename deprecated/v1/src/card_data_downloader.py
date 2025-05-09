@@ -58,13 +58,67 @@ class CardDataDownloader:
             self.logger.error(f"Error downloading bulk data: {str(e)}")
         return None
 
-    def process_card_data(self, cards: List[Dict]) -> List[Dict]:
+    def _format_name_for_edhrec(self, name: str) -> str:
+        """Format card name for EDHREC URL."""
+        specials = "àáâãäåèéêëìíîïòóôõöùúûüýÿñç "
+        replacements = "aaaaaaeeeeiiiiooooouuuuyync-"
+        removals = ",'.\""
+        char_map = str.maketrans(specials, replacements, removals)
+
+        formatted_name = (
+            name.split('/')[0]
+            .replace(' + ', ' ')
+            .strip()
+            .lower()
+            .translate(char_map)
+        )
+        return formatted_name
+
+    async def _get_edhrec_data(self, card_name: str) -> Optional[Dict]:
+        """Get EDHREC data for a card."""
+        try:
+            formatted_name = self._format_name_for_edhrec(card_name)
+            url = f"https://json.edhrec.com/pages/commanders/{formatted_name}.json"
+            
+            async with aiohttp.ClientSession() as session:
+                async with session.get(url) as response:
+                    if response.status == 200:
+                        data = await response.json()
+                        if 'cardlist' in data:
+                            return {
+                                'rank': data.get('rank', 0),
+                                'synergies': data.get('synergies', []),
+                                'average_decks': data.get('average_decks', 0),
+                                'potential_decks': data.get('potential_decks', 0),
+                                'top_cards': [
+                                    {
+                                        'name': card['name'],
+                                        'synergy': card.get('synergy', 0),
+                                        'inclusion_rate': card.get('num_decks', 0) / card.get('potential_decks', 1) if card.get('potential_decks', 0) > 0 else 0
+                                    }
+                                    for card in data['cardlist'][:10]  # Get top 10 cards
+                                ]
+                            }
+            return None
+        except Exception as e:
+            self.logger.error(f"Error fetching EDHREC data for {card_name}: {str(e)}")
+            return None
+
+    async def process_card_data(self, cards: List[Dict]) -> List[Dict]:
         """Process and filter card data to keep only relevant fields."""
         processed_cards = []
+        
         for card in cards:
             # Skip cards that aren't legal in Commander
             if card.get('legalities', {}).get('commander') != 'legal':
                 continue
+
+            # Get EDHREC data for legendary creatures
+            edhrec_data = None
+            if 'Legendary' in card.get('type_line', '') and 'Creature' in card.get('type_line', ''):
+                edhrec_data = await self._get_edhrec_data(card['name'])
+                # Add delay to respect rate limits
+                await asyncio.sleep(0.1)
 
             # Extract only the fields we need
             processed_card = {
@@ -78,7 +132,11 @@ class CardDataDownloader:
                 'toughness': card.get('toughness'),
                 'loyalty': card.get('loyalty'),
                 'keywords': card.get('keywords', []),
-                'edhrec_rank': card.get('edhrec_rank'),
+                'edhrec_rank': edhrec_data.get('rank', 0) if edhrec_data else 0,
+                'edhrec_synergies': edhrec_data.get('synergies', []) if edhrec_data else [],
+                'edhrec_average_decks': edhrec_data.get('average_decks', 0) if edhrec_data else 0,
+                'edhrec_potential_decks': edhrec_data.get('potential_decks', 0) if edhrec_data else 0,
+                'edhrec_top_cards': edhrec_data.get('top_cards', []) if edhrec_data else [],
                 'prices': {
                     'usd': card.get('prices', {}).get('usd'),
                     'usd_foil': card.get('prices', {}).get('usd_foil'),
