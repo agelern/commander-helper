@@ -1,62 +1,73 @@
-# MTG Commander Deck Brewer Bot
+# Commander Helper Bot
 
-A Discord bot that helps users brew Magic: The Gathering Commander decks by providing suggestions, synergies, and meta analysis.
+A Discord bot that helps Magic: The Gathering Commander players by providing quick access to card information.
 
 ## Features
 
-- Deck brewing suggestions for specific commanders
-- Card synergy analysis
-- Budget deck recommendations
-- Meta analysis for commanders
+- `/card <card name>` - Get detailed information about any Magic: The Gathering card
+  - Shows card name, mana cost, type line, oracle text, power/toughness, set information, and card image
+  - Fuzzy matching for card names with suggestions when exact match isn't found
+  - Interactive buttons to select from suggested cards
+
+## Application Flow
+
+1. **Bot Initialization**
+   - The bot starts up and loads environment variables
+   - Checks if card data needs to be updated (downloads if older than 30 days)
+   - Registers slash commands with Discord
+
+2. **Card Data Management**
+   - Card data is downloaded from Scryfall's bulk data API
+   - Data is processed and stored locally in JSON format
+   - Updates automatically when data is older than 30 days
+
+3. **Command Processing**
+   - When a user uses the `/card` command:
+     1. Bot searches for exact card name match
+     2. If no exact match, uses fuzzy matching to find similar cards
+     3. If high confidence match found (>95%), returns that card
+     4. If multiple matches found, shows interactive buttons for selection
+     5. Formats and displays card information in a Discord embed
 
 ## Setup
 
-1. Clone this repository
-2. Create a `.env` file in the root directory with your configuration:
+1. Create a `.env` file with your Discord bot token:
    ```
-   # Discord Bot Token
-   DISCORD_TOKEN=your_discord_bot_token_here
-   
-   # Ollama Configuration
-   OLLAMA_HOST=http://your_ollama_host:11434
-   OLLAMA_MODEL=gemma3
-   ```
-   
-   Note: If you're running Ollama locally, the default host is `http://localhost:11434`. If you're running it on a remote server, use the appropriate IP address or hostname.
-
-3. Build and run the Docker container:
-   ```bash
-   docker build -t commander-brewer .
-   docker run commander-brewer
+   DISCORD_TOKEN=your_token_here
    ```
 
-## Commands
-
-- `!help_brew` - Display help information
-- `!brew <commander>` - Get deck brewing suggestions
-- `!synergy <card>` - Find synergistic cards
-- `!budget <commander> <budget>` - Get budget deck suggestions
-- `!meta <commander>` - Get meta analysis
-
-## Development
-
-1. Install dependencies:
-   ```bash
+2. Install dependencies:
+   ```
    pip install -r requirements.txt
    ```
 
-2. Run the bot locally:
-   ```bash
-   python src/bot.py
+3. Run the bot:
+   ```
+   python src/main.py
    ```
 
-## Contributing
+## Project Structure
 
-Feel free to submit issues and enhancement requests!
+```
+.
+├── src/
+│   ├── bot/
+│   │   └── discord_bot.py      # Main bot implementation
+│   ├── commands/
+│   │   ├── base.py            # Base command class
+│   │   └── card_info.py       # Card info command implementation
+│   ├── data/
+│   │   ├── card_data.py       # Card data management
+│   │   └── card_data_downloader.py  # Scryfall data downloader
+│   └── main.py                # Application entry point
+├── reference/                 # Local card data storage
+├── .env                       # Environment variables
+└── requirements.txt           # Python dependencies
+```
 
-## Security Notes
+## Dependencies
 
-- Never commit your `.env` file to version control
-- Keep your Ollama instance behind a firewall or VPN when exposing it to the internet
-- Consider using HTTPS if exposing Ollama over the internet
-- Use environment variables for all sensitive configuration 
+- discord.py - Discord bot framework
+- python-dotenv - Environment variable management
+- aiohttp - Async HTTP client for API calls
+- fuzzywuzzy - Fuzzy string matching for card names 

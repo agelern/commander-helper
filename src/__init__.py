@@ -1,0 +1,1 @@
+"""Commander Helper Bot - A Discord bot for Magic: The Gathering Commander players.""" 
