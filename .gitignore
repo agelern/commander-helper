@@ -39,6 +39,7 @@ env/
 htmlcov/
 .pytest_cache/
 .mypy_cache/
+*.json
 
 # Docker
 .docker/
