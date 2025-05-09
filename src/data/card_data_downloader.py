@@ -3,6 +3,7 @@ import asyncio
 import aiohttp
 from pathlib import Path
 from typing import Dict, List, Optional
+from datetime import datetime
 
 class CardDataDownloader:
     """Downloads and processes MTG card data from Scryfall."""
@@ -17,6 +18,17 @@ class CardDataDownloader:
         self.data_dir = self.base_path / 'reference'
         self.data_dir.mkdir(exist_ok=True)
         self.data_file = self.data_dir / 'oracle_cards.json'
+        self.last_download_file = self.data_dir / 'last_download.json'
+    
+    def _update_last_download(self):
+        """Update the last download timestamp."""
+        try:
+            timestamp = datetime.now().isoformat()
+            with open(self.last_download_file, 'w', encoding='utf-8') as f:
+                json.dump({'last_download': timestamp}, f, indent=2)
+            print(f"Updated last download timestamp to {timestamp}")
+        except Exception as e:
+            print(f"Error updating last download timestamp: {e}")
     
     async def _get_bulk_data_url(self) -> Optional[str]:
         """Get the download URL for oracle cards bulk data."""
@@ -47,6 +59,10 @@ class CardDataDownloader:
         """Process downloaded cards into a name-indexed dictionary."""
         processed = {}
         for card in cards:
+            # Skip art cards
+            if card.get('layout') == 'art_series':
+                continue
+                
             # Use the first face for double-faced cards
             if 'card_faces' in card:
                 card = card['card_faces'][0]
@@ -84,6 +100,9 @@ class CardDataDownloader:
         
         print("Saving cards...")
         self._save_cards(processed)
+        
+        print("Updating last download timestamp...")
+        self._update_last_download()
         
         print("Done!")
 
