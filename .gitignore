@@ -39,7 +39,10 @@ env/
 htmlcov/
 .pytest_cache/
 .mypy_cache/
-*.json
+
+# Card data files
+reference/*.json
+reference/last_download.json
 
 # Docker
 .docker/
