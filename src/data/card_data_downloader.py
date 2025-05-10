@@ -1,6 +1,7 @@
 import json
 import asyncio
 import aiohttp
+import unicodedata
 from pathlib import Path
 from typing import Dict, List, Optional
 from datetime import datetime
@@ -58,19 +59,13 @@ class CardDataDownloader:
 
     def _format_name_for_edhrec(self, name: str) -> str:
         """Format card name for EDHREC URL."""
-        specials = "àáâãäåèéêëìíîïòóôõöùúûüýÿñç "
-        replacements = "aaaaaaeeeeiiiiooooouuuuyync-"
-        removals = ",'.\""
-        char_map = str.maketrans(specials, replacements, removals)
+        nkfd = unicodedata.normalize('NFKD', name)
 
-        formatted_name = (
-            name.split('/')[0]
-            .replace(' + ', ' ')
-            .strip()
-            .lower()
-            .translate(char_map)
-        )
-        return formatted_name
+        # Handle one special case, the Æ and æ ligature which should be replaced with ae
+        if 'æ' in nkfd or 'Æ' in nkfd:
+            nkfd = nkfd.replace('Æ', 'ae').replace('Æ', 'ae')
+
+        return nkfd.encode('ascii', 'ignore').decode('utf-8').replace(' ', '-').lower()
 
     async def _get_edhrec_data(self, session: aiohttp.ClientSession, card_name: str) -> Optional[Dict]:
         """Get EDHREC data for a card."""
@@ -127,8 +122,11 @@ class CardDataDownloader:
         type_line = card.get('type_line', '').lower()
         oracle_text = card.get('oracle_text', '').lower()
 
-        # Check for regular legendary creatures
-        if 'legendary' in type_line and 'creature' in type_line or 'can be your commander' in oracle_text:
+        # Handles legendary creatures and any card with the special text:
+        # "This card can be your commander"
+        if ("legendary" in type_line and "creature" in type_line) or (
+            "can be your commander" in oracle_text
+        ):
             return True
 
         return False
@@ -139,8 +137,8 @@ class CardDataDownloader:
         oracle = card.get('oracle_text', '').lower()
 
         match oracle:
-            case _ if 'partner with' in oracle:
-                return 'partner_with'
+            case _ if "partner with" in oracle:
+                return "partner_with"
             case _ if 'partner' in oracle:
                 return  'partner'
             case _ if 'choose a background' in oracle:
