@@ -1,10 +1,5 @@
 import pytest
-import unicodedata
-from types import SimpleNamespace
-
 from src.data.card_data_downloader import CardDataDownloader
-
-
 
 
 @pytest.mark.parametrize(
@@ -83,7 +78,7 @@ from src.data.card_data_downloader import CardDataDownloader
         "tab_and_newline",
     ],
 )
-def test_format_name_for_edhrec_happy_and_edge_cases(name, expected):
+def test_format_name_for_edhrec_happy_and_edge_cases(name: str, expected: str):
     # Arrange
 
     downloader = CardDataDownloader()
@@ -119,7 +114,7 @@ def test_format_name_for_edhrec_happy_and_edge_cases(name, expected):
         "bytes_input",
     ],
 )
-def test_format_name_for_edhrec_error_cases(name, expected_exception):
+def test_format_name_for_edhrec_error_cases(name: str, expected_exception: type):
     # Arrange
 
     downloader = CardDataDownloader()
@@ -128,3 +123,5 @@ def test_format_name_for_edhrec_error_cases(name, expected_exception):
 
     with pytest.raises(expected_exception):
         downloader._format_name_for_edhrec(name)
+
+
