@@ -46,4 +46,11 @@ reference/last_download.json
 
 # Docker
 .docker/
-docker-compose.override.yml 
+docker-compose.override.yml
+
+
+# uv
+uv.lock
+pyproject.toml
+.python-version
+.envrc
