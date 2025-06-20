@@ -2,9 +2,13 @@ import json
 import asyncio
 import aiohttp
 import unicodedata
+import re
 from pathlib import Path
 from typing import Optional, TypedDict, Any
 from datetime import datetime
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class CardRequiredFields(TypedDict):
@@ -39,6 +43,49 @@ class CardDataDownloader:
     DOCTORS_COMPANIONS = []
     DOCTORS_COMMANDERS = []
     FRIENDS_FOREVER = []
+    THEME_SLUGS = [
+        "lifegain", "tokens", "proliferate", "spellslinger", "artifacts", "equipment", "sacrifice", 
+        "reanimator", "blink", "dragons", "zombies", "elves", "auras", "landfall", 
+        "storm", "discard", "counters", "voltron", "stax", "group-hug", "aristocrats", 
+        "vehicles", "energy", "plus-1-plus-1-counters", "treasure", "wheels", "lands-matter", 
+        "combo", "mill", "enchantress", "legends", "aggro", "burn", "birthing-pod", "infect", "planeswalkers", 
+        "cantrips", "control", "discard", "ramp", "cedh", "big-mana", "toughness-matters", "midrange", 
+        "exile", "topdeck", "clones", "chaos", "x-spells", "historic", "ninjutsu", "flying", "graveyard", 
+        "sagas", "extra-combats", "forced-combat", "clues", "card-draw", "spell-copy", "theft", "rat-colony", 
+        "group-slug", "energy", "hatebears", "monarch", "good-stuff", "cascade", "deathtouch", "self-mill", 
+        "minus-1-minus-1-counters", "stompy", "snow", "morph", "mutate", "fight", "extra-turns", 
+        "dragons-approach", "sunforger", "party", "pillow-fort", "foretell", "commander-matters", 
+        "toolbox", "land-destruction", "sea-creatures", "tempo", "cheerios", 
+        "counterspells", "politics", "cycling", "curses", "prowess", "power", "shadowborn-apostles", 
+        "dredge", "lifedrain", "persistent-petitioners", "madness", "devotion", "primal-surge", "self-damage", 
+        "etb", "flash", "convoke", "pingers", "keywords", "populate", "polymorph", 
+        "anthems", "defenders", "ad-nauseam", "affinity", "bounce", "attack-triggers", "food", 
+        "relentless-rats", "dungeon", "unnatural", "zoo", "tap-untap", "unblockable", 
+        "activated-abilities", "enrage", "eggs", "discover", "donate", 
+        "exalted", "prison", "aikido", "rock", "multicolor-matters", "triggered-abilities", 
+        "haste", "scry", "modular", "tron", "die-roll", "guildgates", "amass", "the-ring", 
+        "weenies", "impulse-draw", "attractions", "self-discard", "fling", "explore", "land-animation", 
+        "suspend", "glass-cannon", "outlaws", "adventures", "shrines", "blood", "sneak-attack", "delver", 
+        "time-counters", "hand-size", "coin-flip", "crime", "rad-counters", "deserts", 
+        "blue-moon", "stoneblade", "slime-against-humanity", "flashback", "surveil", "connive", "landwalk", 
+        "experience-counters", "extra-upkeeps", "hare-apparent", "myriad", "rooms", "vanilla", "creatureless", 
+        "descend", "old-school", "offspring", "self-destruct", "type-hack", "lure", "charge-counters", 
+        "mount", "saboteurs", "kicker", "turbo-fog", "battles", "reach", "color-hack", "phasing", "hellbent", 
+        "banding", "heroic", "day-night", "oil-counters", "improvise", "delirium", "skulk", "life-exchange", 
+        "spore-counters", "craft", "stickers", "templar-knights", "freerunning", "evoke", "caves", "servos", 
+        "exploit", "squad", "hippos", "dandan", "vampires", "dinosaurs", "humans", "eldrazi", "goblins", "angels",
+        "slivers", "cats", "pirates", "merfolk", "wizards", "phyrexians", "knights", "faeries", "demons", "assassins",
+        "rats", "spirits", "horrors", "soldiers", "saprolings", "hydras", "spiders", "insects", "myr", "shapeshifters", "werewolves",
+        "birds", "rogues", "elementals", "frogs", "ninjas", "bears", "warriors", "dwarves", "tyranids", "treefolk", "mutants", "clerics",
+        "gods", "snakes", "apes", "fungi", "oozes", "beasts", "giants", "wurms", "samurai", "dogs", "lizards", "squirrels",
+        "wolves", "scarecrows", "sphinxes", "halflings", "allies", "bats", "minotaurs", "otters", "mice", "necrons",
+        "rabbits", "druids", "skeletons", "artificers", "golems", "phoenixes", "monks", "raccoons", "crabs", "archers", "devils",
+        "thopters", "praetors", "orcs", "griffins", "wraiths", "illusions", "satyrs", "constructs", "plants",
+        "unicorns", "rebels", "turtles", "avatars", "shamans", "foxes", "horses", "detectives", "time-lords",
+        "robots", "atogs", "elephants", "lhurgoyfs", "kithkin", "elders", "nightmares", "monkeys", "advisors", "gorgons", "astartes",
+        "drakes", "barbarians", "gnomes", "daleks", "mercenaries", "berserkers", "specters", "cybermen", "ogres", "kor",
+        "cephalids", "whales", "goats", "minions", "sharks"
+    ]
 
     def __init__(self):
         """Initialize the downloader."""
@@ -48,231 +95,140 @@ class CardDataDownloader:
         self.data_dir.mkdir(exist_ok=True)
         self.data_file = self.data_dir / 'oracle_cards.json'
         self.last_download_file = self.data_dir / 'last_download.json'
+        # EDHREC cache file
+        self.edhrec_cache_file = self.data_dir / 'edhrec_cache.json'
+        if self.edhrec_cache_file.exists():
+            try:
+                with open(self.edhrec_cache_file, 'r', encoding='utf-8') as f:
+                    self.edhrec_cache = json.load(f)
+            except Exception as e:
+                print(f"Error loading EDHREC cache: {e}")
+                self.edhrec_cache = {}
+        else:
+            self.edhrec_cache = {}
 
-    def _update_last_download(self):
-        """Update the last download timestamp."""
+    def _save_edhrec_cache(self):
         try:
-            timestamp = datetime.now().isoformat()
-            with open(self.last_download_file, 'w', encoding='utf-8') as f:
-                json.dump({'last_download': timestamp}, f, indent=2)
-            print(f"Updated last download timestamp to {timestamp}")
+            with open(self.edhrec_cache_file, 'w', encoding='utf-8') as f:
+                json.dump(self.edhrec_cache, f, indent=2, ensure_ascii=False)
+            print(f"Saved EDHREC cache to {self.edhrec_cache_file}")
         except Exception as e:
-            print(f"Error updating last download timestamp: {e}")
-
-    async def _get_bulk_data_url(self) -> Optional[str]:
-        """Get the download URL for oracle cards bulk data."""
-        async with aiohttp.ClientSession() as session:
-            try:
-                async with session.get(self.SCRYFALL_BULK_API) as response:
-                    if response.status == 200:
-                        data = await response.json()
-                        for item in data['data']:
-                            if item['type'] == self.ORACLE_CARDS:
-                                return item['download_uri']
-            except Exception as e:
-                print(f"Error getting bulk data URL: {e}")
-        return None
-
-    async def _download_cards(self, url: str) -> list[Card]:
-        """Download and process card data from Scryfall."""
-        async with aiohttp.ClientSession() as session:
-            try:
-                async with session.get(url) as response:
-                    if response.status == 200:
-                        return await response.json()
-            except Exception as e:
-                print(f"Error downloading card data: {e}")
-        return []
-
-    def _format_name_for_edhrec(self, name: str) -> str:
-        """Format card name for EDHREC URL."""
-        nkfd = unicodedata.normalize('NFKD', name)
-
-        # Handle one special case, the Æ and æ ligature which should be replaced with ae
-        if 'æ' in nkfd or 'Æ' in nkfd:
-            nkfd = nkfd.replace("æ", "ae").replace("Æ", "ae")
-
-        return (
-            nkfd.encode("ascii", "ignore")
-            .decode("utf-8")
-            .replace(" ", "-")
-            .replace(",", "")
-            .replace("'", "")
-            .lower()
-        )
+            print(f"Error saving EDHREC cache: {e}")
 
     async def _get_edhrec_data(
-        self, session: aiohttp.ClientSession, card_name: str
+        self, session: aiohttp.ClientSession, card_name: str, force_update: bool = False
     ) -> Optional[dict[str, Any]]:
-        """Get EDHREC data for a card."""
+        """Get EDHREC data for a card, using persistent cache."""
         try:
             formatted_name = self._format_name_for_edhrec(card_name)
+            # Check cache first
+            if not force_update and formatted_name in self.edhrec_cache:
+                return self.edhrec_cache[formatted_name]
             url = f"{self.EDHREC_BASE_URL}/{formatted_name}.json"
-
             async with session.get(url) as response:
                 if response.status == 200:
                     data = await response.json()
-                    data_dictionary = data["container"]["json_dict"]
-                    if data_dictionary["cardlists"]:
-                        return {
-                            "synergies": data_dictionary["cardlists"][1],
-                            "potential_decks": data_dictionary["card"].get(
-                                "potential_decks", 0
-                            ),
-                        }
+                    # Handle redirect
+                    if "redirect" in data:
+                        redirect_path = data["redirect"]
+                        redirect_url = f"https://json.edhrec.com{redirect_path}.json"
+                        async with session.get(redirect_url) as redirect_response:
+                            if redirect_response.status == 200:
+                                data = await redirect_response.json()
+                            else:
+                                print(f"Failed to follow redirect for {card_name}: {redirect_url}")
+                                self.edhrec_cache[formatted_name] = None
+                                return None
+                    try:
+                        data_dictionary = data["container"]["json_dict"]
+                        if "cardlists" in data_dictionary and "card" in data_dictionary:
+                            synergies = data_dictionary["cardlists"][1] if len(data_dictionary["cardlists"]) > 1 else data_dictionary["cardlists"][0] if data_dictionary["cardlists"] else []
+                            potential_decks = data_dictionary["card"].get("potential_decks", 0)
+                            result = {
+                                "synergies": synergies,
+                                "potential_decks": potential_decks,
+                            }
+                            # Update cache
+                            self.edhrec_cache[formatted_name] = result
+                            return result
+                        elif "card" in data_dictionary:
+                            # For partner pairs and some combos, only "card" is present
+                            potential_decks = data_dictionary["card"].get("potential_decks", 0)
+                            result = {
+                                "synergies": [],
+                                "potential_decks": potential_decks,
+                            }
+                            self.edhrec_cache[formatted_name] = result
+                            return result
+                        else:
+                            print(f"EDHREC data for {card_name} missing expected keys. Skipping. (Keys: {list(data_dictionary.keys())})")
+                    except Exception as e:
+                        print(f"Error parsing EDHREC data for {card_name}: {e}. Full response: {data}")
+            # Cache negative result to avoid repeated failed lookups
+            self.edhrec_cache[formatted_name] = None
             return None
         except Exception as e:
             print(f"Error fetching EDHREC data for {card_name}: {e}")
             return None
 
-    def _process_cards(self, cards: list[Card]) -> dict[str, Card]:
-        """Process downloaded cards into a name-indexed dictionary."""
-        processed = {}
-        for card in cards:
-            # Skip art cards
-            if card.get('layout') == 'art_series':
-                continue
-
-            # Use the first face for double-faced cards
-            if 'card_faces' in card:
-                card = card['card_faces'][0]
-
-            # Store the card with its name as the key
-            processed[card['name'].lower()] = card
-
-        return processed
-
-    def _is_commander(self, card: Card) -> bool:
-        """Check if a card can be a commander."""
-        # Check if card is legal in commander
-        if card.get('legalities', {}).get('commander') != 'legal':
-            return False
-
-        type_line = card.get('type_line', '').lower()
-        oracle_text = card.get('oracle_text', '').lower()
-
-        # Handles legendary creatures and any card with the special text:
-        # "This card can be your commander"
-        if ("legendary" in type_line and "creature" in type_line) or (
-            "can be your commander" in oracle_text
-        ):
-            return True
-
-        return False
-
-    def _get_commander_type(self, card: Card) -> None:
-        """Check if a commander is a vanilla commander, a partner commander, a partner with commander, a background commander, a doctor's companion commander, or a friends forever commander."""
-
-        oracle = card.get("oracle_text", "").lower()
-        type_line = card.get("type_line", "").lower()
-
-        match oracle:
-            case _ if "background" in type_line:
-                self.BACKGROUNDS.append(card["name"])
-            case _ if "time lord doctor" in type_line:
-                self.DOCTORS_COMMANDERS.append(card["name"])
-            case _ if "partner" in oracle:
-                self.PARTNERS.append(card["name"])
-            case _ if "choose a background" in oracle:
-                self.BACKGROUND_COMMANDERS.append(card["name"])
-            case _ if "doctor's companion" in oracle:
-                self.DOCTORS_COMPANIONS.append(card["name"])
-            case _ if "friends forever" in oracle:
-                self.FRIENDS_FOREVER.append(card["name"])
-            case _:
-                return None
-
-    def _handle_partner_with_commander(self, card: Card) -> dict[str, str]:
-        """Handle commanders that partner with another card."""
-        # Full name of the commander will be the name of the card + the name of the partner
-        oracle_text = card.get("oracle_text", "").lower()
-        return {"name": (oracle_text.split("partner with")[1].split(".")[0].strip())}
-
-    def _handle_background_commander(self, card: Card) -> dict[str, str | list[str]]:
-        """Handle commanders that have a background."""
-        # Since the background is multiple cards, we are returning a Dictionary with the name of a Commander + a list of all the backgrounds, which are cards with the type "background"
-        return {"name": card["name"], "backgrounds": list(self.BACKGROUNDS)}
-
-    def _handle_doctor_companion_commander(
-        self, card: Card
-    ) -> dict[str, str | list[str]]:
-        """Handle commanders that are a doctor's companion."""
-        # Since the doctor's companion is multiple cards, we are returning a Dictionary with the name of a Commander + a list of all the doctor's companions, which are cards with the type "doctor's companion"
-        return {
-            "name": card["name"],
-            "doctor_companions": list(self.DOCTORS_COMPANIONS),
-        }
-
-    def _handle_friends_forever_commander(
-        self, card: Card
-    ) -> dict[str, str | list[str]]:
-        """Handle commanders that are a friends forever."""
-        # Since the friends forever is multiple cards, we are returning a Dictionary with the name of a Commander + a list of all the friends forever, which are cards with the type "friends forever"
-        return {
-            "name": card["name"],
-            "friends_forever": [
-                friend for friend in self.FRIENDS_FOREVER if friend != card["name"]
-            ],
-        }
-
-    def _handle_partner_commander(self, card: Card) -> dict[str, str | list[str]]:
-        """Handle commanders that are a partner."""
-        # Since the partner is multiple cards, we are returning a Dictionary with the name of a Commander + a list of all the partners, which are cards with the type "partner"
-        return {
-            "name": card["name"],
-            "partners": [
-                partner for partner in self.PARTNERS if partner != card["name"]
-            ],
-        }
-
-    def _get_commander_name(self, card: Card) -> str:
-        """Get the formatted commander name for EDHREC lookup."""
-        name = card['name']
-
-        # Handle "partner with" commanders
-        if 'all_parts' in card:
-            for part in card['all_parts']:
-                if (part['object'] == 'related_card' and
-                    part['name'] != name and
-                    'Legendary' in part['type_line']):
-                    return f"{name}-{part['name']}"
-
-        # Handle other partner-type commanders
-        oracle_text = card.get('oracle_text', '').lower()
-        if any(keyword in oracle_text for keyword in ['partner', 'choose a background', 'friends forever', "doctor's companion"]):
-            # For these types, we'll need to handle the partner lookup separately
-            # as it requires finding the matching partner card
-            return name
-
-        return name
-
-    async def _enrich_with_edhrec_data(self, cards: dict[str, Card]) -> dict[str, Card]:
-        """Enrich card data with EDHREC information."""
-        # Count total commanders first
-        total_commanders = sum(bool(self._is_commander(card))
-                           for card in cards.values())
+    async def _enrich_with_edhrec_data(self, cards: dict[str, Card], force_update: bool = False) -> dict[str, Card]:
+        """Enrich card data with EDHREC information, using persistent cache."""
+        print("Categorizing commanders...")
+        # Use sets to avoid duplicates
+        self.PARTNERS = set()
+        self.BACKGROUND_COMMANDERS = set()
+        self.BACKGROUNDS = set()
+        self.DOCTORS_COMPANIONS = set()
+        self.DOCTORS_COMMANDERS = set()
+        self.FRIENDS_FOREVER = set()
+        for card in cards.values():
+            if self._is_commander(card):
+                self._get_commander_type(card)
+        # Build the set of all unique commander possibilities
+        commander_possibilities = set()
+        # 1. All single commanders
+        for card in cards.values():
+            if self._is_commander(card):
+                commander_possibilities.add(self._get_commander_name(card))
+        # 2. All unique unordered pairs of partners
+        partners = list(self.PARTNERS)
+        for i, partner1 in enumerate(partners):
+            for partner2 in partners[i+1:]:
+                pair = f"{partner1}-{partner2}" if partner1 < partner2 else f"{partner2}-{partner1}"
+                commander_possibilities.add(pair)
+        # 3. All background commander + background combinations
+        for commander in self.BACKGROUND_COMMANDERS:
+            for background in self.BACKGROUNDS:
+                commander_possibilities.add(f"{commander}-{background}")
+        # 4. All doctor + companion combinations
+        for doctor in self.DOCTORS_COMMANDERS:
+            for companion in self.DOCTORS_COMPANIONS:
+                commander_possibilities.add(f"{doctor}-{companion}")
+        # 5. All unique unordered pairs of friends forever
+        friends = list(self.FRIENDS_FOREVER)
+        for i, friend1 in enumerate(friends):
+            for friend2 in friends[i+1:]:
+                pair = f"{friend1}-{friend2}" if friend1 < friend2 else f"{friend2}-{friend1}"
+                commander_possibilities.add(pair)
+        print(f"Total unique commander possibilities to fetch: {len(commander_possibilities)}")
         processed = 0
-
-        print(f"\nEnriching {total_commanders} commanders with EDHREC data...")
-
+        total_fetches = len(commander_possibilities)
         async with aiohttp.ClientSession() as session:
-            for card in cards.values():
-                if self._is_commander(card):
-                    commander_name = self._get_commander_name(card)
-                    edhrec_data = await self._get_edhrec_data(session, commander_name)
-                    if edhrec_data:
-                        card['edhrec_data'] = edhrec_data
-                    else:
-                        print(f"Failed to fetch EDHREC data for {commander_name}")
-
+            for name in commander_possibilities:
+                formatted_name = self._format_name_for_edhrec(name)
+                if not force_update and formatted_name in self.edhrec_cache:
                     processed += 1
-                    percentage = (processed / total_commanders) * 100
-                    print(f"\rProgress: {processed}/{total_commanders} commanders processed ({percentage:.1f}%)", end="")
-
-                    # Add delay to respect rate limits
-                    await asyncio.sleep(0.001)
-
+                    percentage = (processed / total_fetches) * 100
+                    print(f"\rProgress: {processed}/{total_fetches} processed ({percentage:.1f}%)", end="")
+                    continue
+                edhrec_data = await self._get_edhrec_data(session, name, force_update=force_update)
+                # Optionally, you could store the data in the relevant cards here
+                processed += 1
+                percentage = (processed / total_fetches) * 100
+                print(f"\rProgress: {processed}/{total_fetches} processed ({percentage:.1f}%)", end="")
+                await asyncio.sleep(0.001)
         print("\nEDHREC data enrichment complete!")
+        self._save_edhrec_cache()
         return cards
 
     def _save_cards(self, cards: dict[str, Card]):
@@ -299,36 +255,282 @@ class CardDataDownloader:
             print(f"Error checking last download time: {e}")
             return True
 
-    async def download(self):
-        """Download and process all card data."""
+    async def download_bulk_data_if_needed(self):
+        """Download and process all card data if needed."""
         if not self._should_update_data():
-            print("Card data is up to date (less than 30 days old)")
+            print("Bulk card data is up to date (less than 30 days old). Skipping bulk download.")
             return
-
         print("Getting bulk data URL...")
         url = await self._get_bulk_data_url()
         if not url:
             print("Failed to get bulk data URL")
             return
-
         print("Downloading card data...")
         cards: list[Card] = await self._download_cards(url)
         if not cards:
             print("Failed to download card data")
             return
-
         print("Processing cards...")
         processed = self._process_cards(cards)
-
-        processed: dict[str, Card] = await self._enrich_with_edhrec_data(processed)
-
         print("Saving cards...")
         self._save_cards(processed)
-
         print("Updating last download timestamp...")
         self._update_last_download()
+        print("Bulk data update complete!")
 
-        print("Done!")
+    async def enrich_with_edhrec_data_if_needed(self, force_update=False):
+        """Enrich cards with EDHREC data if needed."""
+        if not self.data_file.exists():
+            print("No card data found. Please download bulk data first.")
+            return
+        print("Loading processed cards from file...")
+        with open(self.data_file, 'r', encoding='utf-8') as f:
+            cards = json.load(f)
+        # If cards is a list, convert to dict
+        if isinstance(cards, list):
+            cards = {card['name']: card for card in cards if 'name' in card}
+        print("Checking EDHREC data cache and enriching as needed...")
+        await self._enrich_with_edhrec_data(cards, force_update=force_update)
+        print("EDHREC enrichment complete!")
+
+    async def download(self, force_update=False):
+        print("=== Commander Helper Card Data Downloader ===")
+        print("[Step 1] Checking bulk card data...")
+        await self.download_bulk_data_if_needed()
+        print("[Step 2] Checking EDHREC data for commanders...")
+        await self.enrich_with_edhrec_data_if_needed(force_update=force_update)
+        print("[Step 3] Checking EDHREC theme data...")
+        theme_updated = await self.download_edhrec_theme_pages()
+        if theme_updated:
+            print("[Step 4] Enriching cards with theme usage info...")
+            self.enrich_cards_with_theme_usage()
+        print("=== All data checks complete. ===")
+
+    async def _get_bulk_data_url(self) -> Optional[str]:
+        """Get the download URL for oracle cards bulk data."""
+        async with aiohttp.ClientSession() as session:
+            try:
+                async with session.get(self.SCRYFALL_BULK_API) as response:
+                    if response.status == 200:
+                        data = await response.json()
+                        for item in data['data']:
+                            if item['type'] == self.ORACLE_CARDS:
+                                return item['download_uri']
+            except Exception as e:
+                print(f"Error getting bulk data URL: {e}")
+        return None
+
+    async def _download_cards(self, url: str) -> list[Card]:
+        """Download the oracle cards JSON from the given URL."""
+        async with aiohttp.ClientSession() as session:
+            try:
+                async with session.get(url) as response:
+                    if response.status == 200:
+                        data = await response.json()
+                        return data  # Scryfall oracle_cards bulk is a list of card dicts
+                    else:
+                        print(f"Failed to download cards: HTTP {response.status}")
+            except Exception as e:
+                print(f"Error downloading cards: {e}")
+        return []
+
+    def _process_cards(self, cards: list[Card]) -> dict[str, Card]:
+        """Convert list of cards to a dict keyed by card name."""
+        return {card['name']: card for card in cards if 'name' in card}
+
+    def _is_commander(self, card: Card) -> bool:
+        """Return True if the card is a legal commander."""
+        # Check for legendary creature
+        if "type_line" in card and "Legendary Creature" in card["type_line"]:
+            if "legalities" in card and card["legalities"].get("commander", "") == "legal":
+                return True
+        # Check for special rules text
+        if "oracle_text" in card and "can be your commander" in card["oracle_text"].lower():
+            if "legalities" in card and card["legalities"].get("commander", "") == "legal":
+                return True
+        return False
+
+    def _get_commander_type(self, card: Card) -> None:
+        """Categorize the commander type and populate relevant lists."""
+        # Partner
+        if "oracle_text" in card and "partner with" in card["oracle_text"].lower():
+            if card["name"] not in self.PARTNERS:
+                self.PARTNERS.add(card["name"])
+        elif "oracle_text" in card and "partner" in card["oracle_text"].lower():
+            if card["name"] not in self.PARTNERS:
+                self.PARTNERS.add(card["name"])
+        # Background
+        if "oracle_text" in card and "choose a background" in card["oracle_text"].lower():
+            if card["name"] not in self.BACKGROUND_COMMANDERS:
+                self.BACKGROUND_COMMANDERS.add(card["name"])
+        if "type_line" in card and "background" in card["type_line"].lower():
+            if card["name"] not in self.BACKGROUNDS:
+                self.BACKGROUNDS.add(card["name"])
+        # Doctor's companion (for Universes Beyond: Doctor Who)
+        if "oracle_text" in card and "doctor's companion" in card["oracle_text"].lower():
+            if card["name"] not in self.DOCTORS_COMPANIONS:
+                self.DOCTORS_COMPANIONS.add(card["name"])
+        if "oracle_text" in card and "time lord" in card["oracle_text"].lower():
+            if card["name"] not in self.DOCTORS_COMMANDERS:
+                self.DOCTORS_COMMANDERS.add(card["name"])
+        # Friends forever
+        if "oracle_text" in card and "friends forever" in card["oracle_text"].lower():
+            if card["name"] not in self.FRIENDS_FOREVER:
+                self.FRIENDS_FOREVER.add(card["name"])
+
+    def _get_commander_name(self, card: Card) -> str:
+        """Return the correct name for a commander card (handles double-faced, etc)."""
+        # For double-faced or split cards, use only the front face name
+        if "name" in card:
+            return card["name"].split(" // ")[0]
+        # Fallback
+        return str(card)
+
+    def _update_last_download(self) -> None:
+        """Update the last_download.json file with the current timestamp."""
+        try:
+            with open(self.last_download_file, 'w', encoding='utf-8') as f:
+                json.dump({"last_download": datetime.now().isoformat()}, f, indent=2)
+            print(f"Updated last download timestamp at {self.last_download_file}")
+        except Exception as e:
+            print(f"Error updating last download timestamp: {e}")
+
+    def _format_name_for_edhrec(self, name: str) -> str:
+        """Format a card or combination name for EDHREC API URLs."""
+        # Lowercase, remove accents, replace spaces and special chars with '-', remove punctuation
+        name = unicodedata.normalize('NFKD', name).encode('ascii', 'ignore').decode('ascii')
+        name = name.lower()
+        name = re.sub(r"[\s'\"]+", '-', name)
+        name = re.sub(r"[^a-z0-9\-]", '', name)
+        name = re.sub(r'-+', '-', name)
+        name = name.strip('-')
+        return name
+
+    def _theme_data_dir(self):
+        return self.base_path / 'reference' / 'edhrec_themes'
+
+    def _theme_last_download_file(self):
+        return self._theme_data_dir() / 'last_download.json'
+
+    def _should_update_theme_data(self) -> bool:
+        """Check if the theme data needs to be updated (older than 30 days or missing)."""
+        last_file = self._theme_last_download_file()
+        if not last_file.exists():
+            return True
+        try:
+            with open(last_file, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+                last_download = datetime.fromisoformat(data['last_download'])
+                time_since_update = datetime.now() - last_download
+                return time_since_update.days >= 30
+        except Exception as e:
+            print(f"Error checking last theme download time: {e}")
+            return True
+
+    def _update_last_theme_download(self) -> None:
+        """Update the last_download.json file for theme data with the current timestamp."""
+        last_file = self._theme_last_download_file()
+        try:
+            with open(last_file, 'w', encoding='utf-8') as f:
+                json.dump({"last_download": datetime.now().isoformat()}, f, indent=2)
+            print(f"Updated last theme download timestamp at {last_file}")
+        except Exception as e:
+            print(f"Error updating last theme download timestamp: {e}")
+
+    async def download_edhrec_theme_pages(self, theme_slugs: list[str] = None) -> bool:
+        """Download all EDHREC theme JSON pages for the given slugs, if out of date. Returns True if updated."""
+        if theme_slugs is None:
+            theme_slugs = self.THEME_SLUGS
+        theme_dir = self._theme_data_dir()
+        theme_dir.mkdir(parents=True, exist_ok=True)
+        if not self._should_update_theme_data():
+            print("Theme data is up to date (less than 30 days old). Skipping theme download.")
+            return False
+        headers = {'User-Agent': 'CommanderHelperBot/1.0'}
+        success, fail = 0, 0
+        async with aiohttp.ClientSession(headers=headers) as session:
+            for idx, slug in enumerate(theme_slugs, 1):
+                url = f'https://json.edhrec.com/pages/tags/{slug}.json'
+                out_path = theme_dir / f'{slug}.json'
+                print(f"[Theme {idx}/{len(theme_slugs)}] Downloading {slug}...")
+                try:
+                    async with session.get(url) as response:
+                        if response.status == 200:
+                            data = await response.json()
+                            with open(out_path, 'w', encoding='utf-8') as f:
+                                json.dump(data, f, indent=2, ensure_ascii=False)
+                            print(f"Saved {slug}.json")
+                            success += 1
+                        else:
+                            print(f"Failed to download {slug}: HTTP {response.status}")
+                            fail += 1
+                except Exception as e:
+                    print(f"Error downloading {slug}: {e}")
+                    fail += 1
+                await asyncio.sleep(1)
+        self._update_last_theme_download()
+        print(f"All EDHREC theme pages downloaded. Success: {success}, Failed: {fail}")
+        return True
+
+    def enrich_cards_with_theme_usage(self):
+        """Enrich each card in oracle_cards.json with a 'used_in' key listing all theme slugs referencing it."""
+        import glob
+        theme_dir = self._theme_data_dir()
+        theme_files = [f for f in theme_dir.glob('*.json') if f.name != 'last_download.json']
+        # Build mapping: card name (case-insensitive) -> set of theme slugs
+        card_to_themes = {}
+        for theme_file in theme_files:
+            slug = theme_file.stem
+            try:
+                with open(theme_file, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                cardlists = data.get('container', {}).get('json_dict', {}).get('cardlists', [])
+                for cardlist in cardlists:
+                    for cardview in cardlist.get('cardviews', []):
+                        # Some cardviews are commanders with 'names' (partner pairs), some are single cards
+                        if 'names' in cardview:
+                            for name in cardview['names']:
+                                card_to_themes.setdefault(name.lower(), set()).add(slug)
+                        elif 'name' in cardview:
+                            card_to_themes.setdefault(cardview['name'].lower(), set()).add(slug)
+            except Exception as e:
+                print(f"Error processing {theme_file}: {e}")
+        # Load oracle_cards.json
+        try:
+            with open(self.data_file, 'r', encoding='utf-8') as f:
+                cards = json.load(f)
+            # Handle both dict and list formats
+            if isinstance(cards, dict):
+                card_items = cards.items()
+            elif isinstance(cards, list):
+                card_items = ((card['name'], card) for card in cards if 'name' in card)
+            else:
+                print("Unexpected format in oracle_cards.json")
+                return
+            enriched = 0
+            for name, card in card_items:
+                used_in = card_to_themes.get(name.lower(), set())
+                if used_in:
+                    card['used_in'] = sorted(used_in)
+                    enriched += 1
+            # Save back in the same format
+            with open(self.data_file, 'w', encoding='utf-8') as f:
+                json.dump(cards, f, indent=2, ensure_ascii=False)
+            print(f"Enriched {enriched} cards in oracle_cards.json with 'used_in' theme info.")
+        except Exception as e:
+            print(f"Error enriching oracle_cards.json: {e}")
+
+    async def check_and_update(self) -> None:
+        """Check if data needs to be updated and download if necessary."""
+        try:
+            if self._should_update_data():
+                logger.info("Card data is outdated, downloading updates...")
+                await self.download()
+            else:
+                logger.info("Card data is up to date")
+        except Exception as e:
+            logger.error(f"Error checking/updating card data: {e}")
+            raise
 
 async def main():
     """Main entry point for the downloader."""

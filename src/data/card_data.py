@@ -1,57 +1,204 @@
+"""
+Card data management for the Commander Helper Bot.
+"""
+
 import json
+import time
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Set
+from src.utils.logger import get_logger
+
+logger = get_logger(__name__)
+
 
 class CardData:
     """Handles loading and querying MTG card data from local JSON file."""
     
-    def __init__(self):
-        """Initialize the card data handler."""
+    def __init__(self, data_file: Optional[Path] = None):
+        """Initialize the card data handler.
+        
+        Args:
+            data_file: Optional path to the card data file.
+        """
         # Get the absolute path to the reference directory
         self.base_path = Path(__file__).parent.parent.parent
         self.data_dir = self.base_path / 'reference'
-        self.data_file = self.data_dir / 'oracle_cards.json'
+        
+        if data_file:
+            self.data_file = data_file
+        else:
+            self.data_file = self.data_dir / 'oracle_cards.json'
+        
         self.cards: Dict[str, dict] = {}
+        self._load_time: Optional[float] = None
         self._load_cards()
     
-    def _load_cards(self):
+    def _load_cards(self) -> None:
         """Load card data from JSON file."""
+        start_time = time.time()
+        
         try:
+            if not self.data_file.exists():
+                raise FileNotFoundError(f"Card data file not found at {self.data_file}")
+            
             with open(self.data_file, 'r', encoding='utf-8') as f:
                 data = json.load(f)
+                
                 # Handle both list and dictionary formats
                 if isinstance(data, dict):
-                    # If it's a dictionary, use it directly
                     self.cards = {name.lower(): card for name, card in data.items()}
                 elif isinstance(data, list):
-                    # If it's a list, convert to dictionary
                     self.cards = {card['name'].lower(): card for card in data}
                 else:
                     raise ValueError(f"Unexpected data format in {self.data_file}")
-            print(f"Loaded {len(self.cards)} cards from {self.data_file}")
-        except FileNotFoundError:
-            print(f"Failed to load cards: Card data file not found at {self.data_file}")
+                
+                # Add front-face aliases for double-sided cards
+                self._add_card_aliases()
+                
+                self._load_time = time.time()
+                load_duration = self._load_time - start_time
+                
+                logger.info(f"Loaded {len(self.cards)} cards from {self.data_file} in {load_duration:.2f}s")
+                
+        except FileNotFoundError as e:
+            logger.error(f"Failed to load cards: {e}")
             raise
-        except json.JSONDecodeError:
-            print(f"Failed to load cards: Invalid JSON in {self.data_file}")
+        except json.JSONDecodeError as e:
+            logger.error(f"Failed to load cards: Invalid JSON in {self.data_file}: {e}")
             raise
         except Exception as e:
-            print(f"Failed to load cards: {str(e)}")
+            logger.error(f"Failed to load cards: {e}")
             raise
     
-    def get_card(self, name: str) -> Optional[dict]:
-        """Get a card by its exact name."""
-        return self.cards.get(name.lower())
+    def _add_card_aliases(self) -> None:
+        """Add aliases for double-sided cards and other common variations."""
+        aliases_to_add = {}
+        
+        for name, card in self.cards.items():
+            # Handle double-sided cards (e.g., "Card Name // Other Name")
+            if '//' in name:
+                front_name = name.split('//')[0].strip().lower()
+                if front_name not in self.cards:
+                    aliases_to_add[front_name] = card
+            
+            # Handle cards with special characters
+            clean_name = name.replace("'", "").replace(",", "").replace(" ", "").lower()
+            if clean_name != name and clean_name not in self.cards:
+                aliases_to_add[clean_name] = card
+        
+        # Add all aliases
+        self.cards.update(aliases_to_add)
+        if aliases_to_add:
+            logger.info(f"Added {len(aliases_to_add)} card aliases")
     
-    def search_cards(self, query: str, limit: int = 5) -> List[dict]:
-        """Search for cards matching the query string."""
-        query = query.lower()
+    def get_card(self, name: str, include_tokens: bool = True) -> Optional[dict]:
+        """Get a card by name, optionally including or excluding tokens.
+        
+        Args:
+            name: The card name to search for.
+            include_tokens: Whether to include token cards in the search.
+            
+        Returns:
+            The card data if found, None otherwise.
+        """
+        name_lower = name.lower().strip()
+        
+        # Direct lookup
+        if name_lower in self.cards:
+            card = self.cards[name_lower]
+            if include_tokens or "token" not in card.get('type_line', '').lower():
+                return card
+        
+        # Try exact match with original case
+        for card in self.cards.values():
+            if card['name'].lower() == name_lower:
+                if include_tokens or "token" not in card.get('type_line', '').lower():
+                    return card
+        
+        return None
+    
+    def search_cards(self, query: str, limit: int = 5, include_tokens: bool = True) -> List[dict]:
+        """Search for cards matching the query string.
+        
+        Args:
+            query: The search query.
+            limit: Maximum number of results to return.
+            include_tokens: Whether to include token cards in the search.
+            
+        Returns:
+            List of matching cards.
+        """
+        query = query.lower().strip()
         matches = []
         
         for card in self.cards.values():
+            # Skip tokens if not included
+            if not include_tokens and "token" in card.get('type_line', '').lower():
+                continue
+            
+            # Check if query matches card name
             if query in card['name'].lower():
                 matches.append(card)
                 if len(matches) >= limit:
                     break
         
-        return matches 
+        return matches
+    
+    def get_cards_by_type(self, card_type: str, limit: int = 50) -> List[dict]:
+        """Get cards by type (e.g., 'Creature', 'Artifact', 'Legendary').
+        
+        Args:
+            card_type: The card type to search for.
+            limit: Maximum number of results to return.
+            
+        Returns:
+            List of cards of the specified type.
+        """
+        card_type_lower = card_type.lower()
+        matches = []
+        
+        for card in self.cards.values():
+            type_line = card.get('type_line', '').lower()
+            if card_type_lower in type_line:
+                matches.append(card)
+                if len(matches) >= limit:
+                    break
+        
+        return matches
+    
+    def get_commander_legal_cards(self) -> List[dict]:
+        """Get all cards that are legal in Commander format.
+        
+        Returns:
+            List of Commander-legal cards.
+        """
+        commander_cards = []
+        
+        for card in self.cards.values():
+            legalities = card.get('legalities', {})
+            if legalities.get('commander') == 'legal':
+                commander_cards.append(card)
+        
+        return commander_cards
+    
+    def get_card_count(self) -> int:
+        """Get the total number of cards loaded.
+        
+        Returns:
+            Total number of cards.
+        """
+        return len(self.cards)
+    
+    def get_load_time(self) -> Optional[float]:
+        """Get the time when the card data was last loaded.
+        
+        Returns:
+            Timestamp of last load, or None if not loaded.
+        """
+        return self._load_time
+    
+    def reload(self) -> None:
+        """Reload the card data from the file."""
+        logger.info("Reloading card data...")
+        self.cards.clear()
+        self._load_cards() 

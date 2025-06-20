@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Tuple, Optional
 import discord
 from discord.ui import Button, View
 from src.commands.base import Command
@@ -6,9 +6,10 @@ from src.data.card_data import CardData
 from fuzzywuzzy import process
 import aiohttp
 from datetime import datetime
+from .image_utils import ImageStitcher
 
 class CardSuggestionView(View):
-    def __init__(self, card_data, suggestions):
+    def __init__(self, card_data: CardData, suggestions: List[Tuple[str, int]]):
         super().__init__(timeout=60)  # Buttons expire after 60 seconds
         self.card_data = card_data
         self.card_info = CardInfoCommand(card_data)  # Create an instance for formatting
@@ -26,46 +27,26 @@ class CardSuggestionView(View):
     async def button_callback(self, interaction: discord.Interaction):
         # Get the card name from the button's custom_id
         card_name = interaction.data["custom_id"][5:]  # Remove "card_" prefix
-        card = self.card_data.cards[card_name]
+        card = self.card_data.cards[card_name.lower()]
         
         # Create and send the card info embed
-        embed = await self.card_info._format_card_info(card)
-        await interaction.response.edit_message(embed=embed, view=None)
+        embed, file = await self.card_info._format_card_info(card)
+        if file:
+            await interaction.response.edit_message(embed=embed, view=None, attachments=[file])
+        else:
+            await interaction.response.edit_message(embed=embed, view=None, attachments=[])
 
 class CardInfoCommand(Command):
-    """Command to get detailed information about a specific card."""
+    """Command to get information about a specific MTG card."""
     
-    MIN_MATCH_SCORE = 80  # Minimum score for a single match
-    HIGH_CONFIDENCE_THRESHOLD = 95  # Score above which we automatically use the match
-    MAX_SUGGESTIONS = 5   # Maximum number of suggestions to show
+    MIN_MATCH_SCORE = 85
+    HIGH_CONFIDENCE_THRESHOLD = 95
+    MAX_SUGGESTIONS = 5
     
-    def __init__(self, card_data):
+    def __init__(self, card_data: CardData):
+        super().__init__()  # Call parent constructor
         self.card_data = card_data
-        self.session = None
-    
-    async def _get_rulings(self, card: dict) -> List[dict]:
-        """Fetch rulings for a card from Scryfall's API."""
-        if not card.get('rulings_uri'):
-            return []
-            
-        if not self.session:
-            self.session = aiohttp.ClientSession()
-            
-        try:
-            async with self.session.get(card['rulings_uri']) as response:
-                if response.status == 200:
-                    data = await response.json()
-                    return data.get('data', [])
-                return []
-        except Exception as e:
-            print(f"Error fetching rulings: {e}")
-            return []
-    
-    def _format_ruling(self, ruling: dict) -> str:
-        """Format a single ruling with its date."""
-        date = datetime.fromisoformat(ruling['published_at'].replace('Z', '+00:00'))
-        formatted_date = date.strftime('%B %d, %Y')
-        return f"**{formatted_date}**: {ruling['comment']}"
+        self.image_stitcher = ImageStitcher()
     
     @property
     def name(self) -> str:
@@ -77,63 +58,79 @@ class CardInfoCommand(Command):
     
     @property
     def usage(self) -> str:
-        return "!card <card name>"
+        return "/card <card name>"
     
-    async def execute(self, args: str) -> tuple[List[discord.Embed], discord.ui.View | None]:
+    async def execute(self, args: str) -> Tuple[List[discord.Embed], Optional[discord.ui.View], Optional[List[discord.File]]]:
         """Execute the card info command."""
-        if not args:
-            return [discord.Embed(description=self.usage)], None
+        try:
+            # Validate arguments
+            if not self.validate_args(args):
+                embed = self.create_error_embed("No card name provided. Please provide a card name to search for.")
+                self.log_command_execution(args, False, "No arguments provided")
+                return [embed], None, []
             
-        # Try exact match first
-        card = self.card_data.get_card(args)
-        
-        # If no exact match, try fuzzy matching
-        if not card:
-            # Get all card names for fuzzy matching
-            card_names = list(self.card_data.cards.keys())
+            # Determine if we should include tokens based on the presence of "token" in args
+            include_tokens = "token" in args.lower()
             
-            # Find the best matches
-            matches = process.extract(args, card_names, limit=self.MAX_SUGGESTIONS)
+            # Try exact match first
+            card = self.card_data.get_card(args, include_tokens)
             
-            # Check if we have any good matches
-            good_matches = [match for match in matches if match[1] >= self.MIN_MATCH_SCORE]
+            # If no exact match, try fuzzy matching
+            if not card:
+                # Get all card names for fuzzy matching
+                card_names_list = list(self.card_data.cards.keys())
+                
+                # Find the best matches
+                matches = process.extract(args, card_names_list, limit=self.MAX_SUGGESTIONS)
+                
+                # Check if we have any good matches
+                good_matches = [match for match in matches if match[1] >= self.MIN_MATCH_SCORE]
+                
+                if not good_matches:
+                    embed = self.create_error_embed(f"Could not find a card matching '{args}'")
+                    self.log_command_execution(args, False, "No matches found")
+                    return [embed], None, []
+                
+                # If we have multiple good matches, show suggestions
+                if len(good_matches) > 1:
+                    # Filter out aliases to avoid duplicate suggestions
+                    unique_matches = []
+                    seen_cards = set()
+                    for match, score in good_matches:
+                        card_obj = self.card_data.cards[match]
+                        if card_obj['name'] not in seen_cards:
+                            unique_matches.append((card_obj['name'], score))
+                            seen_cards.add(card_obj['name'])
+
+                    if len(unique_matches) > 1:
+                        embed = discord.Embed(
+                            title="Multiple Matches Found",
+                            description="Please select the card you meant:",
+                            color=discord.Color.blue()
+                        )
+                        view = CardSuggestionView(self.card_data, unique_matches)
+                        self.log_command_execution(args, True)
+                        return [embed], view, []
+
+                    card = self.card_data.cards[unique_matches[0][0].lower()]
+                else:
+                    card = self.card_data.cards[good_matches[0][0]]
+
+            # Format and return the card info
+            embed, file = await self._format_card_info(card)
+            self.log_command_execution(args, True)
+            return [embed], None, [file] if file else []
             
-            if good_matches:
-                # If we have a high confidence match, use it
-                if good_matches[0][1] >= self.HIGH_CONFIDENCE_THRESHOLD:
-                    card_name, score = good_matches[0]
-                    card = self.card_data.cards[card_name]
-                    return [await self._format_card_info(card)], None
-                
-                # If we have exactly one good match, use it
-                if len(good_matches) == 1:
-                    card_name, score = good_matches[0]
-                    card = self.card_data.cards[card_name]
-                    return [await self._format_card_info(card)], None
-                
-                # Otherwise, show suggestions
-                suggestions = []
-                for card_name, score in good_matches:
-                    # Properly capitalize the card name
-                    formatted_name = ' '.join(word.capitalize() for word in card_name.split())
-                    suggestions.append(f"• {formatted_name} ({score}%)")
-                
-                embed = discord.Embed(
-                    title="Card Not Found",
-                    description=f"Did you mean one of these cards?\n\n" + "\n".join(suggestions)
-                )
-                
-                # Create a view with buttons for each suggestion
-                view = CardSuggestionView(self.card_data, good_matches)
-                return [embed], view
-            else:
-                return [discord.Embed(description=f"Card not found: {args}")], None
-        
-        return [await self._format_card_info(card)], None
-    
-    async def _format_card_info(self, card: dict) -> discord.Embed:
+        except Exception as e:
+            self.logger.error(f"Error in card info command: {e}")
+            embed = self.create_error_embed(f"An error occurred while processing your request: {str(e)}")
+            self.log_command_execution(args, False, str(e))
+            return [embed], None, []
+
+    async def _format_card_info(self, card: dict) -> Tuple[discord.Embed, Optional[discord.File]]:
         """Format card information into a Discord embed."""
         embed = discord.Embed(title=card['name'])
+        file = None
         
         # Add mana cost to title if available
         if 'mana_cost' in card:
@@ -143,10 +140,33 @@ class CardInfoCommand(Command):
         if 'type_line' in card:
             embed.description = f"*{card['type_line']}*"
         
-        # Add oracle text if available
-        if 'oracle_text' in card:
-            embed.add_field(name="Oracle Text", value=card['oracle_text'], inline=False)
-        
+        # Handle dual-faced cards
+        if 'card_faces' in card and len(card['card_faces']) == 2:
+            faces = card['card_faces']
+            details = ""
+            face_images = []
+            for face in faces:
+                details += f"**{face.get('name', '')}**\n{face.get('mana_cost', '')}\n{face.get('type_line', '')}\n{face.get('oracle_text', '')}\n\n"
+                if 'image_uris' in face and 'normal' in face['image_uris']:
+                    face_images.append(face['image_uris']['normal'])
+            
+            embed.add_field(name="Card Faces", value=details, inline=False)
+            
+            if len(face_images) == 2:
+                try:
+                    stitched_path = await self.image_stitcher.stitch_partner_images(face_images)
+                    filename = f"dualsided_{card['name'].replace(' ', '_')}.png"
+                    file = discord.File(stitched_path, filename=filename)
+                    embed.set_image(url=f"attachment://{filename}")
+                except Exception as e:
+                    print(f"Error stitching images for dual-faced card: {e}")
+        else:
+            # Single-faced card
+            if 'oracle_text' in card:
+                embed.add_field(name="Oracle Text", value=card['oracle_text'], inline=False)
+            if 'image_uris' in card and 'normal' in card['image_uris']:
+                embed.set_image(url=card['image_uris']['normal'])
+
         # Add power/toughness if available and meaningful
         if 'power' in card and 'toughness' in card and card['power'] is not None and card['toughness'] is not None:
             embed.add_field(name="Power/Toughness", value=f"{card['power']}/{card['toughness']}", inline=True)
@@ -164,55 +184,30 @@ class CardInfoCommand(Command):
         if 'rarity' in card:
             embed.add_field(name="Rarity", value=card['rarity'].title(), inline=True)
         
-        # Add EDHREC data if available
-        # if 'edhrec_data' in card:
-        #     edhrec = card['edhrec_data']
-            
-        #     # Format card name for EDHREC URL
-        #     formatted_name = card['name'].lower().replace(' ', '-').replace(',', '').replace("'", '')
-        #     edhrec_url = f"https://edhrec.com/cards/{formatted_name}"
-            
-        #     # Add EDHREC link
-        #     embed.add_field(name="EDHREC", value=f"[View on EDHREC]({edhrec_url})", inline=True)
-            
-        #     # Add rank if available
-        #     if edhrec.get('rank'):
-        #         embed.add_field(name="EDHREC Rank", value=f"#{edhrec['rank']}", inline=True)
-            
-        #     # Add deck statistics if available
-        #     if edhrec.get('average_decks') or edhrec.get('potential_decks'):
-        #         deck_stats = []
-        #         if edhrec.get('average_decks'):
-        #             deck_stats.append(f"Average Decks: {edhrec['average_decks']}")
-        #         if edhrec.get('potential_decks'):
-        #             deck_stats.append(f"Potential Decks: {edhrec['potential_decks']}")
-        #         if deck_stats:
-        #             embed.add_field(name="Deck Statistics", value="\n".join(deck_stats), inline=True)
-            
-        #     # Add top synergies if available
-        #     if edhrec.get('top_cards'):
-        #         top_cards = []
-        #         for card_data in edhrec['top_cards'][:5]:  # Show top 5 synergies
-        #             synergy = card_data.get('synergy', 0)
-        #             inclusion = card_data.get('inclusion_rate', 0)
-        #             top_cards.append(f"• {card_data['name']} (Synergy: {synergy:.2f}, Inclusion: {inclusion:.1%})")
-        #         if top_cards:
-        #             embed.add_field(name="Top Synergies", value="\n".join(top_cards), inline=False)
-        
         # Add rulings if available
         rulings = await self._get_rulings(card)
         if rulings:
             rulings_text = "\n\n".join(self._format_ruling(ruling) for ruling in rulings)
             if len(rulings_text) > 1024:
                 # Construct the Scryfall URL for the card's rulings page
-                formatted_name = card['name'].lower().replace(' ', '-').replace(',', '').replace("'", '')
-                scryfall_url = f"https://scryfall.com/card/{card['set']}/{card['collector_number']}#{card['set']}-rulings"
+                scryfall_url = card.get('scryfall_uri', 'https://scryfall.com')
                 embed.add_field(name="Rulings", value=f"[View Rulings on Scryfall]({scryfall_url})", inline=False)
             else:
                 embed.add_field(name="Rulings", value=rulings_text, inline=False)
         
-        # Add image if available
-        if 'image_uris' in card and 'normal' in card['image_uris']:
-            embed.set_image(url=card['image_uris']['normal'])
+        return embed, file
         
-        return embed 
+    async def _get_rulings(self, card: dict) -> List[dict]:
+        """Get rulings for a card from Scryfall."""
+        if 'rulings_uri' in card:
+            async with aiohttp.ClientSession() as session:
+                async with session.get(card['rulings_uri']) as response:
+                    if response.status == 200:
+                        data = await response.json()
+                        return data.get('data', [])
+        return []
+        
+    def _format_ruling(self, ruling: dict) -> str:
+        """Format a ruling into a string."""
+        date = datetime.strptime(ruling['published_at'], '%Y-%m-%d').strftime('%b %d, %Y')
+        return f"**({date})** {ruling['comment']}" 

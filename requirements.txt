@@ -1,5 +1,24 @@
+# Core dependencies
 discord.py==2.3.2
 python-dotenv==1.0.0
+
+# HTTP and networking
 aiohttp==3.9.3
+aiofiles==23.2.1
+
+# Text processing and fuzzy matching
 fuzzywuzzy==0.18.0
-python-Levenshtein==0.23.0 
+python-Levenshtein==0.23.0
+
+# Image processing
+Pillow==10.2.0
+
+# Development and testing (optional)
+pytest==7.4.3
+pytest-asyncio==0.21.1
+pytest-cov==4.1.0
+
+# Code quality (optional)
+black==23.11.0
+flake8==6.1.0
+mypy==1.7.1 

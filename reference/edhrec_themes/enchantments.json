@@ -1,0 +1,3628 @@
+{
+  "related_info": {
+    "colors": [
+      {
+        "count": 109,
+        "icons": "w",
+        "name": "Mono-White",
+        "url": "/themes/enchantments/mono-white"
+      },
+      {
+        "count": 16,
+        "icons": "u",
+        "name": "Mono-Blue",
+        "url": "/themes/enchantments/mono-blue"
+      },
+      {
+        "count": 160,
+        "icons": "b",
+        "name": "Mono-Black",
+        "url": "/themes/enchantments/mono-black"
+      },
+      {
+        "count": 12,
+        "icons": "r",
+        "name": "Mono-Red",
+        "url": "/themes/enchantments/mono-red"
+      },
+      {
+        "count": 70,
+        "icons": "g",
+        "name": "Mono-Green",
+        "url": "/themes/enchantments/mono-green"
+      },
+      {
+        "count": 147,
+        "icons": "wu",
+        "name": "Azorius",
+        "url": "/themes/enchantments/azorius"
+      },
+      {
+        "count": 23,
+        "icons": "ub",
+        "name": "Dimir",
+        "url": "/themes/enchantments/dimir"
+      },
+      {
+        "count": 51,
+        "icons": "br",
+        "name": "Rakdos",
+        "url": "/themes/enchantments/rakdos"
+      },
+      {
+        "count": 806,
+        "icons": "rg",
+        "name": "Gruul",
+        "url": "/themes/enchantments/gruul"
+      },
+      {
+        "count": 9911,
+        "icons": "gw",
+        "name": "Selesnya",
+        "url": "/themes/enchantments/selesnya"
+      },
+      {
+        "count": 1483,
+        "icons": "wb",
+        "name": "Orzhov",
+        "url": "/themes/enchantments/orzhov"
+      },
+      {
+        "count": 12,
+        "icons": "ur",
+        "name": "Izzet",
+        "url": "/themes/enchantments/izzet"
+      },
+      {
+        "count": 257,
+        "icons": "bg",
+        "name": "Golgari",
+        "url": "/themes/enchantments/golgari"
+      },
+      {
+        "count": 22,
+        "icons": "rw",
+        "name": "Boros",
+        "url": "/themes/enchantments/boros"
+      },
+      {
+        "count": 127,
+        "icons": "gu",
+        "name": "Simic",
+        "url": "/themes/enchantments/simic"
+      },
+      {
+        "count": 4775,
+        "icons": "wub",
+        "name": "Esper",
+        "url": "/themes/enchantments/esper"
+      },
+      {
+        "count": 11,
+        "icons": "ubr",
+        "name": "Grixis",
+        "url": "/themes/enchantments/grixis"
+      },
+      {
+        "count": 46,
+        "icons": "brg",
+        "name": "Jund",
+        "url": "/themes/enchantments/jund"
+      },
+      {
+        "count": 254,
+        "icons": "rgw",
+        "name": "Naya",
+        "url": "/themes/enchantments/naya"
+      },
+      {
+        "count": 4232,
+        "icons": "gwu",
+        "name": "Bant",
+        "url": "/themes/enchantments/bant"
+      },
+      {
+        "count": 9152,
+        "icons": "wbg",
+        "name": "Abzan",
+        "url": "/themes/enchantments/abzan"
+      },
+      {
+        "count": 81,
+        "icons": "urw",
+        "name": "Jeskai",
+        "url": "/themes/enchantments/jeskai"
+      },
+      {
+        "count": 1900,
+        "icons": "bgu",
+        "name": "Sultai",
+        "url": "/themes/enchantments/sultai"
+      },
+      {
+        "count": 787,
+        "icons": "rwb",
+        "name": "Mardu",
+        "url": "/themes/enchantments/mardu"
+      },
+      {
+        "count": 16,
+        "icons": "gur",
+        "name": "Temur",
+        "url": "/themes/enchantments/temur"
+      },
+      {
+        "count": 4,
+        "icons": "wubr",
+        "name": "Yore-Tiller",
+        "url": "/themes/enchantments/yore-tiller"
+      },
+      {
+        "count": 11,
+        "icons": "ubrg",
+        "name": "Glint-Eye",
+        "url": "/themes/enchantments/glint-eye"
+      },
+      {
+        "count": 44,
+        "icons": "brgw",
+        "name": "Dune-Brood",
+        "url": "/themes/enchantments/dune-brood"
+      },
+      {
+        "count": 117,
+        "icons": "rgwu",
+        "name": "Ink-Treader",
+        "url": "/themes/enchantments/ink-treader"
+      },
+      {
+        "count": 250,
+        "icons": "gwub",
+        "name": "Witch-Maw",
+        "url": "/themes/enchantments/witch-maw"
+      },
+      {
+        "count": 12252,
+        "icons": "wubrg",
+        "name": "Five-Color",
+        "url": "/themes/enchantments/five-color"
+      }
+    ],
+    "name": "Enchantment",
+    "singular": "Enchantment",
+    "breadcrumb": [
+      {
+        "/themes": "Themes"
+      },
+      {
+        "/themes/enchantments": "Enchantments"
+      }
+    ]
+  },
+  "header": "Enchantment Theme",
+  "description": "",
+  "container": {
+    "breadcrumb": [
+      {
+        "/themes": "Themes"
+      },
+      {
+        "/themes/enchantments": "Enchantments"
+      }
+    ],
+    "description": "Popular Enchantment EDH commanders",
+    "json_dict": {
+      "cardlists": [
+        {
+          "cardviews": [
+            {
+              "name": "Marina Vendrell",
+              "sanitized": "marina-vendrell/enchantments",
+              "sanitized_wo": "marina-vendrell",
+              "url": "/commanders/marina-vendrell/enchantments",
+              "inclusion": 1514,
+              "label": "1514 decks",
+              "num_decks": 1514
+            },
+            {
+              "name": "Anikthea, Hand of Erebos",
+              "sanitized": "anikthea-hand-of-erebos/enchantments",
+              "sanitized_wo": "anikthea-hand-of-erebos",
+              "url": "/commanders/anikthea-hand-of-erebos/enchantments",
+              "inclusion": 8350,
+              "label": "8350 decks",
+              "num_decks": 8350
+            },
+            {
+              "name": "Go-Shintai of Life's Origin",
+              "sanitized": "go-shintai-of-lifes-origin/enchantments",
+              "sanitized_wo": "go-shintai-of-lifes-origin",
+              "url": "/commanders/go-shintai-of-lifes-origin/enchantments",
+              "inclusion": 9840,
+              "label": "9840 decks",
+              "num_decks": 9840
+            },
+            {
+              "name": "Aminatou, Veil Piercer",
+              "sanitized": "aminatou-veil-piercer/enchantments",
+              "sanitized_wo": "aminatou-veil-piercer",
+              "url": "/commanders/aminatou-veil-piercer/enchantments",
+              "inclusion": 885,
+              "label": "885 decks",
+              "num_decks": 885
+            },
+            {
+              "name": "Sythis, Harvest's Hand",
+              "sanitized": "sythis-harvests-hand/enchantments",
+              "sanitized_wo": "sythis-harvests-hand",
+              "url": "/commanders/sythis-harvests-hand/enchantments",
+              "inclusion": 7793,
+              "label": "7793 decks",
+              "num_decks": 7793
+            },
+            {
+              "name": "The Master of Keys",
+              "sanitized": "the-master-of-keys/enchantments",
+              "sanitized_wo": "the-master-of-keys",
+              "url": "/commanders/the-master-of-keys/enchantments",
+              "inclusion": 407,
+              "label": "407 decks",
+              "num_decks": 407
+            },
+            {
+              "name": "Wildsear, Scouring Maw",
+              "sanitized": "wildsear-scouring-maw/enchantments",
+              "sanitized_wo": "wildsear-scouring-maw",
+              "url": "/commanders/wildsear-scouring-maw/enchantments",
+              "inclusion": 551,
+              "label": "551 decks",
+              "num_decks": 551
+            },
+            {
+              "name": "Zur, Eternal Schemer",
+              "sanitized": "zur-eternal-schemer/enchantments",
+              "sanitized_wo": "zur-eternal-schemer",
+              "url": "/commanders/zur-eternal-schemer/enchantments",
+              "inclusion": 2418,
+              "label": "2418 decks",
+              "num_decks": 2418
+            },
+            {
+              "name": "Tuvasa the Sunlit",
+              "sanitized": "tuvasa-the-sunlit/enchantments",
+              "sanitized_wo": "tuvasa-the-sunlit",
+              "url": "/commanders/tuvasa-the-sunlit/enchantments",
+              "inclusion": 2519,
+              "label": "2519 decks",
+              "num_decks": 2519
+            },
+            {
+              "name": "Victor, Valgavoth's Seneschal",
+              "sanitized": "victor-valgavoths-seneschal/enchantments",
+              "sanitized_wo": "victor-valgavoths-seneschal",
+              "url": "/commanders/victor-valgavoths-seneschal/enchantments",
+              "inclusion": 226,
+              "label": "226 decks",
+              "num_decks": 226
+            },
+            {
+              "name": "Tatsunari, Toad Rider",
+              "sanitized": "tatsunari-toad-rider/enchantments",
+              "sanitized_wo": "tatsunari-toad-rider",
+              "url": "/commanders/tatsunari-toad-rider/enchantments",
+              "inclusion": 1846,
+              "label": "1846 decks",
+              "num_decks": 1846
+            },
+            {
+              "name": "Yenna, Redtooth Regent",
+              "sanitized": "yenna-redtooth-regent/enchantments",
+              "sanitized_wo": "yenna-redtooth-regent",
+              "url": "/commanders/yenna-redtooth-regent/enchantments",
+              "inclusion": 756,
+              "label": "756 decks",
+              "num_decks": 756
+            },
+            {
+              "name": "Daxos the Returned",
+              "sanitized": "daxos-the-returned/enchantments",
+              "sanitized_wo": "daxos-the-returned",
+              "url": "/commanders/daxos-the-returned/enchantments",
+              "inclusion": 1100,
+              "label": "1100 decks",
+              "num_decks": 1100
+            },
+            {
+              "name": "Calix, Guided by Fate",
+              "sanitized": "calix-guided-by-fate/enchantments",
+              "sanitized_wo": "calix-guided-by-fate",
+              "url": "/commanders/calix-guided-by-fate/enchantments",
+              "inclusion": 749,
+              "label": "749 decks",
+              "num_decks": 749
+            },
+            {
+              "name": "Estrid, the Masked",
+              "sanitized": "estrid-the-masked/enchantments",
+              "sanitized_wo": "estrid-the-masked",
+              "url": "/commanders/estrid-the-masked/enchantments",
+              "inclusion": 959,
+              "label": "959 decks",
+              "num_decks": 959
+            },
+            {
+              "name": "Ghen, Arcanum Weaver",
+              "sanitized": "ghen-arcanum-weaver/enchantments",
+              "sanitized_wo": "ghen-arcanum-weaver",
+              "url": "/commanders/ghen-arcanum-weaver/enchantments",
+              "inclusion": 778,
+              "label": "778 decks",
+              "num_decks": 778
+            },
+            {
+              "name": "Zur the Enchanter",
+              "sanitized": "zur-the-enchanter/enchantments",
+              "sanitized_wo": "zur-the-enchanter",
+              "url": "/commanders/zur-the-enchanter/enchantments",
+              "inclusion": 714,
+              "label": "714 decks",
+              "num_decks": 714
+            },
+            {
+              "name": "Narci, Fable Singer",
+              "sanitized": "narci-fable-singer/enchantments",
+              "sanitized_wo": "narci-fable-singer",
+              "url": "/commanders/narci-fable-singer/enchantments",
+              "inclusion": 386,
+              "label": "386 decks",
+              "num_decks": 386
+            },
+            {
+              "name": "Sisay, Weatherlight Captain",
+              "sanitized": "sisay-weatherlight-captain/enchantments",
+              "sanitized_wo": "sisay-weatherlight-captain",
+              "url": "/commanders/sisay-weatherlight-captain/enchantments",
+              "inclusion": 346,
+              "label": "346 decks",
+              "num_decks": 346
+            },
+            {
+              "name": "Kestia, the Cultivator",
+              "sanitized": "kestia-the-cultivator/enchantments",
+              "sanitized_wo": "kestia-the-cultivator",
+              "url": "/commanders/kestia-the-cultivator/enchantments",
+              "inclusion": 287,
+              "label": "287 decks",
+              "num_decks": 287
+            },
+            {
+              "name": "Karametra, God of Harvests",
+              "sanitized": "karametra-god-of-harvests/enchantments",
+              "sanitized_wo": "karametra-god-of-harvests",
+              "url": "/commanders/karametra-god-of-harvests/enchantments",
+              "inclusion": 282,
+              "label": "282 decks",
+              "num_decks": 282
+            },
+            {
+              "name": "Myrkul, Lord of Bones",
+              "sanitized": "myrkul-lord-of-bones/enchantments",
+              "sanitized_wo": "myrkul-lord-of-bones",
+              "url": "/commanders/myrkul-lord-of-bones/enchantments",
+              "inclusion": 237,
+              "label": "237 decks",
+              "num_decks": 237
+            },
+            {
+              "name": "Amareth, the Lustrous",
+              "sanitized": "amareth-the-lustrous/enchantments",
+              "sanitized_wo": "amareth-the-lustrous",
+              "url": "/commanders/amareth-the-lustrous/enchantments",
+              "inclusion": 256,
+              "label": "256 decks",
+              "num_decks": 256
+            },
+            {
+              "name": "Alela, Artful Provocateur",
+              "sanitized": "alela-artful-provocateur/enchantments",
+              "sanitized_wo": "alela-artful-provocateur",
+              "url": "/commanders/alela-artful-provocateur/enchantments",
+              "inclusion": 250,
+              "label": "250 decks",
+              "num_decks": 250
+            }
+          ],
+          "header": "Top Commanders",
+          "tag": "topcommanders"
+        },
+        {
+          "cardviews": [
+            {
+              "name": "Monstrous Emergence",
+              "sanitized": "monstrous-emergence",
+              "sanitized_wo": "monstrous-emergence",
+              "url": "/cards/monstrous-emergence",
+              "synergy": 0.0,
+              "inclusion": 7,
+              "label": "100% of 7 decks\n+0% synergy",
+              "num_decks": 7,
+              "potential_decks": 7
+            },
+            {
+              "name": "Roaring Furnace // Steaming Sauna",
+              "sanitized": "roaring-furnace-steaming-sauna",
+              "sanitized_wo": "roaring-furnace-steaming-sauna",
+              "url": "/cards/roaring-furnace-steaming-sauna",
+              "synergy": 0.8,
+              "inclusion": 1350,
+              "label": "88% of 1535 decks\n+80% synergy",
+              "num_decks": 1350,
+              "potential_decks": 1535
+            },
+            {
+              "name": "Glimmerburst",
+              "sanitized": "glimmerburst",
+              "sanitized_wo": "glimmerburst",
+              "url": "/cards/glimmerburst",
+              "synergy": 0.45,
+              "inclusion": 161,
+              "label": "79% of 205 decks\n+45% synergy",
+              "num_decks": 161,
+              "potential_decks": 205
+            },
+            {
+              "name": "Inquisitive Glimmer",
+              "sanitized": "inquisitive-glimmer",
+              "sanitized_wo": "inquisitive-glimmer",
+              "url": "/cards/inquisitive-glimmer",
+              "synergy": 0.73,
+              "inclusion": 2756,
+              "label": "78% of 3554 decks\n+73% synergy",
+              "num_decks": 2756,
+              "potential_decks": 3554
+            },
+            {
+              "name": "Dazzling Theater // Prop Room",
+              "sanitized": "dazzling-theater-prop-room",
+              "sanitized_wo": "dazzling-theater-prop-room",
+              "url": "/cards/dazzling-theater-prop-room",
+              "synergy": 0.12,
+              "inclusion": 1348,
+              "label": "73% of 1851 decks\n+12% synergy",
+              "num_decks": 1348,
+              "potential_decks": 1851
+            }
+          ],
+          "header": "New Cards",
+          "tag": "newcards"
+        },
+        {
+          "cardviews": [
+            {
+              "name": "Sanctum Weaver",
+              "sanitized": "sanctum-weaver",
+              "sanitized_wo": "sanctum-weaver",
+              "url": "/cards/sanctum-weaver",
+              "synergy": 0.89,
+              "inclusion": 35997,
+              "label": "92% of 39191 decks\n+89% synergy",
+              "num_decks": 35997,
+              "potential_decks": 39191
+            },
+            {
+              "name": "Enchantress's Presence",
+              "sanitized": "enchantresss-presence",
+              "sanitized_wo": "enchantresss-presence",
+              "url": "/cards/enchantresss-presence",
+              "synergy": 0.86,
+              "inclusion": 34623,
+              "label": "88% of 39443 decks\n+86% synergy",
+              "num_decks": 34623,
+              "potential_decks": 39443
+            },
+            {
+              "name": "Sanctum of All",
+              "sanitized": "sanctum-of-all",
+              "sanitized_wo": "sanctum-of-all",
+              "url": "/cards/sanctum-of-all",
+              "synergy": 0.82,
+              "inclusion": 10129,
+              "label": "83% of 12239 decks\n+82% synergy",
+              "num_decks": 10129,
+              "potential_decks": 12239
+            },
+            {
+              "name": "Eidolon of Blossoms",
+              "sanitized": "eidolon-of-blossoms",
+              "sanitized_wo": "eidolon-of-blossoms",
+              "url": "/cards/eidolon-of-blossoms",
+              "synergy": 0.81,
+              "inclusion": 32672,
+              "label": "83% of 39434 decks\n+81% synergy",
+              "num_decks": 32672,
+              "potential_decks": 39434
+            },
+            {
+              "name": "Jukai Naturalist",
+              "sanitized": "jukai-naturalist",
+              "sanitized_wo": "jukai-naturalist",
+              "url": "/cards/jukai-naturalist",
+              "synergy": 0.79,
+              "inclusion": 28363,
+              "label": "80% of 35404 decks\n+79% synergy",
+              "num_decks": 28363,
+              "potential_decks": 35404
+            },
+            {
+              "name": "Sterling Grove",
+              "sanitized": "sterling-grove",
+              "sanitized_wo": "sterling-grove",
+              "url": "/cards/sterling-grove",
+              "synergy": 0.78,
+              "inclusion": 28914,
+              "label": "80% of 36210 decks\n+78% synergy",
+              "num_decks": 28914,
+              "potential_decks": 36210
+            },
+            {
+              "name": "Setessan Champion",
+              "sanitized": "setessan-champion",
+              "sanitized_wo": "setessan-champion",
+              "url": "/cards/setessan-champion",
+              "synergy": 0.74,
+              "inclusion": 30118,
+              "label": "77% of 39361 decks\n+74% synergy",
+              "num_decks": 30118,
+              "potential_decks": 39361
+            },
+            {
+              "name": "Destiny Spinner",
+              "sanitized": "destiny-spinner",
+              "sanitized_wo": "destiny-spinner",
+              "url": "/cards/destiny-spinner",
+              "synergy": 0.72,
+              "inclusion": 29150,
+              "label": "74% of 39361 decks\n+72% synergy",
+              "num_decks": 29150,
+              "potential_decks": 39361
+            },
+            {
+              "name": "Sythis, Harvest's Hand",
+              "sanitized": "sythis-harvests-hand",
+              "sanitized_wo": "sythis-harvests-hand",
+              "url": "/cards/sythis-harvests-hand",
+              "synergy": 0.71,
+              "inclusion": 26192,
+              "label": "73% of 35973 decks\n+71% synergy",
+              "num_decks": 26192,
+              "potential_decks": 35973
+            },
+            {
+              "name": "Honden of Infinite Rage",
+              "sanitized": "honden-of-infinite-rage",
+              "sanitized_wo": "honden-of-infinite-rage",
+              "url": "/cards/honden-of-infinite-rage",
+              "synergy": 0.69,
+              "inclusion": 10110,
+              "label": "70% of 14524 decks\n+69% synergy",
+              "num_decks": 10110,
+              "potential_decks": 14524
+            }
+          ],
+          "header": "High Synergy Cards",
+          "tag": "highsynergycards"
+        },
+        {
+          "cardviews": [
+            {
+              "name": "Meat Locker // Drowned Diner",
+              "sanitized": "meat-locker-drowned-diner",
+              "sanitized_wo": "meat-locker-drowned-diner",
+              "url": "/cards/meat-locker-drowned-diner",
+              "synergy": 0.47,
+              "inclusion": 1243,
+              "label": "72% of 1735 decks\n+47% synergy",
+              "num_decks": 1243,
+              "potential_decks": 1735
+            },
+            {
+              "name": "Entity Tracker",
+              "sanitized": "entity-tracker",
+              "sanitized_wo": "entity-tracker",
+              "url": "/cards/entity-tracker",
+              "synergy": 0.59,
+              "inclusion": 2333,
+              "label": "70% of 3346 decks\n+59% synergy",
+              "num_decks": 2333,
+              "potential_decks": 3346
+            },
+            {
+              "name": "Smoky Lounge // Misty Salon",
+              "sanitized": "smoky-lounge-misty-salon",
+              "sanitized_wo": "smoky-lounge-misty-salon",
+              "url": "/cards/smoky-lounge-misty-salon",
+              "synergy": 0.67,
+              "inclusion": 1285,
+              "label": "69% of 1862 decks\n+67% synergy",
+              "num_decks": 1285,
+              "potential_decks": 1862
+            },
+            {
+              "name": "Go-Shintai of Ancient Wars",
+              "sanitized": "go-shintai-of-ancient-wars",
+              "sanitized_wo": "go-shintai-of-ancient-wars",
+              "url": "/cards/go-shintai-of-ancient-wars",
+              "synergy": 0.69,
+              "inclusion": 9891,
+              "label": "69% of 14362 decks\n+69% synergy",
+              "num_decks": 9891,
+              "potential_decks": 14362
+            },
+            {
+              "name": "Mesa Enchantress",
+              "sanitized": "mesa-enchantress",
+              "sanitized_wo": "mesa-enchantress",
+              "url": "/cards/mesa-enchantress",
+              "synergy": 0.66,
+              "inclusion": 29512,
+              "label": "68% of 43615 decks\n+66% synergy",
+              "num_decks": 29512,
+              "potential_decks": 43615
+            },
+            {
+              "name": "Sigil of the Empty Throne",
+              "sanitized": "sigil-of-the-empty-throne",
+              "sanitized_wo": "sigil-of-the-empty-throne",
+              "url": "/cards/sigil-of-the-empty-throne",
+              "synergy": 0.65,
+              "inclusion": 29086,
+              "label": "67% of 43615 decks\n+65% synergy",
+              "num_decks": 29086,
+              "potential_decks": 43615
+            },
+            {
+              "name": "Doomwake Giant",
+              "sanitized": "doomwake-giant",
+              "sanitized_wo": "doomwake-giant",
+              "url": "/cards/doomwake-giant",
+              "synergy": 0.65,
+              "inclusion": 20647,
+              "label": "66% of 31201 decks\n+65% synergy",
+              "num_decks": 20647,
+              "potential_decks": 31201
+            },
+            {
+              "name": "Ghostly Dancers",
+              "sanitized": "ghostly-dancers",
+              "sanitized_wo": "ghostly-dancers",
+              "url": "/cards/ghostly-dancers",
+              "synergy": 0.54,
+              "inclusion": 1987,
+              "label": "65% of 3070 decks\n+54% synergy",
+              "num_decks": 1987,
+              "potential_decks": 3070
+            },
+            {
+              "name": "Satyr Enchanter",
+              "sanitized": "satyr-enchanter",
+              "sanitized_wo": "satyr-enchanter",
+              "url": "/cards/satyr-enchanter",
+              "synergy": 0.64,
+              "inclusion": 23391,
+              "label": "65% of 36180 decks\n+64% synergy",
+              "num_decks": 23391,
+              "potential_decks": 36180
+            },
+            {
+              "name": "Moldering Gym // Weight Room",
+              "sanitized": "moldering-gym-weight-room",
+              "sanitized_wo": "moldering-gym-weight-room",
+              "url": "/cards/moldering-gym-weight-room",
+              "synergy": 0.57,
+              "inclusion": 1125,
+              "label": "64% of 1750 decks\n+57% synergy",
+              "num_decks": 1125,
+              "potential_decks": 1750
+            }
+          ],
+          "header": "Top Cards",
+          "tag": "topcards"
+        },
+        {
+          "cardviews": [
+            {
+              "name": "Herald of the Pantheon",
+              "sanitized": "herald-of-the-pantheon",
+              "sanitized_wo": "herald-of-the-pantheon",
+              "url": "/cards/herald-of-the-pantheon",
+              "synergy": 0.59,
+              "inclusion": 23849,
+              "label": "60% of 39433 decks\n+59% synergy",
+              "num_decks": 23849,
+              "potential_decks": 39433
+            },
+            {
+              "name": "Weaver of Harmony",
+              "sanitized": "weaver-of-harmony",
+              "sanitized_wo": "weaver-of-harmony",
+              "url": "/cards/weaver-of-harmony",
+              "synergy": 0.57,
+              "inclusion": 22475,
+              "label": "58% of 38603 decks\n+57% synergy",
+              "num_decks": 22475,
+              "potential_decks": 38603
+            },
+            {
+              "name": "Fear of Sleep Paralysis",
+              "sanitized": "fear-of-sleep-paralysis",
+              "sanitized_wo": "fear-of-sleep-paralysis",
+              "url": "/cards/fear-of-sleep-paralysis",
+              "synergy": 0.48,
+              "inclusion": 1912,
+              "label": "57% of 3346 decks\n+48% synergy",
+              "num_decks": 1912,
+              "potential_decks": 3346
+            },
+            {
+              "name": "Dryad of the Ilysian Grove",
+              "sanitized": "dryad-of-the-ilysian-grove",
+              "sanitized_wo": "dryad-of-the-ilysian-grove",
+              "url": "/cards/dryad-of-the-ilysian-grove",
+              "synergy": 0.53,
+              "inclusion": 22256,
+              "label": "57% of 39361 decks\n+53% synergy",
+              "num_decks": 22256,
+              "potential_decks": 39361
+            },
+            {
+              "name": "Verduran Enchantress",
+              "sanitized": "verduran-enchantress",
+              "sanitized_wo": "verduran-enchantress",
+              "url": "/cards/verduran-enchantress",
+              "synergy": 0.52,
+              "inclusion": 21013,
+              "label": "53% of 39443 decks\n+52% synergy",
+              "num_decks": 21013,
+              "potential_decks": 39443
+            },
+            {
+              "name": "Archon of Sun's Grace",
+              "sanitized": "archon-of-suns-grace",
+              "sanitized_wo": "archon-of-suns-grace",
+              "url": "/cards/archon-of-suns-grace",
+              "synergy": 0.5,
+              "inclusion": 22473,
+              "label": "52% of 43485 decks\n+50% synergy",
+              "num_decks": 22473,
+              "potential_decks": 43485
+            },
+            {
+              "name": "Demon of Fate's Design",
+              "sanitized": "demon-of-fates-design",
+              "sanitized_wo": "demon-of-fates-design",
+              "url": "/cards/demon-of-fates-design",
+              "synergy": 0.49,
+              "inclusion": 10395,
+              "label": "50% of 20933 decks\n+49% synergy",
+              "num_decks": 10395,
+              "potential_decks": 20933
+            },
+            {
+              "name": "Composer of Spring",
+              "sanitized": "composer-of-spring",
+              "sanitized_wo": "composer-of-spring",
+              "url": "/cards/composer-of-spring",
+              "synergy": 0.46,
+              "inclusion": 11515,
+              "label": "47% of 24501 decks\n+46% synergy",
+              "num_decks": 11515,
+              "potential_decks": 24501
+            },
+            {
+              "name": "Starfield Mystic",
+              "sanitized": "starfield-mystic",
+              "sanitized_wo": "starfield-mystic",
+              "url": "/cards/starfield-mystic",
+              "synergy": 0.44,
+              "inclusion": 19878,
+              "label": "46% of 43516 decks\n+44% synergy",
+              "num_decks": 19878,
+              "potential_decks": 43516
+            },
+            {
+              "name": "Enduring Vitality",
+              "sanitized": "enduring-vitality",
+              "sanitized_wo": "enduring-vitality",
+              "url": "/cards/enduring-vitality",
+              "synergy": 0.31,
+              "inclusion": 1177,
+              "label": "46% of 2585 decks\n+31% synergy",
+              "num_decks": 1177,
+              "potential_decks": 2585
+            },
+            {
+              "name": "Zur the Enchanter",
+              "sanitized": "zur-the-enchanter",
+              "sanitized_wo": "zur-the-enchanter",
+              "url": "/cards/zur-the-enchanter",
+              "synergy": 0.43,
+              "inclusion": 7584,
+              "label": "44% of 17279 decks\n+43% synergy",
+              "num_decks": 7584,
+              "potential_decks": 17279
+            },
+            {
+              "name": "Zur, Eternal Schemer",
+              "sanitized": "zur-eternal-schemer",
+              "sanitized_wo": "zur-eternal-schemer",
+              "url": "/cards/zur-eternal-schemer",
+              "synergy": 0.43,
+              "inclusion": 6657,
+              "label": "44% of 15298 decks\n+43% synergy",
+              "num_decks": 6657,
+              "potential_decks": 15298
+            },
+            {
+              "name": "Ondu Spiritdancer",
+              "sanitized": "ondu-spiritdancer",
+              "sanitized_wo": "ondu-spiritdancer",
+              "url": "/cards/ondu-spiritdancer",
+              "synergy": 0.42,
+              "inclusion": 11640,
+              "label": "43% of 27166 decks\n+42% synergy",
+              "num_decks": 11640,
+              "potential_decks": 27166
+            },
+            {
+              "name": "Yenna, Redtooth Regent",
+              "sanitized": "yenna-redtooth-regent",
+              "sanitized_wo": "yenna-redtooth-regent",
+              "url": "/cards/yenna-redtooth-regent",
+              "synergy": 0.41,
+              "inclusion": 7161,
+              "label": "42% of 17213 decks\n+41% synergy",
+              "num_decks": 7161,
+              "potential_decks": 17213
+            },
+            {
+              "name": "Soaring Lightbringer",
+              "sanitized": "soaring-lightbringer",
+              "sanitized_wo": "soaring-lightbringer",
+              "url": "/cards/soaring-lightbringer",
+              "synergy": 0.34,
+              "inclusion": 1636,
+              "label": "41% of 4020 decks\n+34% synergy",
+              "num_decks": 1636,
+              "potential_decks": 4020
+            },
+            {
+              "name": "Go-Shintai of Lost Wisdom",
+              "sanitized": "go-shintai-of-lost-wisdom",
+              "sanitized_wo": "go-shintai-of-lost-wisdom",
+              "url": "/cards/go-shintai-of-lost-wisdom",
+              "synergy": 0.4,
+              "inclusion": 9544,
+              "label": "41% of 23475 decks\n+40% synergy",
+              "num_decks": 9544,
+              "potential_decks": 23475
+            },
+            {
+              "name": "Calix, Guided by Fate",
+              "sanitized": "calix-guided-by-fate",
+              "sanitized_wo": "calix-guided-by-fate",
+              "url": "/cards/calix-guided-by-fate",
+              "synergy": 0.38,
+              "inclusion": 9774,
+              "label": "39% of 24989 decks\n+38% synergy",
+              "num_decks": 9774,
+              "potential_decks": 24989
+            },
+            {
+              "name": "Victor, Valgavoth's Seneschal",
+              "sanitized": "victor-valgavoths-seneschal",
+              "sanitized_wo": "victor-valgavoths-seneschal",
+              "url": "/cards/victor-valgavoths-seneschal",
+              "synergy": 0.36,
+              "inclusion": 1575,
+              "label": "39% of 4056 decks\n+36% synergy",
+              "num_decks": 1575,
+              "potential_decks": 4056
+            },
+            {
+              "name": "Grim Guardian",
+              "sanitized": "grim-guardian",
+              "sanitized_wo": "grim-guardian",
+              "url": "/cards/grim-guardian",
+              "synergy": 0.37,
+              "inclusion": 11774,
+              "label": "38% of 31201 decks\n+37% synergy",
+              "num_decks": 11774,
+              "potential_decks": 31201
+            },
+            {
+              "name": "Wildsear, Scouring Maw",
+              "sanitized": "wildsear-scouring-maw",
+              "sanitized_wo": "wildsear-scouring-maw",
+              "url": "/cards/wildsear-scouring-maw",
+              "synergy": 0.35,
+              "inclusion": 1024,
+              "label": "38% of 2723 decks\n+35% synergy",
+              "num_decks": 1024,
+              "potential_decks": 2723
+            },
+            {
+              "name": "The Master of Keys",
+              "sanitized": "the-master-of-keys",
+              "sanitized_wo": "the-master-of-keys",
+              "url": "/cards/the-master-of-keys",
+              "synergy": 0.29,
+              "inclusion": 1042,
+              "label": "34% of 3070 decks\n+29% synergy",
+              "num_decks": 1042,
+              "potential_decks": 3070
+            },
+            {
+              "name": "Gremlin Tamer",
+              "sanitized": "gremlin-tamer",
+              "sanitized_wo": "gremlin-tamer",
+              "url": "/cards/gremlin-tamer",
+              "synergy": 0.29,
+              "inclusion": 1088,
+              "label": "33% of 3264 decks\n+29% synergy",
+              "num_decks": 1088,
+              "potential_decks": 3264
+            },
+            {
+              "name": "Enduring Curiosity",
+              "sanitized": "enduring-curiosity",
+              "sanitized_wo": "enduring-curiosity",
+              "url": "/cards/enduring-curiosity",
+              "synergy": 0.27,
+              "inclusion": 1233,
+              "label": "33% of 3712 decks\n+27% synergy",
+              "num_decks": 1233,
+              "potential_decks": 3712
+            },
+            {
+              "name": "Go-Shintai of Hidden Cruelty",
+              "sanitized": "go-shintai-of-hidden-cruelty",
+              "sanitized_wo": "go-shintai-of-hidden-cruelty",
+              "url": "/cards/go-shintai-of-hidden-cruelty",
+              "synergy": 0.33,
+              "inclusion": 10172,
+              "label": "33% of 30877 decks\n+33% synergy",
+              "num_decks": 10172,
+              "potential_decks": 30877
+            },
+            {
+              "name": "Argothian Enchantress",
+              "sanitized": "argothian-enchantress",
+              "sanitized_wo": "argothian-enchantress",
+              "url": "/cards/argothian-enchantress",
+              "synergy": 0.32,
+              "inclusion": 12713,
+              "label": "32% of 39443 decks\n+32% synergy",
+              "num_decks": 12713,
+              "potential_decks": 39443
+            },
+            {
+              "name": "Courser of Kruphix",
+              "sanitized": "courser-of-kruphix",
+              "sanitized_wo": "courser-of-kruphix",
+              "url": "/cards/courser-of-kruphix",
+              "synergy": 0.27,
+              "inclusion": 11497,
+              "label": "29% of 39434 decks\n+27% synergy",
+              "num_decks": 11497,
+              "potential_decks": 39434
+            },
+            {
+              "name": "Bello, Bard of the Brambles",
+              "sanitized": "bello-bard-of-the-brambles",
+              "sanitized_wo": "bello-bard-of-the-brambles",
+              "url": "/cards/bello-bard-of-the-brambles",
+              "synergy": 0.28,
+              "inclusion": 826,
+              "label": "29% of 2863 decks\n+28% synergy",
+              "num_decks": 826,
+              "potential_decks": 2863
+            },
+            {
+              "name": "Overlord of the Balemurk",
+              "sanitized": "overlord-of-the-balemurk",
+              "sanitized_wo": "overlord-of-the-balemurk",
+              "url": "/cards/overlord-of-the-balemurk",
+              "synergy": 0.17,
+              "inclusion": 836,
+              "label": "29% of 2933 decks\n+17% synergy",
+              "num_decks": 836,
+              "potential_decks": 2933
+            },
+            {
+              "name": "Heliod, the Radiant Dawn",
+              "sanitized": "heliod-the-radiant-dawn",
+              "sanitized_wo": "heliod-the-radiant-dawn",
+              "url": "/cards/heliod-the-radiant-dawn",
+              "cards": [
+                {
+                  "name": "Heliod, the Radiant Dawn",
+                  "url": "heliod-the-radiant-dawn"
+                },
+                {
+                  "name": "Heliod, the Warped Eclipse",
+                  "url": "heliod-the-radiant-dawn"
+                }
+              ],
+              "synergy": 0.28,
+              "inclusion": 4124,
+              "label": "28% of 14541 decks\n+28% synergy",
+              "num_decks": 4124,
+              "potential_decks": 14541
+            },
+            {
+              "name": "Overlord of the Floodpits",
+              "sanitized": "overlord-of-the-floodpits",
+              "sanitized_wo": "overlord-of-the-floodpits",
+              "url": "/cards/overlord-of-the-floodpits",
+              "synergy": 0.24,
+              "inclusion": 1010,
+              "label": "28% of 3672 decks\n+24% synergy",
+              "num_decks": 1010,
+              "potential_decks": 3672
+            },
+            {
+              "name": "Alseid of Life's Bounty",
+              "sanitized": "alseid-of-lifes-bounty",
+              "sanitized_wo": "alseid-of-lifes-bounty",
+              "url": "/cards/alseid-of-lifes-bounty",
+              "synergy": 0.26,
+              "inclusion": 11878,
+              "label": "27% of 43485 decks\n+26% synergy",
+              "num_decks": 11878,
+              "potential_decks": 43485
+            },
+            {
+              "name": "Sisay, Weatherlight Captain",
+              "sanitized": "sisay-weatherlight-captain",
+              "sanitized_wo": "sisay-weatherlight-captain",
+              "url": "/cards/sisay-weatherlight-captain",
+              "synergy": 0.27,
+              "inclusion": 3343,
+              "label": "27% of 12245 decks\n+27% synergy",
+              "num_decks": 3343,
+              "potential_decks": 12245
+            },
+            {
+              "name": "Nyxborn Behemoth",
+              "sanitized": "nyxborn-behemoth",
+              "sanitized_wo": "nyxborn-behemoth",
+              "url": "/cards/nyxborn-behemoth",
+              "synergy": 0.26,
+              "inclusion": 6546,
+              "label": "27% of 24501 decks\n+26% synergy",
+              "num_decks": 6546,
+              "potential_decks": 24501
+            },
+            {
+              "name": "Nyx Weaver",
+              "sanitized": "nyx-weaver",
+              "sanitized_wo": "nyx-weaver",
+              "url": "/cards/nyx-weaver",
+              "synergy": 0.25,
+              "inclusion": 6122,
+              "label": "26% of 23907 decks\n+25% synergy",
+              "num_decks": 6122,
+              "potential_decks": 23907
+            },
+            {
+              "name": "Go-Shintai of Boundless Vigor",
+              "sanitized": "go-shintai-of-boundless-vigor",
+              "sanitized_wo": "go-shintai-of-boundless-vigor",
+              "url": "/cards/go-shintai-of-boundless-vigor",
+              "synergy": 0.25,
+              "inclusion": 9878,
+              "label": "26% of 38603 decks\n+25% synergy",
+              "num_decks": 9878,
+              "potential_decks": 38603
+            },
+            {
+              "name": "Go-Shintai of Shared Purpose",
+              "sanitized": "go-shintai-of-shared-purpose",
+              "sanitized_wo": "go-shintai-of-shared-purpose",
+              "url": "/cards/go-shintai-of-shared-purpose",
+              "synergy": 0.24,
+              "inclusion": 10190,
+              "label": "24% of 42601 decks\n+24% synergy",
+              "num_decks": 10190,
+              "potential_decks": 42601
+            },
+            {
+              "name": "Spirited Companion",
+              "sanitized": "spirited-companion",
+              "sanitized_wo": "spirited-companion",
+              "url": "/cards/spirited-companion",
+              "synergy": 0.22,
+              "inclusion": 10060,
+              "label": "24% of 42601 decks\n+22% synergy",
+              "num_decks": 10060,
+              "potential_decks": 42601
+            },
+            {
+              "name": "Balemurk Leech",
+              "sanitized": "balemurk-leech",
+              "sanitized_wo": "balemurk-leech",
+              "url": "/cards/balemurk-leech",
+              "synergy": 0.2,
+              "inclusion": 878,
+              "label": "23% of 3792 decks\n+20% synergy",
+              "num_decks": 878,
+              "potential_decks": 3792
+            },
+            {
+              "name": "Overlord of the Hauntwoods",
+              "sanitized": "overlord-of-the-hauntwoods",
+              "sanitized_wo": "overlord-of-the-hauntwoods",
+              "url": "/cards/overlord-of-the-hauntwoods",
+              "synergy": 0.22,
+              "inclusion": 1116,
+              "label": "23% of 4848 decks\n+22% synergy",
+              "num_decks": 1116,
+              "potential_decks": 4848
+            },
+            {
+              "name": "Ghostly Keybearer",
+              "sanitized": "ghostly-keybearer",
+              "sanitized_wo": "ghostly-keybearer",
+              "url": "/cards/ghostly-keybearer",
+              "synergy": 0.21,
+              "inclusion": 765,
+              "label": "22% of 3494 decks\n+21% synergy",
+              "num_decks": 765,
+              "potential_decks": 3494
+            },
+            {
+              "name": "Archetype of Imagination",
+              "sanitized": "archetype-of-imagination",
+              "sanitized_wo": "archetype-of-imagination",
+              "url": "/cards/archetype-of-imagination",
+              "synergy": 0.19,
+              "inclusion": 4893,
+              "label": "20% of 23964 decks\n+19% synergy",
+              "num_decks": 4893,
+              "potential_decks": 23964
+            },
+            {
+              "name": "Overlord of the Mistmoors",
+              "sanitized": "overlord-of-the-mistmoors",
+              "sanitized_wo": "overlord-of-the-mistmoors",
+              "url": "/cards/overlord-of-the-mistmoors",
+              "synergy": 0.18,
+              "inclusion": 964,
+              "label": "20% of 4734 decks\n+18% synergy",
+              "num_decks": 964,
+              "potential_decks": 4734
+            },
+            {
+              "name": "Moon-Blessed Cleric",
+              "sanitized": "moon-blessed-cleric",
+              "sanitized_wo": "moon-blessed-cleric",
+              "url": "/cards/moon-blessed-cleric",
+              "synergy": 0.19,
+              "inclusion": 8591,
+              "label": "20% of 42971 decks\n+19% synergy",
+              "num_decks": 8591,
+              "potential_decks": 42971
+            },
+            {
+              "name": "Springheart Nantuko",
+              "sanitized": "springheart-nantuko",
+              "sanitized_wo": "springheart-nantuko",
+              "url": "/cards/springheart-nantuko",
+              "synergy": 0.15,
+              "inclusion": 1381,
+              "label": "19% of 7107 decks\n+15% synergy",
+              "num_decks": 1381,
+              "potential_decks": 7107
+            },
+            {
+              "name": "Silent Hallcreeper",
+              "sanitized": "silent-hallcreeper",
+              "sanitized_wo": "silent-hallcreeper",
+              "url": "/cards/silent-hallcreeper",
+              "synergy": 0.14,
+              "inclusion": 674,
+              "label": "19% of 3494 decks\n+14% synergy",
+              "num_decks": 674,
+              "potential_decks": 3494
+            },
+            {
+              "name": "Nyxbloom Ancient",
+              "sanitized": "nyxbloom-ancient",
+              "sanitized_wo": "nyxbloom-ancient",
+              "url": "/cards/nyxbloom-ancient",
+              "synergy": 0.17,
+              "inclusion": 7583,
+              "label": "19% of 39361 decks\n+17% synergy",
+              "num_decks": 7583,
+              "potential_decks": 39361
+            },
+            {
+              "name": "Aminatou, Veil Piercer",
+              "sanitized": "aminatou-veil-piercer",
+              "sanitized_wo": "aminatou-veil-piercer",
+              "url": "/cards/aminatou-veil-piercer",
+              "synergy": 0.18,
+              "inclusion": 650,
+              "label": "19% of 3385 decks\n+18% synergy",
+              "num_decks": 650,
+              "potential_decks": 3385
+            },
+            {
+              "name": "Heliod, God of the Sun",
+              "sanitized": "heliod-god-of-the-sun",
+              "sanitized_wo": "heliod-god-of-the-sun",
+              "url": "/cards/heliod-god-of-the-sun",
+              "synergy": 0.18,
+              "inclusion": 8117,
+              "label": "19% of 43609 decks\n+18% synergy",
+              "num_decks": 8117,
+              "potential_decks": 43609
+            },
+            {
+              "name": "Enduring Courage",
+              "sanitized": "enduring-courage",
+              "sanitized_wo": "enduring-courage",
+              "url": "/cards/enduring-courage",
+              "synergy": 0.13,
+              "inclusion": 340,
+              "label": "18% of 1851 decks\n+13% synergy",
+              "num_decks": 340,
+              "potential_decks": 1851
+            },
+            {
+              "name": "Arasta of the Endless Web",
+              "sanitized": "arasta-of-the-endless-web",
+              "sanitized_wo": "arasta-of-the-endless-web",
+              "url": "/cards/arasta-of-the-endless-web",
+              "synergy": 0.16,
+              "inclusion": 6718,
+              "label": "17% of 39361 decks\n+16% synergy",
+              "num_decks": 6718,
+              "potential_decks": 39361
+            }
+          ],
+          "header": "Creatures",
+          "tag": "creatures"
+        },
+        {
+          "cardviews": [
+            {
+              "name": "Swords to Plowshares",
+              "sanitized": "swords-to-plowshares",
+              "sanitized_wo": "swords-to-plowshares",
+              "url": "/cards/swords-to-plowshares",
+              "synergy": 0.23,
+              "inclusion": 22289,
+              "label": "51% of 43619 decks\n+23% synergy",
+              "num_decks": 22289,
+              "potential_decks": 43619
+            },
+            {
+              "name": "Seized from Slumber",
+              "sanitized": "seized-from-slumber",
+              "sanitized_wo": "seized-from-slumber",
+              "url": "/cards/seized-from-slumber",
+              "synergy": 0.06,
+              "inclusion": 86,
+              "label": "41% of 212 decks\n+6% synergy",
+              "num_decks": 86,
+              "potential_decks": 212
+            },
+            {
+              "name": "Path to Exile",
+              "sanitized": "path-to-exile",
+              "sanitized_wo": "path-to-exile",
+              "url": "/cards/path-to-exile",
+              "synergy": 0.17,
+              "inclusion": 16429,
+              "label": "38% of 43615 decks\n+17% synergy",
+              "num_decks": 16429,
+              "potential_decks": 43615
+            },
+            {
+              "name": "Enlightened Tutor",
+              "sanitized": "enlightened-tutor",
+              "sanitized_wo": "enlightened-tutor",
+              "url": "/cards/enlightened-tutor",
+              "synergy": 0.27,
+              "inclusion": 15425,
+              "label": "35% of 43619 decks\n+27% synergy",
+              "num_decks": 15425,
+              "potential_decks": 43619
+            },
+            {
+              "name": "Heroic Intervention",
+              "sanitized": "heroic-intervention",
+              "sanitized_wo": "heroic-intervention",
+              "url": "/cards/heroic-intervention",
+              "synergy": 0.2,
+              "inclusion": 13467,
+              "label": "34% of 39422 decks\n+20% synergy",
+              "num_decks": 13467,
+              "potential_decks": 39422
+            },
+            {
+              "name": "Counterspell",
+              "sanitized": "counterspell",
+              "sanitized_wo": "counterspell",
+              "url": "/cards/counterspell",
+              "synergy": 0.11,
+              "inclusion": 7661,
+              "label": "32% of 23972 decks\n+11% synergy",
+              "num_decks": 7661,
+              "potential_decks": 23972
+            },
+            {
+              "name": "Teferi's Protection",
+              "sanitized": "teferis-protection",
+              "sanitized_wo": "teferis-protection",
+              "url": "/cards/teferis-protection",
+              "synergy": 0.16,
+              "inclusion": 11066,
+              "label": "25% of 43573 decks\n+16% synergy",
+              "num_decks": 11066,
+              "potential_decks": 43573
+            },
+            {
+              "name": "Beast Within",
+              "sanitized": "beast-within",
+              "sanitized_wo": "beast-within",
+              "url": "/cards/beast-within",
+              "synergy": 0.06,
+              "inclusion": 9507,
+              "label": "24% of 39439 decks\n+6% synergy",
+              "num_decks": 9507,
+              "potential_decks": 39439
+            },
+            {
+              "name": "Cyclonic Rift",
+              "sanitized": "cyclonic-rift",
+              "sanitized_wo": "cyclonic-rift",
+              "url": "/cards/cyclonic-rift",
+              "synergy": 0.07,
+              "inclusion": 5009,
+              "label": "21% of 23965 decks\n+7% synergy",
+              "num_decks": 5009,
+              "potential_decks": 23965
+            },
+            {
+              "name": "Dovin's Veto",
+              "sanitized": "dovins-veto",
+              "sanitized_wo": "dovins-veto",
+              "url": "/cards/dovins-veto",
+              "synergy": 0.12,
+              "inclusion": 3558,
+              "label": "16% of 21816 decks\n+12% synergy",
+              "num_decks": 3558,
+              "potential_decks": 21816
+            },
+            {
+              "name": "Negate",
+              "sanitized": "negate",
+              "sanitized_wo": "negate",
+              "url": "/cards/negate",
+              "synergy": 0.04,
+              "inclusion": 3714,
+              "label": "15% of 23969 decks\n+4% synergy",
+              "num_decks": 3714,
+              "potential_decks": 23969
+            },
+            {
+              "name": "Assassin's Trophy",
+              "sanitized": "assassins-trophy",
+              "sanitized_wo": "assassins-trophy",
+              "url": "/cards/assassins-trophy",
+              "synergy": 0.09,
+              "inclusion": 3579,
+              "label": "15% of 23903 decks\n+9% synergy",
+              "num_decks": 3579,
+              "potential_decks": 23903
+            },
+            {
+              "name": "Generous Gift",
+              "sanitized": "generous-gift",
+              "sanitized_wo": "generous-gift",
+              "url": "/cards/generous-gift",
+              "synergy": 0.02,
+              "inclusion": 5980,
+              "label": "14% of 43524 decks\n+2% synergy",
+              "num_decks": 5980,
+              "potential_decks": 43524
+            },
+            {
+              "name": "Anguished Unmaking",
+              "sanitized": "anguished-unmaking",
+              "sanitized_wo": "anguished-unmaking",
+              "url": "/cards/anguished-unmaking",
+              "synergy": 0.07,
+              "inclusion": 3623,
+              "label": "13% of 28736 decks\n+7% synergy",
+              "num_decks": 3623,
+              "potential_decks": 28736
+            },
+            {
+              "name": "Void Rend",
+              "sanitized": "void-rend",
+              "sanitized_wo": "void-rend",
+              "url": "/cards/void-rend",
+              "synergy": 0.11,
+              "inclusion": 2033,
+              "label": "12% of 16292 decks\n+11% synergy",
+              "num_decks": 2033,
+              "potential_decks": 16292
+            },
+            {
+              "name": "Dawn's Truce",
+              "sanitized": "dawns-truce",
+              "sanitized_wo": "dawns-truce",
+              "url": "/cards/dawns-truce",
+              "synergy": 0.03,
+              "inclusion": 702,
+              "label": "12% of 5873 decks\n+3% synergy",
+              "num_decks": 702,
+              "potential_decks": 5873
+            },
+            {
+              "name": "Arcane Denial",
+              "sanitized": "arcane-denial",
+              "sanitized_wo": "arcane-denial",
+              "url": "/cards/arcane-denial",
+              "synergy": 0.02,
+              "inclusion": 2746,
+              "label": "11% of 23972 decks\n+2% synergy",
+              "num_decks": 2746,
+              "potential_decks": 23972
+            },
+            {
+              "name": "Fierce Guardianship",
+              "sanitized": "fierce-guardianship",
+              "sanitized_wo": "fierce-guardianship",
+              "url": "/cards/fierce-guardianship",
+              "synergy": 0.02,
+              "inclusion": 2517,
+              "label": "11% of 23854 decks\n+2% synergy",
+              "num_decks": 2517,
+              "potential_decks": 23854
+            },
+            {
+              "name": "Entomb",
+              "sanitized": "entomb",
+              "sanitized_wo": "entomb",
+              "url": "/cards/entomb",
+              "synergy": 0.06,
+              "inclusion": 3148,
+              "label": "10% of 31204 decks\n+6% synergy",
+              "num_decks": 3148,
+              "potential_decks": 31204
+            },
+            {
+              "name": "Get Out",
+              "sanitized": "get-out",
+              "sanitized_wo": "get-out",
+              "url": "/cards/get-out",
+              "synergy": 0.07,
+              "inclusion": 248,
+              "label": "10% of 2536 decks\n+7% synergy",
+              "num_decks": 248,
+              "potential_decks": 2536
+            },
+            {
+              "name": "Vampiric Tutor",
+              "sanitized": "vampiric-tutor",
+              "sanitized_wo": "vampiric-tutor",
+              "url": "/cards/vampiric-tutor",
+              "synergy": -0.0,
+              "inclusion": 2841,
+              "label": "9% of 31204 decks\n-0% synergy",
+              "num_decks": 2841,
+              "potential_decks": 31204
+            },
+            {
+              "name": "Eladamri's Call",
+              "sanitized": "eladamris-call",
+              "sanitized_wo": "eladamris-call",
+              "url": "/cards/eladamris-call",
+              "synergy": 0.06,
+              "inclusion": 3170,
+              "label": "9% of 36210 decks\n+6% synergy",
+              "num_decks": 3170,
+              "potential_decks": 36210
+            },
+            {
+              "name": "Mana Drain",
+              "sanitized": "mana-drain",
+              "sanitized_wo": "mana-drain",
+              "url": "/cards/mana-drain",
+              "synergy": 0.01,
+              "inclusion": 1937,
+              "label": "8% of 23972 decks\n+1% synergy",
+              "num_decks": 1937,
+              "potential_decks": 23972
+            },
+            {
+              "name": "Swan Song",
+              "sanitized": "swan-song",
+              "sanitized_wo": "swan-song",
+              "url": "/cards/swan-song",
+              "synergy": -0.0,
+              "inclusion": 1882,
+              "label": "8% of 23964 decks\n-0% synergy",
+              "num_decks": 1882,
+              "potential_decks": 23964
+            },
+            {
+              "name": "Worldly Tutor",
+              "sanitized": "worldly-tutor",
+              "sanitized_wo": "worldly-tutor",
+              "url": "/cards/worldly-tutor",
+              "synergy": 0.01,
+              "inclusion": 3093,
+              "label": "8% of 39443 decks\n+1% synergy",
+              "num_decks": 3093,
+              "potential_decks": 39443
+            },
+            {
+              "name": "An Offer You Can't Refuse",
+              "sanitized": "an-offer-you-cant-refuse",
+              "sanitized_wo": "an-offer-you-cant-refuse",
+              "url": "/cards/an-offer-you-cant-refuse",
+              "synergy": -0.02,
+              "inclusion": 1726,
+              "label": "8% of 22235 decks\n-2% synergy",
+              "num_decks": 1726,
+              "potential_decks": 22235
+            },
+            {
+              "name": "Despark",
+              "sanitized": "despark",
+              "sanitized_wo": "despark",
+              "url": "/cards/despark",
+              "synergy": 0.03,
+              "inclusion": 1874,
+              "label": "7% of 28707 decks\n+3% synergy",
+              "num_decks": 1874,
+              "potential_decks": 28707
+            },
+            {
+              "name": "Crop Rotation",
+              "sanitized": "crop-rotation",
+              "sanitized_wo": "crop-rotation",
+              "url": "/cards/crop-rotation",
+              "synergy": 0.01,
+              "inclusion": 2348,
+              "label": "6% of 39443 decks\n+1% synergy",
+              "num_decks": 2348,
+              "potential_decks": 39443
+            },
+            {
+              "name": "Stroke of Midnight",
+              "sanitized": "stroke-of-midnight",
+              "sanitized_wo": "stroke-of-midnight",
+              "url": "/cards/stroke-of-midnight",
+              "synergy": -0.0,
+              "inclusion": 1268,
+              "label": "6% of 22564 decks\n-0% synergy",
+              "num_decks": 1268,
+              "potential_decks": 22564
+            },
+            {
+              "name": "Fell the Profane",
+              "sanitized": "fell-the-profane",
+              "sanitized_wo": "fell-the-profane",
+              "url": "/cards/fell-the-profane",
+              "cards": [
+                {
+                  "name": "Fell the Profane",
+                  "url": "fell-the-profane"
+                },
+                {
+                  "name": "Fell Mire",
+                  "url": "fell-the-profane"
+                }
+              ],
+              "synergy": -0.01,
+              "inclusion": 424,
+              "label": "6% of 7560 decks\n-1% synergy",
+              "num_decks": 424,
+              "potential_decks": 7560
+            },
+            {
+              "name": "Brainstorm",
+              "sanitized": "brainstorm",
+              "sanitized_wo": "brainstorm",
+              "url": "/cards/brainstorm",
+              "synergy": -0.05,
+              "inclusion": 1340,
+              "label": "6% of 23972 decks\n-5% synergy",
+              "num_decks": 1340,
+              "potential_decks": 23972
+            },
+            {
+              "name": "Chaos Warp",
+              "sanitized": "chaos-warp",
+              "sanitized_wo": "chaos-warp",
+              "url": "/cards/chaos-warp",
+              "synergy": -0.1,
+              "inclusion": 790,
+              "label": "5% of 14524 decks\n-10% synergy",
+              "num_decks": 790,
+              "potential_decks": 14524
+            },
+            {
+              "name": "Sundering Growth",
+              "sanitized": "sundering-growth",
+              "sanitized_wo": "sundering-growth",
+              "url": "/cards/sundering-growth",
+              "synergy": 0.04,
+              "inclusion": 1909,
+              "label": "5% of 36203 decks\n+4% synergy",
+              "num_decks": 1909,
+              "potential_decks": 36203
+            },
+            {
+              "name": "Boros Charm",
+              "sanitized": "boros-charm",
+              "sanitized_wo": "boros-charm",
+              "url": "/cards/boros-charm",
+              "synergy": -0.01,
+              "inclusion": 684,
+              "label": "5% of 13557 decks\n-1% synergy",
+              "num_decks": 684,
+              "potential_decks": 13557
+            }
+          ],
+          "header": "Instants",
+          "tag": "instants"
+        },
+        {
+          "cardviews": [
+            {
+              "name": "Extinguish All Hope",
+              "sanitized": "extinguish-all-hope",
+              "sanitized_wo": "extinguish-all-hope",
+              "url": "/cards/extinguish-all-hope",
+              "synergy": 0.52,
+              "inclusion": 16277,
+              "label": "52% of 31201 decks\n+52% synergy",
+              "num_decks": 16277,
+              "potential_decks": 31201
+            },
+            {
+              "name": "Idyllic Tutor",
+              "sanitized": "idyllic-tutor",
+              "sanitized_wo": "idyllic-tutor",
+              "url": "/cards/idyllic-tutor",
+              "synergy": 0.38,
+              "inclusion": 17776,
+              "label": "41% of 43615 decks\n+38% synergy",
+              "num_decks": 17776,
+              "potential_decks": 43615
+            },
+            {
+              "name": "Redress Fate",
+              "sanitized": "redress-fate",
+              "sanitized_wo": "redress-fate",
+              "url": "/cards/redress-fate",
+              "synergy": 0.28,
+              "inclusion": 1442,
+              "label": "36% of 4020 decks\n+28% synergy",
+              "num_decks": 1442,
+              "potential_decks": 4020
+            },
+            {
+              "name": "Farseek",
+              "sanitized": "farseek",
+              "sanitized_wo": "farseek",
+              "url": "/cards/farseek",
+              "synergy": 0.18,
+              "inclusion": 13419,
+              "label": "34% of 39440 decks\n+18% synergy",
+              "num_decks": 13419,
+              "potential_decks": 39440
+            },
+            {
+              "name": "Dance of the Manse",
+              "sanitized": "dance-of-the-manse",
+              "sanitized_wo": "dance-of-the-manse",
+              "url": "/cards/dance-of-the-manse",
+              "synergy": 0.29,
+              "inclusion": 6489,
+              "label": "30% of 21802 decks\n+29% synergy",
+              "num_decks": 6489,
+              "potential_decks": 21802
+            },
+            {
+              "name": "Resurgent Belief",
+              "sanitized": "resurgent-belief",
+              "sanitized_wo": "resurgent-belief",
+              "url": "/cards/resurgent-belief",
+              "synergy": 0.29,
+              "inclusion": 12768,
+              "label": "30% of 43248 decks\n+29% synergy",
+              "num_decks": 12768,
+              "potential_decks": 43248
+            },
+            {
+              "name": "Cultivate",
+              "sanitized": "cultivate",
+              "sanitized_wo": "cultivate",
+              "url": "/cards/cultivate",
+              "synergy": 0.06,
+              "inclusion": 10870,
+              "label": "28% of 39439 decks\n+6% synergy",
+              "num_decks": 10870,
+              "potential_decks": 39439
+            },
+            {
+              "name": "Kodama's Reach",
+              "sanitized": "kodamas-reach",
+              "sanitized_wo": "kodamas-reach",
+              "url": "/cards/kodamas-reach",
+              "synergy": 0.09,
+              "inclusion": 9510,
+              "label": "24% of 39440 decks\n+9% synergy",
+              "num_decks": 9510,
+              "potential_decks": 39440
+            },
+            {
+              "name": "Rampant Growth",
+              "sanitized": "rampant-growth",
+              "sanitized_wo": "rampant-growth",
+              "url": "/cards/rampant-growth",
+              "synergy": 0.04,
+              "inclusion": 8125,
+              "label": "21% of 39443 decks\n+4% synergy",
+              "num_decks": 8125,
+              "potential_decks": 39443
+            },
+            {
+              "name": "Nature's Lore",
+              "sanitized": "natures-lore",
+              "sanitized_wo": "natures-lore",
+              "url": "/cards/natures-lore",
+              "synergy": 0.05,
+              "inclusion": 7933,
+              "label": "20% of 39443 decks\n+5% synergy",
+              "num_decks": 7933,
+              "potential_decks": 39443
+            },
+            {
+              "name": "Brilliant Restoration",
+              "sanitized": "brilliant-restoration",
+              "sanitized_wo": "brilliant-restoration",
+              "url": "/cards/brilliant-restoration",
+              "synergy": 0.19,
+              "inclusion": 8567,
+              "label": "20% of 42601 decks\n+19% synergy",
+              "num_decks": 8567,
+              "potential_decks": 42601
+            },
+            {
+              "name": "Replenish",
+              "sanitized": "replenish",
+              "sanitized_wo": "replenish",
+              "url": "/cards/replenish",
+              "synergy": 0.18,
+              "inclusion": 7910,
+              "label": "18% of 43619 decks\n+18% synergy",
+              "num_decks": 7910,
+              "potential_decks": 43619
+            },
+            {
+              "name": "Eerie Ultimatum",
+              "sanitized": "eerie-ultimatum",
+              "sanitized_wo": "eerie-ultimatum",
+              "url": "/cards/eerie-ultimatum",
+              "synergy": 0.16,
+              "inclusion": 3827,
+              "label": "18% of 21678 decks\n+16% synergy",
+              "num_decks": 3827,
+              "potential_decks": 21678
+            },
+            {
+              "name": "Three Visits",
+              "sanitized": "three-visits",
+              "sanitized_wo": "three-visits",
+              "url": "/cards/three-visits",
+              "synergy": 0.05,
+              "inclusion": 6601,
+              "label": "17% of 39443 decks\n+5% synergy",
+              "num_decks": 6601,
+              "potential_decks": 39443
+            },
+            {
+              "name": "Farewell",
+              "sanitized": "farewell",
+              "sanitized_wo": "farewell",
+              "url": "/cards/farewell",
+              "synergy": 0.08,
+              "inclusion": 5905,
+              "label": "14% of 42601 decks\n+8% synergy",
+              "num_decks": 5905,
+              "potential_decks": 42601
+            },
+            {
+              "name": "Austere Command",
+              "sanitized": "austere-command",
+              "sanitized_wo": "austere-command",
+              "url": "/cards/austere-command",
+              "synergy": 0.07,
+              "inclusion": 5538,
+              "label": "13% of 43615 decks\n+7% synergy",
+              "num_decks": 5538,
+              "potential_decks": 43615
+            },
+            {
+              "name": "Demonic Tutor",
+              "sanitized": "demonic-tutor",
+              "sanitized_wo": "demonic-tutor",
+              "url": "/cards/demonic-tutor",
+              "synergy": 0.01,
+              "inclusion": 3922,
+              "label": "13% of 31204 decks\n+1% synergy",
+              "num_decks": 3922,
+              "potential_decks": 31204
+            },
+            {
+              "name": "Supreme Verdict",
+              "sanitized": "supreme-verdict",
+              "sanitized_wo": "supreme-verdict",
+              "url": "/cards/supreme-verdict",
+              "synergy": 0.09,
+              "inclusion": 2546,
+              "label": "12% of 21849 decks\n+9% synergy",
+              "num_decks": 2546,
+              "potential_decks": 21849
+            },
+            {
+              "name": "Blasphemous Act",
+              "sanitized": "blasphemous-act",
+              "sanitized_wo": "blasphemous-act",
+              "url": "/cards/blasphemous-act",
+              "synergy": -0.05,
+              "inclusion": 1616,
+              "label": "11% of 14524 decks\n-5% synergy",
+              "num_decks": 1616,
+              "potential_decks": 14524
+            },
+            {
+              "name": "Culling Ritual",
+              "sanitized": "culling-ritual",
+              "sanitized_wo": "culling-ritual",
+              "url": "/cards/culling-ritual",
+              "synergy": 0.07,
+              "inclusion": 2240,
+              "label": "9% of 23851 decks\n+7% synergy",
+              "num_decks": 2240,
+              "potential_decks": 23851
+            },
+            {
+              "name": "Winds of Rath",
+              "sanitized": "winds-of-rath",
+              "sanitized_wo": "winds-of-rath",
+              "url": "/cards/winds-of-rath",
+              "synergy": 0.08,
+              "inclusion": 4088,
+              "label": "9% of 43619 decks\n+8% synergy",
+              "num_decks": 4088,
+              "potential_decks": 43619
+            },
+            {
+              "name": "Open the Vaults",
+              "sanitized": "open-the-vaults",
+              "sanitized_wo": "open-the-vaults",
+              "url": "/cards/open-the-vaults",
+              "synergy": 0.08,
+              "inclusion": 3899,
+              "label": "9% of 43615 decks\n+8% synergy",
+              "num_decks": 3899,
+              "potential_decks": 43615
+            },
+            {
+              "name": "Ruinous Ultimatum",
+              "sanitized": "ruinous-ultimatum",
+              "sanitized_wo": "ruinous-ultimatum",
+              "url": "/cards/ruinous-ultimatum",
+              "synergy": 0.07,
+              "inclusion": 1161,
+              "label": "9% of 13072 decks\n+7% synergy",
+              "num_decks": 1161,
+              "potential_decks": 13072
+            },
+            {
+              "name": "Damn",
+              "sanitized": "damn",
+              "sanitized_wo": "damn",
+              "url": "/cards/damn",
+              "synergy": 0.04,
+              "inclusion": 2195,
+              "label": "8% of 28570 decks\n+4% synergy",
+              "num_decks": 2195,
+              "potential_decks": 28570
+            },
+            {
+              "name": "Bala Ged Recovery",
+              "sanitized": "bala-ged-recovery",
+              "sanitized_wo": "bala-ged-recovery",
+              "url": "/cards/bala-ged-recovery",
+              "cards": [
+                {
+                  "name": "Bala Ged Recovery",
+                  "url": "bala-ged-recovery"
+                },
+                {
+                  "name": "Bala Ged Sanctuary",
+                  "url": "bala-ged-recovery"
+                }
+              ],
+              "synergy": 0.03,
+              "inclusion": 2799,
+              "label": "7% of 39252 decks\n+3% synergy",
+              "num_decks": 2799,
+              "potential_decks": 39252
+            },
+            {
+              "name": "Wrath of God",
+              "sanitized": "wrath-of-god",
+              "sanitized_wo": "wrath-of-god",
+              "url": "/cards/wrath-of-god",
+              "synergy": 0.03,
+              "inclusion": 2871,
+              "label": "7% of 43619 decks\n+3% synergy",
+              "num_decks": 2871,
+              "potential_decks": 43619
+            },
+            {
+              "name": "Approach of the Second Sun",
+              "sanitized": "approach-of-the-second-sun",
+              "sanitized_wo": "approach-of-the-second-sun",
+              "url": "/cards/approach-of-the-second-sun",
+              "synergy": 0.04,
+              "inclusion": 2722,
+              "label": "6% of 43585 decks\n+4% synergy",
+              "num_decks": 2722,
+              "potential_decks": 43585
+            },
+            {
+              "name": "Plea for Guidance",
+              "sanitized": "plea-for-guidance",
+              "sanitized_wo": "plea-for-guidance",
+              "url": "/cards/plea-for-guidance",
+              "synergy": 0.06,
+              "inclusion": 2673,
+              "label": "6% of 43609 decks\n+6% synergy",
+              "num_decks": 2673,
+              "potential_decks": 43609
+            },
+            {
+              "name": "Kruphix's Insight",
+              "sanitized": "kruphixs-insight",
+              "sanitized_wo": "kruphixs-insight",
+              "url": "/cards/kruphixs-insight",
+              "synergy": 0.06,
+              "inclusion": 2211,
+              "label": "6% of 39434 decks\n+6% synergy",
+              "num_decks": 2211,
+              "potential_decks": 39434
+            },
+            {
+              "name": "Unmarked Grave",
+              "sanitized": "unmarked-grave",
+              "sanitized_wo": "unmarked-grave",
+              "url": "/cards/unmarked-grave",
+              "synergy": 0.04,
+              "inclusion": 1655,
+              "label": "5% of 31018 decks\n+4% synergy",
+              "num_decks": 1655,
+              "potential_decks": 31018
+            },
+            {
+              "name": "Stump Stomp",
+              "sanitized": "stump-stomp",
+              "sanitized_wo": "stump-stomp",
+              "url": "/cards/stump-stomp",
+              "cards": [
+                {
+                  "name": "Stump Stomp",
+                  "url": "stump-stomp"
+                },
+                {
+                  "name": "Burnwillow Clearing",
+                  "url": "stump-stomp"
+                }
+              ],
+              "synergy": 0.03,
+              "inclusion": 184,
+              "label": "5% of 3531 decks\n+3% synergy",
+              "num_decks": 184,
+              "potential_decks": 3531
+            }
+          ],
+          "header": "Sorceries",
+          "tag": "sorceries"
+        },
+        {
+          "cardviews": [
+            {
+              "name": "Keys to the House",
+              "sanitized": "keys-to-the-house",
+              "sanitized_wo": "keys-to-the-house",
+              "url": "/cards/keys-to-the-house",
+              "synergy": 0.24,
+              "inclusion": 675,
+              "label": "28% of 2421 decks\n+24% synergy",
+              "num_decks": 675,
+              "potential_decks": 2421
+            },
+            {
+              "name": "Lightning Greaves",
+              "sanitized": "lightning-greaves",
+              "sanitized_wo": "lightning-greaves",
+              "url": "/cards/lightning-greaves",
+              "synergy": -0.14,
+              "inclusion": 5528,
+              "label": "12% of 47134 decks\n-14% synergy",
+              "num_decks": 5528,
+              "potential_decks": 47134
+            },
+            {
+              "name": "Swiftfoot Boots",
+              "sanitized": "swiftfoot-boots",
+              "sanitized_wo": "swiftfoot-boots",
+              "url": "/cards/swiftfoot-boots",
+              "synergy": -0.16,
+              "inclusion": 5384,
+              "label": "11% of 47132 decks\n-16% synergy",
+              "num_decks": 5384,
+              "potential_decks": 47132
+            },
+            {
+              "name": "Helm of the Gods",
+              "sanitized": "helm-of-the-gods",
+              "sanitized_wo": "helm-of-the-gods",
+              "url": "/cards/helm-of-the-gods",
+              "synergy": 0.11,
+              "inclusion": 5321,
+              "label": "11% of 47124 decks\n+11% synergy",
+              "num_decks": 5321,
+              "potential_decks": 47124
+            },
+            {
+              "name": "Bident of Thassa",
+              "sanitized": "bident-of-thassa",
+              "sanitized_wo": "bident-of-thassa",
+              "url": "/cards/bident-of-thassa",
+              "synergy": 0.05,
+              "inclusion": 2072,
+              "label": "9% of 23964 decks\n+5% synergy",
+              "num_decks": 2072,
+              "potential_decks": 23964
+            }
+          ],
+          "header": "Utility Artifacts",
+          "tag": "utilityartifacts"
+        },
+        {
+          "cardviews": [
+            {
+              "name": "Charred Foyer // Warped Space",
+              "sanitized": "charred-foyer-warped-space",
+              "sanitized_wo": "charred-foyer-warped-space",
+              "url": "/cards/charred-foyer-warped-space",
+              "synergy": 0.58,
+              "inclusion": 1163,
+              "label": "63% of 1851 decks\n+58% synergy",
+              "num_decks": 1163,
+              "potential_decks": 1851
+            },
+            {
+              "name": "Sanctum of Shattered Heights",
+              "sanitized": "sanctum-of-shattered-heights",
+              "sanitized_wo": "sanctum-of-shattered-heights",
+              "url": "/cards/sanctum-of-shattered-heights",
+              "synergy": 0.62,
+              "inclusion": 9106,
+              "label": "63% of 14498 decks\n+62% synergy",
+              "num_decks": 9106,
+              "potential_decks": 14498
+            },
+            {
+              "name": "Derelict Attic // Widow's Walk",
+              "sanitized": "derelict-attic-widows-walk",
+              "sanitized_wo": "derelict-attic-widows-walk",
+              "url": "/cards/derelict-attic-widows-walk",
+              "synergy": 0.38,
+              "inclusion": 1143,
+              "label": "62% of 1834 decks\n+38% synergy",
+              "num_decks": 1143,
+              "potential_decks": 1834
+            },
+            {
+              "name": "Sphere of Safety",
+              "sanitized": "sphere-of-safety",
+              "sanitized_wo": "sphere-of-safety",
+              "url": "/cards/sphere-of-safety",
+              "synergy": 0.6,
+              "inclusion": 26927,
+              "label": "62% of 43611 decks\n+60% synergy",
+              "num_decks": 26927,
+              "potential_decks": 43611
+            },
+            {
+              "name": "Walk-In Closet // Forgotten Cellar",
+              "sanitized": "walk-in-closet-forgotten-cellar",
+              "sanitized_wo": "walk-in-closet-forgotten-cellar",
+              "url": "/cards/walk-in-closet-forgotten-cellar",
+              "synergy": 0.46,
+              "inclusion": 1068,
+              "label": "61% of 1750 decks\n+46% synergy",
+              "num_decks": 1068,
+              "potential_decks": 1750
+            },
+            {
+              "name": "Secret Arcade // Dusty Parlor",
+              "sanitized": "secret-arcade-dusty-parlor",
+              "sanitized_wo": "secret-arcade-dusty-parlor",
+              "url": "/cards/secret-arcade-dusty-parlor",
+              "synergy": 0.46,
+              "inclusion": 2229,
+              "label": "55% of 4020 decks\n+46% synergy",
+              "num_decks": 2229,
+              "potential_decks": 4020
+            },
+            {
+              "name": "Glassworks // Shattered Yard",
+              "sanitized": "glassworks-shattered-yard",
+              "sanitized_wo": "glassworks-shattered-yard",
+              "url": "/cards/glassworks-shattered-yard",
+              "synergy": 0.52,
+              "inclusion": 1017,
+              "label": "55% of 1862 decks\n+52% synergy",
+              "num_decks": 1017,
+              "potential_decks": 1862
+            },
+            {
+              "name": "Greenhouse // Rickety Gazebo",
+              "sanitized": "greenhouse-rickety-gazebo",
+              "sanitized_wo": "greenhouse-rickety-gazebo",
+              "url": "/cards/greenhouse-rickety-gazebo",
+              "synergy": 0.51,
+              "inclusion": 1429,
+              "label": "54% of 2660 decks\n+51% synergy",
+              "num_decks": 1429,
+              "potential_decks": 2660
+            },
+            {
+              "name": "Wild Growth",
+              "sanitized": "wild-growth",
+              "sanitized_wo": "wild-growth",
+              "url": "/cards/wild-growth",
+              "synergy": 0.48,
+              "inclusion": 20912,
+              "label": "53% of 39443 decks\n+48% synergy",
+              "num_decks": 20912,
+              "potential_decks": 39443
+            },
+            {
+              "name": "Restricted Office // Lecture Hall",
+              "sanitized": "restricted-office-lecture-hall",
+              "sanitized_wo": "restricted-office-lecture-hall",
+              "url": "/cards/restricted-office-lecture-hall",
+              "synergy": 0.48,
+              "inclusion": 1745,
+              "label": "53% of 3295 decks\n+48% synergy",
+              "num_decks": 1745,
+              "potential_decks": 3295
+            },
+            {
+              "name": "Defiled Crypt // Cadaver Lab",
+              "sanitized": "defiled-crypt-cadaver-lab",
+              "sanitized_wo": "defiled-crypt-cadaver-lab",
+              "url": "/cards/defiled-crypt-cadaver-lab",
+              "synergy": 0.44,
+              "inclusion": 1226,
+              "label": "52% of 2349 decks\n+44% synergy",
+              "num_decks": 1226,
+              "potential_decks": 2349
+            },
+            {
+              "name": "Mirari's Wake",
+              "sanitized": "miraris-wake",
+              "sanitized_wo": "miraris-wake",
+              "url": "/cards/miraris-wake",
+              "synergy": 0.49,
+              "inclusion": 18852,
+              "label": "52% of 36210 decks\n+49% synergy",
+              "num_decks": 18852,
+              "potential_decks": 36210
+            },
+            {
+              "name": "Ghostly Prison",
+              "sanitized": "ghostly-prison",
+              "sanitized_wo": "ghostly-prison",
+              "url": "/cards/ghostly-prison",
+              "synergy": 0.46,
+              "inclusion": 22322,
+              "label": "51% of 43615 decks\n+46% synergy",
+              "num_decks": 22322,
+              "potential_decks": 43615
+            },
+            {
+              "name": "Fertile Ground",
+              "sanitized": "fertile-ground",
+              "sanitized_wo": "fertile-ground",
+              "url": "/cards/fertile-ground",
+              "synergy": 0.49,
+              "inclusion": 20062,
+              "label": "51% of 39443 decks\n+49% synergy",
+              "num_decks": 20062,
+              "potential_decks": 39443
+            },
+            {
+              "name": "Mirror Room // Fractured Realm",
+              "sanitized": "mirror-room-fractured-realm",
+              "sanitized_wo": "mirror-room-fractured-realm",
+              "url": "/cards/mirror-room-fractured-realm",
+              "synergy": 0.45,
+              "inclusion": 1842,
+              "label": "50% of 3712 decks\n+45% synergy",
+              "num_decks": 1842,
+              "potential_decks": 3712
+            },
+            {
+              "name": "Propaganda",
+              "sanitized": "propaganda",
+              "sanitized_wo": "propaganda",
+              "url": "/cards/propaganda",
+              "synergy": 0.44,
+              "inclusion": 11841,
+              "label": "49% of 23972 decks\n+44% synergy",
+              "num_decks": 11841,
+              "potential_decks": 23972
+            },
+            {
+              "name": "Ticket Booth // Tunnel of Hate",
+              "sanitized": "ticket-booth-tunnel-of-hate",
+              "sanitized_wo": "ticket-booth-tunnel-of-hate",
+              "url": "/cards/ticket-booth-tunnel-of-hate",
+              "synergy": 0.33,
+              "inclusion": 668,
+              "label": "49% of 1356 decks\n+33% synergy",
+              "num_decks": 668,
+              "potential_decks": 1356
+            },
+            {
+              "name": "Painter's Studio // Defaced Gallery",
+              "sanitized": "painters-studio-defaced-gallery",
+              "sanitized_wo": "painters-studio-defaced-gallery",
+              "url": "/cards/painters-studio-defaced-gallery",
+              "synergy": 0.45,
+              "inclusion": 792,
+              "label": "49% of 1613 decks\n+45% synergy",
+              "num_decks": 792,
+              "potential_decks": 1613
+            },
+            {
+              "name": "Underwater Tunnel // Slimy Aquarium",
+              "sanitized": "underwater-tunnel-slimy-aquarium",
+              "sanitized_wo": "underwater-tunnel-slimy-aquarium",
+              "url": "/cards/underwater-tunnel-slimy-aquarium",
+              "synergy": 0.3,
+              "inclusion": 839,
+              "label": "48% of 1735 decks\n+30% synergy",
+              "num_decks": 839,
+              "potential_decks": 1735
+            },
+            {
+              "name": "Bottomless Pool // Locker Room",
+              "sanitized": "bottomless-pool-locker-room",
+              "sanitized_wo": "bottomless-pool-locker-room",
+              "url": "/cards/bottomless-pool-locker-room",
+              "synergy": 0.42,
+              "inclusion": 1616,
+              "label": "46% of 3494 decks\n+42% synergy",
+              "num_decks": 1616,
+              "potential_decks": 3494
+            },
+            {
+              "name": "Central Elevator // Promising Stairs",
+              "sanitized": "central-elevator-promising-stairs",
+              "sanitized_wo": "central-elevator-promising-stairs",
+              "url": "/cards/central-elevator-promising-stairs",
+              "synergy": 0.42,
+              "inclusion": 1620,
+              "label": "44% of 3672 decks\n+42% synergy",
+              "num_decks": 1620,
+              "potential_decks": 3672
+            },
+            {
+              "name": "Sanctum of Calm Waters",
+              "sanitized": "sanctum-of-calm-waters",
+              "sanitized_wo": "sanctum-of-calm-waters",
+              "url": "/cards/sanctum-of-calm-waters",
+              "synergy": 0.43,
+              "inclusion": 10291,
+              "label": "43% of 23829 decks\n+43% synergy",
+              "num_decks": 10291,
+              "potential_decks": 23829
+            },
+            {
+              "name": "Hallowed Haunting",
+              "sanitized": "hallowed-haunting",
+              "sanitized_wo": "hallowed-haunting",
+              "url": "/cards/hallowed-haunting",
+              "synergy": 0.42,
+              "inclusion": 18184,
+              "label": "43% of 42785 decks\n+42% synergy",
+              "num_decks": 18184,
+              "potential_decks": 42785
+            },
+            {
+              "name": "Smothering Tithe",
+              "sanitized": "smothering-tithe",
+              "sanitized_wo": "smothering-tithe",
+              "url": "/cards/smothering-tithe",
+              "synergy": 0.31,
+              "inclusion": 18335,
+              "label": "42% of 43541 decks\n+31% synergy",
+              "num_decks": 18335,
+              "potential_decks": 43541
+            },
+            {
+              "name": "Utopia Sprawl",
+              "sanitized": "utopia-sprawl",
+              "sanitized_wo": "utopia-sprawl",
+              "url": "/cards/utopia-sprawl",
+              "synergy": 0.38,
+              "inclusion": 16497,
+              "label": "42% of 39440 decks\n+38% synergy",
+              "num_decks": 16497,
+              "potential_decks": 39440
+            },
+            {
+              "name": "Spiked Corridor // Torture Pit",
+              "sanitized": "spiked-corridor-torture-pit",
+              "sanitized_wo": "spiked-corridor-torture-pit",
+              "url": "/cards/spiked-corridor-torture-pit",
+              "synergy": 0.27,
+              "inclusion": 644,
+              "label": "41% of 1557 decks\n+27% synergy",
+              "num_decks": 644,
+              "potential_decks": 1557
+            },
+            {
+              "name": "Leyline of the Guildpact",
+              "sanitized": "leyline-of-the-guildpact",
+              "sanitized_wo": "leyline-of-the-guildpact",
+              "url": "/cards/leyline-of-the-guildpact",
+              "synergy": 0.39,
+              "inclusion": 1700,
+              "label": "41% of 4194 decks\n+39% synergy",
+              "num_decks": 1700,
+              "potential_decks": 4194
+            },
+            {
+              "name": "Honden of Seeing Winds",
+              "sanitized": "honden-of-seeing-winds",
+              "sanitized_wo": "honden-of-seeing-winds",
+              "url": "/cards/honden-of-seeing-winds",
+              "synergy": 0.4,
+              "inclusion": 9708,
+              "label": "41% of 23969 decks\n+40% synergy",
+              "num_decks": 9708,
+              "potential_decks": 23969
+            },
+            {
+              "name": "Starfield of Nyx",
+              "sanitized": "starfield-of-nyx",
+              "sanitized_wo": "starfield-of-nyx",
+              "url": "/cards/starfield-of-nyx",
+              "synergy": 0.39,
+              "inclusion": 17557,
+              "label": "40% of 43606 decks\n+39% synergy",
+              "num_decks": 17557,
+              "potential_decks": 43606
+            },
+            {
+              "name": "Grasp of Fate",
+              "sanitized": "grasp-of-fate",
+              "sanitized_wo": "grasp-of-fate",
+              "url": "/cards/grasp-of-fate",
+              "synergy": 0.39,
+              "inclusion": 17507,
+              "label": "40% of 43604 decks\n+39% synergy",
+              "num_decks": 17507,
+              "potential_decks": 43604
+            },
+            {
+              "name": "Boon of the Spirit Realm",
+              "sanitized": "boon-of-the-spirit-realm",
+              "sanitized_wo": "boon-of-the-spirit-realm",
+              "url": "/cards/boon-of-the-spirit-realm",
+              "synergy": 0.39,
+              "inclusion": 10811,
+              "label": "40% of 27166 decks\n+39% synergy",
+              "num_decks": 10811,
+              "potential_decks": 27166
+            },
+            {
+              "name": "Rhystic Study",
+              "sanitized": "rhystic-study",
+              "sanitized_wo": "rhystic-study",
+              "url": "/cards/rhystic-study",
+              "synergy": 0.26,
+              "inclusion": 9513,
+              "label": "40% of 23972 decks\n+26% synergy",
+              "num_decks": 9513,
+              "potential_decks": 23972
+            },
+            {
+              "name": "Cramped Vents // Access Maze",
+              "sanitized": "cramped-vents-access-maze",
+              "sanitized_wo": "cramped-vents-access-maze",
+              "url": "/cards/cramped-vents-access-maze",
+              "synergy": 0.34,
+              "inclusion": 1504,
+              "label": "40% of 3792 decks\n+34% synergy",
+              "num_decks": 1504,
+              "potential_decks": 3792
+            },
+            {
+              "name": "Cacophony Unleashed",
+              "sanitized": "cacophony-unleashed",
+              "sanitized_wo": "cacophony-unleashed",
+              "url": "/cards/cacophony-unleashed",
+              "synergy": 0.38,
+              "inclusion": 8086,
+              "label": "39% of 20933 decks\n+38% synergy",
+              "num_decks": 8086,
+              "potential_decks": 20933
+            },
+            {
+              "name": "Polluted Cistern // Dim Oubliette",
+              "sanitized": "polluted-cistern-dim-oubliette",
+              "sanitized_wo": "polluted-cistern-dim-oubliette",
+              "url": "/cards/polluted-cistern-dim-oubliette",
+              "synergy": 0.29,
+              "inclusion": 901,
+              "label": "38% of 2349 decks\n+29% synergy",
+              "num_decks": 901,
+              "potential_decks": 2349
+            },
+            {
+              "name": "Kenrith's Transformation",
+              "sanitized": "kenriths-transformation",
+              "sanitized_wo": "kenriths-transformation",
+              "url": "/cards/kenriths-transformation",
+              "synergy": 0.35,
+              "inclusion": 15077,
+              "label": "38% of 39373 decks\n+35% synergy",
+              "num_decks": 15077,
+              "potential_decks": 39373
+            },
+            {
+              "name": "Darksteel Mutation",
+              "sanitized": "darksteel-mutation",
+              "sanitized_wo": "darksteel-mutation",
+              "url": "/cards/darksteel-mutation",
+              "synergy": 0.35,
+              "inclusion": 16341,
+              "label": "37% of 43609 decks\n+35% synergy",
+              "num_decks": 16341,
+              "potential_decks": 43609
+            },
+            {
+              "name": "Surgical Suite // Hospital Room",
+              "sanitized": "surgical-suite-hospital-room",
+              "sanitized_wo": "surgical-suite-hospital-room",
+              "url": "/cards/surgical-suite-hospital-room",
+              "synergy": 0.32,
+              "inclusion": 1143,
+              "label": "37% of 3070 decks\n+32% synergy",
+              "num_decks": 1143,
+              "potential_decks": 3070
+            },
+            {
+              "name": "Unholy Annex // Ritual Chamber",
+              "sanitized": "unholy-annex-ritual-chamber",
+              "sanitized_wo": "unholy-annex-ritual-chamber",
+              "url": "/cards/unholy-annex-ritual-chamber",
+              "synergy": 0.3,
+              "inclusion": 1369,
+              "label": "35% of 3885 decks\n+30% synergy",
+              "num_decks": 1369,
+              "potential_decks": 3885
+            },
+            {
+              "name": "Privileged Position",
+              "sanitized": "privileged-position",
+              "sanitized_wo": "privileged-position",
+              "url": "/cards/privileged-position",
+              "synergy": 0.33,
+              "inclusion": 12352,
+              "label": "34% of 36207 decks\n+33% synergy",
+              "num_decks": 12352,
+              "potential_decks": 36207
+            },
+            {
+              "name": "Strength of the Harvest",
+              "sanitized": "strength-of-the-harvest",
+              "sanitized_wo": "strength-of-the-harvest",
+              "url": "/cards/strength-of-the-harvest",
+              "cards": [
+                {
+                  "name": "Strength of the Harvest",
+                  "url": "strength-of-the-harvest"
+                },
+                {
+                  "name": "Haven of the Harvest",
+                  "url": "strength-of-the-harvest"
+                }
+              ],
+              "synergy": 0.32,
+              "inclusion": 2311,
+              "label": "34% of 6815 decks\n+32% synergy",
+              "num_decks": 2311,
+              "potential_decks": 6815
+            },
+            {
+              "name": "Sanctum of Stone Fangs",
+              "sanitized": "sanctum-of-stone-fangs",
+              "sanitized_wo": "sanctum-of-stone-fangs",
+              "url": "/cards/sanctum-of-stone-fangs",
+              "synergy": 0.33,
+              "inclusion": 10412,
+              "label": "33% of 31107 decks\n+33% synergy",
+              "num_decks": 10412,
+              "potential_decks": 31107
+            },
+            {
+              "name": "Funeral Room // Awakening Hall",
+              "sanitized": "funeral-room-awakening-hall",
+              "sanitized_wo": "funeral-room-awakening-hall",
+              "url": "/cards/funeral-room-awakening-hall",
+              "synergy": 0.29,
+              "inclusion": 1402,
+              "label": "33% of 4209 decks\n+29% synergy",
+              "num_decks": 1402,
+              "potential_decks": 4209
+            },
+            {
+              "name": "Binding the Old Gods",
+              "sanitized": "binding-the-old-gods",
+              "sanitized_wo": "binding-the-old-gods",
+              "url": "/cards/binding-the-old-gods",
+              "synergy": 0.31,
+              "inclusion": 7756,
+              "label": "33% of 23858 decks\n+31% synergy",
+              "num_decks": 7756,
+              "potential_decks": 23858
+            },
+            {
+              "name": "Honden of Night's Reach",
+              "sanitized": "honden-of-nights-reach",
+              "sanitized_wo": "honden-of-nights-reach",
+              "url": "/cards/honden-of-nights-reach",
+              "synergy": 0.31,
+              "inclusion": 9787,
+              "label": "31% of 31204 decks\n+31% synergy",
+              "num_decks": 9787,
+              "potential_decks": 31204
+            },
+            {
+              "name": "Mirrormade",
+              "sanitized": "mirrormade",
+              "sanitized_wo": "mirrormade",
+              "url": "/cards/mirrormade",
+              "synergy": 0.28,
+              "inclusion": 7065,
+              "label": "30% of 23917 decks\n+28% synergy",
+              "num_decks": 7065,
+              "potential_decks": 23917
+            },
+            {
+              "name": "Court of Vantress",
+              "sanitized": "court-of-vantress",
+              "sanitized_wo": "court-of-vantress",
+              "url": "/cards/court-of-vantress",
+              "synergy": 0.27,
+              "inclusion": 3321,
+              "label": "28% of 11726 decks\n+27% synergy",
+              "num_decks": 3321,
+              "potential_decks": 11726
+            },
+            {
+              "name": "Estrid's Invocation",
+              "sanitized": "estrids-invocation",
+              "sanitized_wo": "estrids-invocation",
+              "url": "/cards/estrids-invocation",
+              "synergy": 0.27,
+              "inclusion": 6598,
+              "label": "28% of 23952 decks\n+27% synergy",
+              "num_decks": 6598,
+              "potential_decks": 23952
+            },
+            {
+              "name": "Imprisoned in the Moon",
+              "sanitized": "imprisoned-in-the-moon",
+              "sanitized_wo": "imprisoned-in-the-moon",
+              "url": "/cards/imprisoned-in-the-moon",
+              "synergy": 0.25,
+              "inclusion": 6510,
+              "label": "27% of 23960 decks\n+25% synergy",
+              "num_decks": 6510,
+              "potential_decks": 23960
+            },
+            {
+              "name": "Dollmaker's Shop // Porcelain Gallery",
+              "sanitized": "dollmakers-shop-porcelain-gallery",
+              "sanitized_wo": "dollmakers-shop-porcelain-gallery",
+              "url": "/cards/dollmakers-shop-porcelain-gallery",
+              "synergy": 0.23,
+              "inclusion": 1273,
+              "label": "27% of 4734 decks\n+23% synergy",
+              "num_decks": 1273,
+              "potential_decks": 4734
+            }
+          ],
+          "header": "Enchantments",
+          "tag": "enchantments"
+        },
+        {
+          "cardviews": [
+            {
+              "name": "Invasion of Theros",
+              "sanitized": "invasion-of-theros",
+              "sanitized_wo": "invasion-of-theros",
+              "url": "/cards/invasion-of-theros",
+              "cards": [
+                {
+                  "name": "Invasion of Theros",
+                  "url": "invasion-of-theros"
+                },
+                {
+                  "name": "Ephara, Ever-Sheltering",
+                  "url": "invasion-of-theros"
+                }
+              ],
+              "synergy": 0.18,
+              "inclusion": 2609,
+              "label": "19% of 13951 decks\n+18% synergy",
+              "num_decks": 2609,
+              "potential_decks": 13951
+            }
+          ],
+          "header": "Battles",
+          "tag": "battles"
+        },
+        {
+          "cardviews": [
+            {
+              "name": "Calix, Destiny's Hand",
+              "sanitized": "calix-destinys-hand",
+              "sanitized_wo": "calix-destinys-hand",
+              "url": "/cards/calix-destinys-hand",
+              "synergy": 0.31,
+              "inclusion": 11312,
+              "label": "31% of 36129 decks\n+31% synergy",
+              "num_decks": 11312,
+              "potential_decks": 36129
+            },
+            {
+              "name": "Estrid, the Masked",
+              "sanitized": "estrid-the-masked",
+              "sanitized_wo": "estrid-the-masked",
+              "url": "/cards/estrid-the-masked",
+              "synergy": 0.07,
+              "inclusion": 1181,
+              "label": "7% of 16837 decks\n+7% synergy",
+              "num_decks": 1181,
+              "potential_decks": 16837
+            }
+          ],
+          "header": "Planeswalkers",
+          "tag": "planeswalkers"
+        },
+        {
+          "cardviews": [
+            {
+              "name": "Hall of Heliod's Generosity",
+              "sanitized": "hall-of-heliods-generosity",
+              "sanitized_wo": "hall-of-heliods-generosity",
+              "url": "/cards/hall-of-heliods-generosity",
+              "synergy": 0.54,
+              "inclusion": 24764,
+              "label": "57% of 43524 decks\n+54% synergy",
+              "num_decks": 24764,
+              "potential_decks": 43524
+            },
+            {
+              "name": "Reliquary Tower",
+              "sanitized": "reliquary-tower",
+              "sanitized_wo": "reliquary-tower",
+              "url": "/cards/reliquary-tower",
+              "synergy": 0.16,
+              "inclusion": 21148,
+              "label": "45% of 47134 decks\n+16% synergy",
+              "num_decks": 21148,
+              "potential_decks": 47134
+            },
+            {
+              "name": "Boseiju, Who Endures",
+              "sanitized": "boseiju-who-endures",
+              "sanitized_wo": "boseiju-who-endures",
+              "url": "/cards/boseiju-who-endures",
+              "synergy": 0.11,
+              "inclusion": 7848,
+              "label": "20% of 38603 decks\n+11% synergy",
+              "num_decks": 7848,
+              "potential_decks": 38603
+            },
+            {
+              "name": "Serra's Sanctum",
+              "sanitized": "serras-sanctum",
+              "sanitized_wo": "serras-sanctum",
+              "url": "/cards/serras-sanctum",
+              "synergy": 0.2,
+              "inclusion": 8839,
+              "label": "20% of 43619 decks\n+20% synergy",
+              "num_decks": 8839,
+              "potential_decks": 43619
+            },
+            {
+              "name": "Yavimaya, Cradle of Growth",
+              "sanitized": "yavimaya-cradle-of-growth",
+              "sanitized_wo": "yavimaya-cradle-of-growth",
+              "url": "/cards/yavimaya-cradle-of-growth",
+              "synergy": 0.1,
+              "inclusion": 9023,
+              "label": "19% of 46747 decks\n+10% synergy",
+              "num_decks": 9023,
+              "potential_decks": 46747
+            },
+            {
+              "name": "Bojuka Bog",
+              "sanitized": "bojuka-bog",
+              "sanitized_wo": "bojuka-bog",
+              "url": "/cards/bojuka-bog",
+              "synergy": 0.02,
+              "inclusion": 5572,
+              "label": "18% of 31204 decks\n+2% synergy",
+              "num_decks": 5572,
+              "potential_decks": 31204
+            },
+            {
+              "name": "Otawara, Soaring City",
+              "sanitized": "otawara-soaring-city",
+              "sanitized_wo": "otawara-soaring-city",
+              "url": "/cards/otawara-soaring-city",
+              "synergy": 0.04,
+              "inclusion": 3000,
+              "label": "13% of 23475 decks\n+4% synergy",
+              "num_decks": 3000,
+              "potential_decks": 23475
+            },
+            {
+              "name": "Eiganjo, Seat of the Empire",
+              "sanitized": "eiganjo-seat-of-the-empire",
+              "sanitized_wo": "eiganjo-seat-of-the-empire",
+              "url": "/cards/eiganjo-seat-of-the-empire",
+              "synergy": 0.05,
+              "inclusion": 3755,
+              "label": "9% of 42601 decks\n+5% synergy",
+              "num_decks": 3755,
+              "potential_decks": 42601
+            },
+            {
+              "name": "Urborg, Tomb of Yawgmoth",
+              "sanitized": "urborg-tomb-of-yawgmoth",
+              "sanitized_wo": "urborg-tomb-of-yawgmoth",
+              "url": "/cards/urborg-tomb-of-yawgmoth",
+              "synergy": -0.01,
+              "inclusion": 4084,
+              "label": "9% of 47134 decks\n-1% synergy",
+              "num_decks": 4084,
+              "potential_decks": 47134
+            },
+            {
+              "name": "Rogue's Passage",
+              "sanitized": "rogues-passage",
+              "sanitized_wo": "rogues-passage",
+              "url": "/cards/rogues-passage",
+              "synergy": -0.11,
+              "inclusion": 3958,
+              "label": "8% of 47130 decks\n-11% synergy",
+              "num_decks": 3958,
+              "potential_decks": 47130
+            },
+            {
+              "name": "Takenuma, Abandoned Mire",
+              "sanitized": "takenuma-abandoned-mire",
+              "sanitized_wo": "takenuma-abandoned-mire",
+              "url": "/cards/takenuma-abandoned-mire",
+              "synergy": 0.03,
+              "inclusion": 2579,
+              "label": "8% of 30877 decks\n+3% synergy",
+              "num_decks": 2579,
+              "potential_decks": 30877
+            },
+            {
+              "name": "Nykthos, Shrine to Nyx",
+              "sanitized": "nykthos-shrine-to-nyx",
+              "sanitized_wo": "nykthos-shrine-to-nyx",
+              "url": "/cards/nykthos-shrine-to-nyx",
+              "synergy": 0.01,
+              "inclusion": 3278,
+              "label": "7% of 47128 decks\n+1% synergy",
+              "num_decks": 3278,
+              "potential_decks": 47128
+            },
+            {
+              "name": "Shifting Woodland",
+              "sanitized": "shifting-woodland",
+              "sanitized_wo": "shifting-woodland",
+              "url": "/cards/shifting-woodland",
+              "synergy": 0.01,
+              "inclusion": 488,
+              "label": "6% of 7925 decks\n+1% synergy",
+              "num_decks": 488,
+              "potential_decks": 7925
+            },
+            {
+              "name": "Ancient Tomb",
+              "sanitized": "ancient-tomb",
+              "sanitized_wo": "ancient-tomb",
+              "url": "/cards/ancient-tomb",
+              "synergy": -0.05,
+              "inclusion": 2513,
+              "label": "5% of 47138 decks\n-5% synergy",
+              "num_decks": 2513,
+              "potential_decks": 47138
+            }
+          ],
+          "header": "Utility Lands",
+          "tag": "utilitylands"
+        },
+        {
+          "cardviews": [
+            {
+              "name": "Sol Ring",
+              "sanitized": "sol-ring",
+              "sanitized_wo": "sol-ring",
+              "url": "/cards/sol-ring",
+              "synergy": -0.13,
+              "inclusion": 33666,
+              "label": "71% of 47138 decks\n-13% synergy",
+              "num_decks": 33666,
+              "potential_decks": 47138
+            },
+            {
+              "name": "Arcane Signet",
+              "sanitized": "arcane-signet",
+              "sanitized_wo": "arcane-signet",
+              "url": "/cards/arcane-signet",
+              "synergy": -0.14,
+              "inclusion": 26932,
+              "label": "57% of 47026 decks\n-14% synergy",
+              "num_decks": 26932,
+              "potential_decks": 47026
+            },
+            {
+              "name": "Haunted Screen",
+              "sanitized": "haunted-screen",
+              "sanitized_wo": "haunted-screen",
+              "url": "/cards/haunted-screen",
+              "synergy": 0.19,
+              "inclusion": 344,
+              "label": "20% of 1748 decks\n+19% synergy",
+              "num_decks": 344,
+              "potential_decks": 1748
+            },
+            {
+              "name": "Chromatic Lantern",
+              "sanitized": "chromatic-lantern",
+              "sanitized_wo": "chromatic-lantern",
+              "url": "/cards/chromatic-lantern",
+              "synergy": 0.08,
+              "inclusion": 8477,
+              "label": "18% of 47130 decks\n+8% synergy",
+              "num_decks": 8477,
+              "potential_decks": 47130
+            },
+            {
+              "name": "Orzhov Signet",
+              "sanitized": "orzhov-signet",
+              "sanitized_wo": "orzhov-signet",
+              "url": "/cards/orzhov-signet",
+              "synergy": 0.07,
+              "inclusion": 3796,
+              "label": "13% of 28745 decks\n+7% synergy",
+              "num_decks": 3796,
+              "potential_decks": 28745
+            },
+            {
+              "name": "Timeless Lotus",
+              "sanitized": "timeless-lotus",
+              "sanitized_wo": "timeless-lotus",
+              "url": "/cards/timeless-lotus",
+              "synergy": 0.11,
+              "inclusion": 1242,
+              "label": "12% of 10600 decks\n+11% synergy",
+              "num_decks": 1242,
+              "potential_decks": 10600
+            },
+            {
+              "name": "Fellwar Stone",
+              "sanitized": "fellwar-stone",
+              "sanitized_wo": "fellwar-stone",
+              "url": "/cards/fellwar-stone",
+              "synergy": -0.09,
+              "inclusion": 5453,
+              "label": "12% of 47138 decks\n-9% synergy",
+              "num_decks": 5453,
+              "potential_decks": 47138
+            },
+            {
+              "name": "Azorius Signet",
+              "sanitized": "azorius-signet",
+              "sanitized_wo": "azorius-signet",
+              "url": "/cards/azorius-signet",
+              "synergy": 0.05,
+              "inclusion": 2466,
+              "label": "11% of 21853 decks\n+5% synergy",
+              "num_decks": 2466,
+              "potential_decks": 21853
+            },
+            {
+              "name": "Thought Vessel",
+              "sanitized": "thought-vessel",
+              "sanitized_wo": "thought-vessel",
+              "url": "/cards/thought-vessel",
+              "synergy": -0.05,
+              "inclusion": 5242,
+              "label": "11% of 47122 decks\n-5% synergy",
+              "num_decks": 5242,
+              "potential_decks": 47122
+            },
+            {
+              "name": "Talisman of Hierarchy",
+              "sanitized": "talisman-of-hierarchy",
+              "sanitized_wo": "talisman-of-hierarchy",
+              "url": "/cards/talisman-of-hierarchy",
+              "synergy": 0.05,
+              "inclusion": 2989,
+              "label": "10% of 28704 decks\n+5% synergy",
+              "num_decks": 2989,
+              "potential_decks": 28704
+            },
+            {
+              "name": "Talisman of Dominance",
+              "sanitized": "talisman-of-dominance",
+              "sanitized_wo": "talisman-of-dominance",
+              "url": "/cards/talisman-of-dominance",
+              "synergy": 0.01,
+              "inclusion": 1761,
+              "label": "9% of 19224 decks\n+1% synergy",
+              "num_decks": 1761,
+              "potential_decks": 19224
+            },
+            {
+              "name": "Dimir Signet",
+              "sanitized": "dimir-signet",
+              "sanitized_wo": "dimir-signet",
+              "url": "/cards/dimir-signet",
+              "synergy": 0.02,
+              "inclusion": 1758,
+              "label": "9% of 19224 decks\n+2% synergy",
+              "num_decks": 1758,
+              "potential_decks": 19224
+            },
+            {
+              "name": "Decanter of Endless Water",
+              "sanitized": "decanter-of-endless-water",
+              "sanitized_wo": "decanter-of-endless-water",
+              "url": "/cards/decanter-of-endless-water",
+              "synergy": 0.03,
+              "inclusion": 3474,
+              "label": "8% of 42227 decks\n+3% synergy",
+              "num_decks": 3474,
+              "potential_decks": 42227
+            },
+            {
+              "name": "Talisman of Progress",
+              "sanitized": "talisman-of-progress",
+              "sanitized_wo": "talisman-of-progress",
+              "url": "/cards/talisman-of-progress",
+              "synergy": 0.03,
+              "inclusion": 1715,
+              "label": "8% of 21853 decks\n+3% synergy",
+              "num_decks": 1715,
+              "potential_decks": 21853
+            },
+            {
+              "name": "Commander's Sphere",
+              "sanitized": "commanders-sphere",
+              "sanitized_wo": "commanders-sphere",
+              "url": "/cards/commanders-sphere",
+              "synergy": -0.08,
+              "inclusion": 3684,
+              "label": "8% of 47125 decks\n-8% synergy",
+              "num_decks": 3684,
+              "potential_decks": 47125
+            }
+          ],
+          "header": "Mana Artifacts",
+          "tag": "manaartifacts"
+        },
+        {
+          "cardviews": [
+            {
+              "name": "Command Tower",
+              "sanitized": "command-tower",
+              "sanitized_wo": "command-tower",
+              "url": "/cards/command-tower",
+              "synergy": 0.16,
+              "inclusion": 42421,
+              "label": "90% of 47132 decks\n+16% synergy",
+              "num_decks": 42421,
+              "potential_decks": 47132
+            },
+            {
+              "name": "Temple Garden",
+              "sanitized": "temple-garden",
+              "sanitized_wo": "temple-garden",
+              "url": "/cards/temple-garden",
+              "synergy": 0.42,
+              "inclusion": 18255,
+              "label": "50% of 36207 decks\n+42% synergy",
+              "num_decks": 18255,
+              "potential_decks": 36207
+            },
+            {
+              "name": "Exotic Orchard",
+              "sanitized": "exotic-orchard",
+              "sanitized_wo": "exotic-orchard",
+              "url": "/cards/exotic-orchard",
+              "synergy": 0.14,
+              "inclusion": 23394,
+              "label": "50% of 47134 decks\n+14% synergy",
+              "num_decks": 23394,
+              "potential_decks": 47134
+            },
+            {
+              "name": "The World Tree",
+              "sanitized": "the-world-tree",
+              "sanitized_wo": "the-world-tree",
+              "url": "/cards/the-world-tree",
+              "synergy": 0.47,
+              "inclusion": 5966,
+              "label": "49% of 12211 decks\n+47% synergy",
+              "num_decks": 5966,
+              "potential_decks": 12211
+            },
+            {
+              "name": "Valgavoth's Lair",
+              "sanitized": "valgavoths-lair",
+              "sanitized_wo": "valgavoths-lair",
+              "url": "/cards/valgavoths-lair",
+              "synergy": 0.4,
+              "inclusion": 2310,
+              "label": "46% of 4998 decks\n+40% synergy",
+              "num_decks": 2310,
+              "potential_decks": 4998
+            },
+            {
+              "name": "Canopy Vista",
+              "sanitized": "canopy-vista",
+              "sanitized_wo": "canopy-vista",
+              "url": "/cards/canopy-vista",
+              "synergy": 0.36,
+              "inclusion": 15918,
+              "label": "44% of 36199 decks\n+36% synergy",
+              "num_decks": 15918,
+              "potential_decks": 36199
+            },
+            {
+              "name": "Hallowed Fountain",
+              "sanitized": "hallowed-fountain",
+              "sanitized_wo": "hallowed-fountain",
+              "url": "/cards/hallowed-fountain",
+              "synergy": 0.35,
+              "inclusion": 9572,
+              "label": "44% of 21853 decks\n+35% synergy",
+              "num_decks": 9572,
+              "potential_decks": 21853
+            },
+            {
+              "name": "Spara's Headquarters",
+              "sanitized": "sparas-headquarters",
+              "sanitized_wo": "sparas-headquarters",
+              "url": "/cards/sparas-headquarters",
+              "synergy": 0.4,
+              "inclusion": 6651,
+              "label": "43% of 15380 decks\n+40% synergy",
+              "num_decks": 6651,
+              "potential_decks": 15380
+            },
+            {
+              "name": "Breeding Pool",
+              "sanitized": "breeding-pool",
+              "sanitized_wo": "breeding-pool",
+              "url": "/cards/breeding-pool",
+              "synergy": 0.33,
+              "inclusion": 7898,
+              "label": "42% of 18901 decks\n+33% synergy",
+              "num_decks": 7898,
+              "potential_decks": 18901
+            },
+            {
+              "name": "Indatha Triome",
+              "sanitized": "indatha-triome",
+              "sanitized_wo": "indatha-triome",
+              "url": "/cards/indatha-triome",
+              "synergy": 0.38,
+              "inclusion": 9000,
+              "label": "42% of 21678 decks\n+38% synergy",
+              "num_decks": 9000,
+              "potential_decks": 21678
+            },
+            {
+              "name": "Overgrown Tomb",
+              "sanitized": "overgrown-tomb",
+              "sanitized_wo": "overgrown-tomb",
+              "url": "/cards/overgrown-tomb",
+              "synergy": 0.32,
+              "inclusion": 9855,
+              "label": "41% of 23910 decks\n+32% synergy",
+              "num_decks": 9855,
+              "potential_decks": 23910
+            },
+            {
+              "name": "Godless Shrine",
+              "sanitized": "godless-shrine",
+              "sanitized_wo": "godless-shrine",
+              "url": "/cards/godless-shrine",
+              "synergy": 0.31,
+              "inclusion": 11695,
+              "label": "41% of 28745 decks\n+31% synergy",
+              "num_decks": 11695,
+              "potential_decks": 28745
+            },
+            {
+              "name": "Sandsteppe Citadel",
+              "sanitized": "sandsteppe-citadel",
+              "sanitized_wo": "sandsteppe-citadel",
+              "url": "/cards/sandsteppe-citadel",
+              "synergy": 0.37,
+              "inclusion": 8609,
+              "label": "40% of 21693 decks\n+37% synergy",
+              "num_decks": 8609,
+              "potential_decks": 21693
+            },
+            {
+              "name": "Jetmir's Garden",
+              "sanitized": "jetmirs-garden",
+              "sanitized_wo": "jetmirs-garden",
+              "url": "/cards/jetmirs-garden",
+              "synergy": 0.32,
+              "inclusion": 4224,
+              "label": "36% of 11748 decks\n+32% synergy",
+              "num_decks": 4224,
+              "potential_decks": 11748
+            },
+            {
+              "name": "Stomping Ground",
+              "sanitized": "stomping-ground",
+              "sanitized_wo": "stomping-ground",
+              "url": "/cards/stomping-ground",
+              "synergy": 0.26,
+              "inclusion": 4781,
+              "label": "35% of 13544 decks\n+26% synergy",
+              "num_decks": 4781,
+              "potential_decks": 13544
+            },
+            {
+              "name": "Zagoth Triome",
+              "sanitized": "zagoth-triome",
+              "sanitized_wo": "zagoth-triome",
+              "url": "/cards/zagoth-triome",
+              "synergy": 0.31,
+              "inclusion": 4906,
+              "label": "34% of 14397 decks\n+31% synergy",
+              "num_decks": 4906,
+              "potential_decks": 14397
+            },
+            {
+              "name": "Bountiful Promenade",
+              "sanitized": "bountiful-promenade",
+              "sanitized_wo": "bountiful-promenade",
+              "url": "/cards/bountiful-promenade",
+              "synergy": 0.28,
+              "inclusion": 12121,
+              "label": "34% of 36180 decks\n+28% synergy",
+              "num_decks": 12121,
+              "potential_decks": 36180
+            },
+            {
+              "name": "Raffine's Tower",
+              "sanitized": "raffines-tower",
+              "sanitized_wo": "raffines-tower",
+              "url": "/cards/raffines-tower",
+              "synergy": 0.3,
+              "inclusion": 5432,
+              "label": "33% of 16292 decks\n+30% synergy",
+              "num_decks": 5432,
+              "potential_decks": 16292
+            },
+            {
+              "name": "Ketria Triome",
+              "sanitized": "ketria-triome",
+              "sanitized_wo": "ketria-triome",
+              "url": "/cards/ketria-triome",
+              "synergy": 0.28,
+              "inclusion": 3954,
+              "label": "32% of 12380 decks\n+28% synergy",
+              "num_decks": 3954,
+              "potential_decks": 12380
+            },
+            {
+              "name": "Watery Grave",
+              "sanitized": "watery-grave",
+              "sanitized_wo": "watery-grave",
+              "url": "/cards/watery-grave",
+              "synergy": 0.21,
+              "inclusion": 6102,
+              "label": "32% of 19224 decks\n+21% synergy",
+              "num_decks": 6102,
+              "potential_decks": 19224
+            },
+            {
+              "name": "Sunpetal Grove",
+              "sanitized": "sunpetal-grove",
+              "sanitized_wo": "sunpetal-grove",
+              "url": "/cards/sunpetal-grove",
+              "synergy": 0.27,
+              "inclusion": 11435,
+              "label": "32% of 36207 decks\n+27% synergy",
+              "num_decks": 11435,
+              "potential_decks": 36207
+            },
+            {
+              "name": "Seaside Citadel",
+              "sanitized": "seaside-citadel",
+              "sanitized_wo": "seaside-citadel",
+              "url": "/cards/seaside-citadel",
+              "synergy": 0.27,
+              "inclusion": 5039,
+              "label": "30% of 16847 decks\n+27% synergy",
+              "num_decks": 5039,
+              "potential_decks": 16847
+            },
+            {
+              "name": "Sacred Foundry",
+              "sanitized": "sacred-foundry",
+              "sanitized_wo": "sacred-foundry",
+              "url": "/cards/sacred-foundry",
+              "synergy": 0.2,
+              "inclusion": 3873,
+              "label": "29% of 13559 decks\n+20% synergy",
+              "num_decks": 3873,
+              "potential_decks": 13559
+            },
+            {
+              "name": "Arcane Sanctum",
+              "sanitized": "arcane-sanctum",
+              "sanitized_wo": "arcane-sanctum",
+              "url": "/cards/arcane-sanctum",
+              "synergy": 0.25,
+              "inclusion": 4905,
+              "label": "28% of 17279 decks\n+25% synergy",
+              "num_decks": 4905,
+              "potential_decks": 17279
+            },
+            {
+              "name": "Ziatora's Proving Ground",
+              "sanitized": "ziatoras-proving-ground",
+              "sanitized_wo": "ziatoras-proving-ground",
+              "url": "/cards/ziatoras-proving-ground",
+              "synergy": 0.25,
+              "inclusion": 3191,
+              "label": "28% of 11462 decks\n+25% synergy",
+              "num_decks": 3191,
+              "potential_decks": 11462
+            },
+            {
+              "name": "Raugrin Triome",
+              "sanitized": "raugrin-triome",
+              "sanitized_wo": "raugrin-triome",
+              "url": "/cards/raugrin-triome",
+              "synergy": 0.25,
+              "inclusion": 3415,
+              "label": "27% of 12436 decks\n+25% synergy",
+              "num_decks": 3415,
+              "potential_decks": 12436
+            },
+            {
+              "name": "Windswept Heath",
+              "sanitized": "windswept-heath",
+              "sanitized_wo": "windswept-heath",
+              "url": "/cards/windswept-heath",
+              "synergy": 0.17,
+              "inclusion": 12694,
+              "label": "27% of 47138 decks\n+17% synergy",
+              "num_decks": 12694,
+              "potential_decks": 47138
+            },
+            {
+              "name": "Vault of Champions",
+              "sanitized": "vault-of-champions",
+              "sanitized_wo": "vault-of-champions",
+              "url": "/cards/vault-of-champions",
+              "synergy": 0.2,
+              "inclusion": 7368,
+              "label": "26% of 28620 decks\n+20% synergy",
+              "num_decks": 7368,
+              "potential_decks": 28620
+            },
+            {
+              "name": "Opulent Palace",
+              "sanitized": "opulent-palace",
+              "sanitized_wo": "opulent-palace",
+              "url": "/cards/opulent-palace",
+              "synergy": 0.22,
+              "inclusion": 3661,
+              "label": "25% of 14408 decks\n+22% synergy",
+              "num_decks": 3661,
+              "potential_decks": 14408
+            },
+            {
+              "name": "Undergrowth Stadium",
+              "sanitized": "undergrowth-stadium",
+              "sanitized_wo": "undergrowth-stadium",
+              "url": "/cards/undergrowth-stadium",
+              "synergy": 0.19,
+              "inclusion": 5822,
+              "label": "24% of 23863 decks\n+19% synergy",
+              "num_decks": 5822,
+              "potential_decks": 23863
+            },
+            {
+              "name": "Jungle Shrine",
+              "sanitized": "jungle-shrine",
+              "sanitized_wo": "jungle-shrine",
+              "url": "/cards/jungle-shrine",
+              "synergy": 0.2,
+              "inclusion": 3065,
+              "label": "24% of 12665 decks\n+20% synergy",
+              "num_decks": 3065,
+              "potential_decks": 12665
+            },
+            {
+              "name": "Fortified Village",
+              "sanitized": "fortified-village",
+              "sanitized_wo": "fortified-village",
+              "url": "/cards/fortified-village",
+              "synergy": 0.21,
+              "inclusion": 8710,
+              "label": "24% of 36197 decks\n+21% synergy",
+              "num_decks": 8710,
+              "potential_decks": 36197
+            },
+            {
+              "name": "Savai Triome",
+              "sanitized": "savai-triome",
+              "sanitized_wo": "savai-triome",
+              "url": "/cards/savai-triome",
+              "synergy": 0.21,
+              "inclusion": 3102,
+              "label": "24% of 13072 decks\n+21% synergy",
+              "num_decks": 3102,
+              "potential_decks": 13072
+            },
+            {
+              "name": "Temple of Plenty",
+              "sanitized": "temple-of-plenty",
+              "sanitized_wo": "temple-of-plenty",
+              "url": "/cards/temple-of-plenty",
+              "synergy": 0.21,
+              "inclusion": 8546,
+              "label": "24% of 36201 decks\n+21% synergy",
+              "num_decks": 8546,
+              "potential_decks": 36201
+            },
+            {
+              "name": "Overgrown Farmland",
+              "sanitized": "overgrown-farmland",
+              "sanitized_wo": "overgrown-farmland",
+              "url": "/cards/overgrown-farmland",
+              "synergy": 0.2,
+              "inclusion": 8405,
+              "label": "24% of 35640 decks\n+20% synergy",
+              "num_decks": 8405,
+              "potential_decks": 35640
+            },
+            {
+              "name": "Sea of Clouds",
+              "sanitized": "sea-of-clouds",
+              "sanitized_wo": "sea-of-clouds",
+              "url": "/cards/sea-of-clouds",
+              "synergy": 0.18,
+              "inclusion": 5081,
+              "label": "23% of 21838 decks\n+18% synergy",
+              "num_decks": 5081,
+              "potential_decks": 21838
+            },
+            {
+              "name": "Caves of Koilos",
+              "sanitized": "caves-of-koilos",
+              "sanitized_wo": "caves-of-koilos",
+              "url": "/cards/caves-of-koilos",
+              "synergy": 0.16,
+              "inclusion": 6413,
+              "label": "22% of 28745 decks\n+16% synergy",
+              "num_decks": 6413,
+              "potential_decks": 28745
+            },
+            {
+              "name": "Brushland",
+              "sanitized": "brushland",
+              "sanitized_wo": "brushland",
+              "url": "/cards/brushland",
+              "synergy": 0.19,
+              "inclusion": 7933,
+              "label": "22% of 36210 decks\n+19% synergy",
+              "num_decks": 7933,
+              "potential_decks": 36210
+            },
+            {
+              "name": "Prairie Stream",
+              "sanitized": "prairie-stream",
+              "sanitized_wo": "prairie-stream",
+              "url": "/cards/prairie-stream",
+              "synergy": 0.14,
+              "inclusion": 4777,
+              "label": "22% of 21846 decks\n+14% synergy",
+              "num_decks": 4777,
+              "potential_decks": 21846
+            },
+            {
+              "name": "Isolated Chapel",
+              "sanitized": "isolated-chapel",
+              "sanitized_wo": "isolated-chapel",
+              "url": "/cards/isolated-chapel",
+              "synergy": 0.16,
+              "inclusion": 6261,
+              "label": "22% of 28745 decks\n+16% synergy",
+              "num_decks": 6261,
+              "potential_decks": 28745
+            },
+            {
+              "name": "Lush Portico",
+              "sanitized": "lush-portico",
+              "sanitized_wo": "lush-portico",
+              "url": "/cards/lush-portico",
+              "synergy": 0.19,
+              "inclusion": 2417,
+              "label": "22% of 11105 decks\n+19% synergy",
+              "num_decks": 2417,
+              "potential_decks": 11105
+            },
+            {
+              "name": "Steam Vents",
+              "sanitized": "steam-vents",
+              "sanitized_wo": "steam-vents",
+              "url": "/cards/steam-vents",
+              "synergy": 0.13,
+              "inclusion": 2702,
+              "label": "22% of 12502 decks\n+13% synergy",
+              "num_decks": 2702,
+              "potential_decks": 12502
+            },
+            {
+              "name": "Marsh Flats",
+              "sanitized": "marsh-flats",
+              "sanitized_wo": "marsh-flats",
+              "url": "/cards/marsh-flats",
+              "synergy": 0.1,
+              "inclusion": 10033,
+              "label": "21% of 47134 decks\n+10% synergy",
+              "num_decks": 10033,
+              "potential_decks": 47134
+            },
+            {
+              "name": "Selesnya Sanctuary",
+              "sanitized": "selesnya-sanctuary",
+              "sanitized_wo": "selesnya-sanctuary",
+              "url": "/cards/selesnya-sanctuary",
+              "synergy": 0.18,
+              "inclusion": 7516,
+              "label": "21% of 36207 decks\n+18% synergy",
+              "num_decks": 7516,
+              "potential_decks": 36207
+            },
+            {
+              "name": "Rejuvenating Springs",
+              "sanitized": "rejuvenating-springs",
+              "sanitized_wo": "rejuvenating-springs",
+              "url": "/cards/rejuvenating-springs",
+              "synergy": 0.14,
+              "inclusion": 3866,
+              "label": "21% of 18747 decks\n+14% synergy",
+              "num_decks": 3866,
+              "potential_decks": 18747
+            },
+            {
+              "name": "Temple of Silence",
+              "sanitized": "temple-of-silence",
+              "sanitized_wo": "temple-of-silence",
+              "url": "/cards/temple-of-silence",
+              "synergy": 0.16,
+              "inclusion": 5875,
+              "label": "20% of 28742 decks\n+16% synergy",
+              "num_decks": 5875,
+              "potential_decks": 28742
+            },
+            {
+              "name": "Shadowy Backstreet",
+              "sanitized": "shadowy-backstreet",
+              "sanitized_wo": "shadowy-backstreet",
+              "url": "/cards/shadowy-backstreet",
+              "synergy": 0.17,
+              "inclusion": 2090,
+              "label": "20% of 10421 decks\n+17% synergy",
+              "num_decks": 2090,
+              "potential_decks": 10421
+            },
+            {
+              "name": "Frontier Bivouac",
+              "sanitized": "frontier-bivouac",
+              "sanitized_wo": "frontier-bivouac",
+              "url": "/cards/frontier-bivouac",
+              "synergy": 0.17,
+              "inclusion": 2476,
+              "label": "20% of 12391 decks\n+17% synergy",
+              "num_decks": 2476,
+              "potential_decks": 12391
+            },
+            {
+              "name": "Sungrass Prairie",
+              "sanitized": "sungrass-prairie",
+              "sanitized_wo": "sungrass-prairie",
+              "url": "/cards/sungrass-prairie",
+              "synergy": 0.17,
+              "inclusion": 7187,
+              "label": "20% of 36210 decks\n+17% synergy",
+              "num_decks": 7187,
+              "potential_decks": 36210
+            },
+            {
+              "name": "Blood Crypt",
+              "sanitized": "blood-crypt",
+              "sanitized_wo": "blood-crypt",
+              "url": "/cards/blood-crypt",
+              "synergy": 0.11,
+              "inclusion": 2609,
+              "label": "20% of 13204 decks\n+11% synergy",
+              "num_decks": 2609,
+              "potential_decks": 13204
+            }
+          ],
+          "header": "Lands",
+          "tag": "lands"
+        }
+      ]
+    },
+    "keywords": "Enchantment,Theme",
+    "title": "Enchantment Theme"
+  }
+}

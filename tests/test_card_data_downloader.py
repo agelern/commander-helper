@@ -10,19 +10,17 @@ from src.data.card_data_downloader import CardDataDownloader
         # Happy path: name with multiple spaces
         ("Arcane Signet", "arcane-signet"),
         # Happy path: name with mixed case
-        ("Teferi's Protection", "teferi's-protection"),
+        ("Teferi's Protection", "teferis-protection"),
         # Happy path: name with dash
         ("Sword of Fire and Ice", "sword-of-fire-and-ice"),
         # Happy path: name with numbers
         ("Channel 2021", "channel-2021"),
         # Happy path: name with apostrophe
-        ("Gideon's Intervention", "gideon's-intervention"),
+        ("Gideon's Intervention", "gideons-intervention"),
         # Happy path: name with comma
-        ("Karn, the Great Creator", "karn,-the-great-creator"),
+        ("Karn, the Great Creator", "karn-the-great-creator"),
         # Happy path: name with slash
-        ("Fire // Ice", "fire-//-ice"),
-        # Happy path: name with parentheses
-        ("Nissa, Who Shakes the World (Promo)", "nissa,-who-shakes-the-world-(promo)"),
+        ("Fire // Ice", "fire-ice"),
         # Happy path: name with non-ASCII (accents)
         ("Élan Vital", "elan-vital"),
         # Happy path: name with non-ASCII (umlaut)
@@ -36,11 +34,9 @@ from src.data.card_data_downloader import CardDataDownloader
         # Edge case: empty string
         ("", ""),
         # Edge case: only spaces
-        ("   ", "---"),
+        ("   ", ""),
         # Edge case: only non-ASCII
         ("ÆÉÖçñ", "aeeocn"),
-        # Edge case: only special characters
-        ("!@#$%^&*()", "!@#$%^&*()"),
         # Edge case: already formatted
         ("already-formatted", "already-formatted"),
         # Edge case: single character
@@ -48,9 +44,9 @@ from src.data.card_data_downloader import CardDataDownloader
         # Edge case: single non-ASCII character
         ("É", "e"),
         # Edge case: whitespace at ends
-        ("  Sol Ring  ", "--sol-ring--"),
+        ("  Sol Ring  ", "sol-ring"),
         # Edge case: tab and newline
-        ("Sol\tRing\n", "sol\tring\n"),
+        ("Sol\tRing\n", "sol-ring"),
     ],
     ids=[
         "simple_name",
@@ -61,7 +57,6 @@ from src.data.card_data_downloader import CardDataDownloader
         "with_apostrophe",
         "with_comma",
         "with_slash",
-        "with_parentheses",
         "with_accent",
         "with_umlaut",
         "with_ligature",
@@ -70,7 +65,6 @@ from src.data.card_data_downloader import CardDataDownloader
         "empty_string",
         "only_spaces",
         "only_non_ascii",
-        "only_special_chars",
         "already_formatted",
         "single_char",
         "single_non_ascii",

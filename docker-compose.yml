@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  commander-bot:
+    build: .
+    container_name: commander-helper-bot
+    restart: unless-stopped
+    environment:
+      - DISCORD_TOKEN=${DISCORD_TOKEN}
+      - MAX_COMMAND_TIMEOUT=30
+      - MAX_FILE_SIZE=26214400
+      - DATA_UPDATE_INTERVAL=86400
+      - MAX_DOWNLOAD_RETRIES=3
+      - MAX_COMMANDER_CACHE_SIZE=1000
+      - MAX_SYNERGY_CALCULATION_TIME=8.0
+    volumes:
+      - ./reference:/app/reference:ro
+      - ./cache:/app/cache
+    healthcheck:
+      test: ["CMD", "python", "-c", "import sys; sys.exit(0)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Development service (optional)
+  commander-bot-dev:
+    build: .
+    container_name: commander-helper-bot-dev
+    restart: "no"
+    environment:
+      - DISCORD_TOKEN=${DISCORD_TOKEN}
+      - MAX_COMMAND_TIMEOUT=60
+      - MAX_SYNERGY_CALCULATION_TIME=15.0
+    volumes:
+      - ./src:/app/src
+      - ./reference:/app/reference:ro
+      - ./cache:/app/cache
+      - ./tests:/app/tests
+    profiles:
+      - dev
+    command: ["python", "-m", "pytest", "tests/", "-v"] 
