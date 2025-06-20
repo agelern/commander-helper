@@ -1,12 +1,14 @@
 # Commander Helper Bot
 
+Disclaimer: Tests are broken as heck right now because I thought it would be neat to try vibe coding. Fixing soon.
+
 A Discord bot for Magic: The Gathering Commander format assistance. Provides card information and commander recommendations based on custom card lists.
 
 ## Features
 
 - **Card Information**: Get detailed information about any MTG card using `/card`
 - **Commander Recommendations**: Get personalized commander suggestions based on your card list using `/revedh`
-- **Smart Synergy Analysis**: Advanced algorithm that considers theme overlap, tribal synergies, and popularity
+- **Smart Synergy Analysis**: Advanced algorithm that considers theme overlap, typal synergies, and popularity
 - **Image Support**: Displays card images and stitched partner commander images
 - **Performance Optimized**: Efficient caching and early termination to prevent timeouts
 
