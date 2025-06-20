@@ -382,29 +382,28 @@ class CommanderRecommendationCommand(Command):
         return combined_colors
     
     def _commander_matches_colors(self, commander: dict, required_colors: Set[str]) -> bool:
-        """Check if a commander's color identity includes all required colors."""
+        """Allow commanders whose color identity is a superset of the required colors (not just an exact match)."""
         commander_colors = self._extract_color_identity(commander)
         return required_colors.issubset(commander_colors)
     
-    def _has_tribal_synergy(self, commander: dict, card: dict) -> bool:
-        """Check for tribal synergies between commander and card."""
+    def _has_typal_synergy(self, commander: dict, card: dict) -> bool:
+        """Check for typal synergies between commander and card."""
         commander_type = commander.get('type_line', '').lower()
         card_type = card.get('type_line', '').lower()
-        
         # Extract creature types
         commander_creatures = self._extract_creature_types(commander_type)
         card_creatures = self._extract_creature_types(card_type)
-        
         # Check for shared creature types
         shared_types = commander_creatures.intersection(card_creatures)
         return len(shared_types) > 0
-    
+
     def _extract_creature_types(self, type_line: str) -> Set[str]:
         """Extract creature types from a type line."""
         # Find the part after "Creature —" or similar
         if '—' in type_line:
             creature_part = type_line.split('—')[1].strip()
-            return set(creature_part.split())
+            types = set(creature_part.split())
+            return types
         return set()
     
     def _has_mana_synergy(self, commander: dict, card: dict) -> bool:
@@ -422,13 +421,11 @@ class CommanderRecommendationCommand(Command):
         """Calculate synergy score based on overlap of 'used_in' theme slugs between commander and input cards."""
         if not input_cards:
             return 0.0
-        
         # Check for specific card types in input
         has_planeswalkers = False
         has_artifacts = False
         has_enchantments = False
         has_creatures = False
-        
         for card in input_cards:
             if 'type_line' in card:
                 type_line = card['type_line']
@@ -440,7 +437,6 @@ class CommanderRecommendationCommand(Command):
                     has_enchantments = True
                 if 'Creature' in type_line:
                     has_creatures = True
-        
         # Get the set of themes for the commander (union if partner pair)
         commander_themes = set()
         if 'partner_names' in commander:
@@ -454,55 +450,40 @@ class CommanderRecommendationCommand(Command):
             card = self.card_data.get_card(commander['name'])
             if card and 'used_in' in card:
                 commander_themes = set(card['used_in'])
-        
         # Get the set of all themes for the input cards
         input_themes = set()
         for card in input_cards:
             if 'used_in' in card:
                 input_themes.update(card['used_in'])
-        
         if not commander_themes or not input_themes:
             return 0.0
-        
         overlap = commander_themes & input_themes
-        
         # Calculate both coverage ratios
         input_coverage = len(overlap) / len(input_themes)  # How many input themes are matched
         commander_focus = len(overlap) / len(commander_themes)  # How focused the commander is on matching themes
-        
         # Penalize commanders that appear in too many themes (jack-of-all-trades)
-        # If a commander appears in more than 20 themes, apply a penalty
         theme_penalty = 1.0
         if len(commander_themes) > 20:
-            # Reduce score for commanders with too many themes
-            theme_penalty = 20.0 / len(commander_themes)
-        
+            # Reduce score for commanders with too many themes (only knock down by 5%)
+            theme_penalty = 0.95
         # Weighted average favoring commander focus (60%) over input coverage (40%)
-        # This rewards commanders that are more focused on the input themes
         base_score = 100.0 * (0.6 * commander_focus + 0.4 * input_coverage)
-        
         # Apply theme penalty
         score = base_score * theme_penalty
-        
         # Add type-based bonuses
         type_bonus = 1.0
-        
         # Planeswalker bonus - strongest bonus since it's most specific
         if has_planeswalkers and 'planeswalkers' in commander_themes:
             type_bonus *= 1.5
-        
         # Artifact bonus
         if has_artifacts and 'artifacts' in commander_themes:
             type_bonus *= 1.2
-        
         # Enchantment bonus
         if has_enchantments and 'enchantments' in commander_themes:
             type_bonus *= 1.2
-        
         # Creature bonus (smaller since it's very common)
         if has_creatures and 'creatures' in commander_themes:
             type_bonus *= 1.1
-        
         return score * type_bonus
 
     def _calculate_synergy_score(self, commander: dict, input_cards: List[dict]) -> float:
@@ -520,16 +501,25 @@ class CommanderRecommendationCommand(Command):
                 return sum(partner_scores) / len(partner_scores)
         # Theme overlap is the dominant factor
         theme_score = self._calculate_theme_overlap_score(commander, input_cards)
-        # Optionally, add a small bonus for tribal or mana synergy (keep it simple)
-        tribal_bonus = 0.0
+        # Optionally, add a small bonus for typal, mana, or keyword synergy
+        typal_bonus = 0.0
         mana_bonus = 0.0
+        keyword_bonus = 0.0
         for card in input_cards:
-            if self._has_tribal_synergy(commander, card):
-                tribal_bonus += 2.0
+            if self._has_typal_synergy(commander, card):
+                typal_bonus += 2.0
             if self._has_mana_synergy(commander, card):
                 mana_bonus += 1.0
+            # Robust keyword synergy: check for shared or related keywords (e.g., ninjutsu, commander ninjutsu, etc.)
+            commander_keywords = self._extract_keywords(commander)
+            card_keywords = self._extract_keywords(card)
+            for c_kw in commander_keywords:
+                for i_kw in card_keywords:
+                    if c_kw in i_kw or i_kw in c_kw:
+                        keyword_bonus += 2.0
+                        break
         # Normalize bonuses
-        bonus = min(tribal_bonus + mana_bonus, 10.0)
+        bonus = min(typal_bonus + mana_bonus + keyword_bonus, 10.0)
         # Final synergy score: 90% theme overlap, 10% bonus
         return min(theme_score * 0.9 + bonus, 100.0)
     
@@ -602,74 +592,64 @@ class CommanderRecommendationCommand(Command):
         return synergy_weight, popularity_weight
     
     def _find_synergistic_commanders(self, valid_cards: List[dict], combined_colors: Set[str], max_time_seconds: float = 8.0) -> List[dict]:
-        """Efficiently find synergistic commanders with early termination to prevent timeouts."""
         start_time = time.time()
         commanders = self._get_commander_cache()
-        
-        # For colorless cards, we need to be more selective to prevent processing thousands of commanders
+        # Remove all per-commander (e.g., Yuriko) special handling
+        # Color filtering
         if not combined_colors:
-            # Start with colorless commanders first (most likely to be synergistic)
             colorless_commanders = []
             colored_commanders = []
-            
             for commander in commanders.values():
                 commander_colors = self._extract_color_identity(commander)
                 if not commander_colors:
                     colorless_commanders.append(commander)
                 else:
                     colored_commanders.append(commander)
-            
-            # Process colorless commanders first, then add some popular colored ones
-            candidates = colorless_commanders + colored_commanders[:100]  # Limit colored commanders
+            candidates = colorless_commanders + colored_commanders[:100]
         else:
-            # For colored cards, use normal color matching
             candidates = [commander for commander in commanders.values() 
                          if self._commander_matches_colors(commander, combined_colors)]
-        
-        # Pre-filter candidates using quick synergy check to reduce expensive calculations
+        # Pre-filtering
         potential_candidates = []
         for commander in candidates:
-            # Always include commanders that pass quick synergy check
             if self._quick_synergy_check(commander, valid_cards):
                 potential_candidates.append(commander)
-            # Also include some popular commanders to ensure variety
             elif self._calculate_popularity_score(commander) > 60:
                 potential_candidates.append(commander)
-            # Limit total candidates to prevent explosion
             if len(potential_candidates) >= 200:
                 break
-        
-        print(f"Pre-filtered {len(candidates)} commanders down to {len(potential_candidates)} candidates")
-        
-        # Calculate synergy scores with early termination
+        # Scoring
         scored_commanders = []
         processed_count = 0
-        
         for commander in potential_candidates:
-            # Check if we're running out of time
             if time.time() - start_time > max_time_seconds:
-                print(f"Early termination after {processed_count} commanders due to time limit")
                 break
-            
             synergy_score = self._calculate_synergy_score(commander, valid_cards)
             popularity_score = self._calculate_popularity_score(commander)
-            
             scored_commanders.append({
                 'commander': commander,
                 'synergy_score': synergy_score,
                 'popularity_score': popularity_score
             })
-            
             processed_count += 1
-            
-            # Early termination if we have enough high-synergy commanders
             high_synergy_count = sum(1 for sc in scored_commanders if sc['synergy_score'] > 50)
             if high_synergy_count >= 20:
-                print(f"Early termination after {processed_count} commanders - found {high_synergy_count} high-synergy commanders")
                 break
-        
-        print(f"Processed {processed_count} commanders in {time.time() - start_time:.2f} seconds")
-        return scored_commanders
+        # Final recommendations (after sorting and limiting)
+        scored_commanders.sort(key=lambda x: (round(x['synergy_score'], 1), x['popularity_score']), reverse=True)
+        # Filter out solo 'partner with' commanders
+        filtered_commanders = []
+        for rec in scored_commanders:
+            commander = rec['commander']
+            oracle = commander.get('oracle_text', '').lower()
+            # If this is a solo commander with 'partner with', skip it
+            if (
+                'partner with' in oracle
+                and 'partner_names' not in commander
+            ):
+                continue
+            filtered_commanders.append(rec)
+        return filtered_commanders
     
     async def execute(self, args: str) -> Tuple[List[discord.Embed], Optional[discord.ui.View], Optional[List[discord.File]]]:
         """Execute the commander recommendation command."""
@@ -748,24 +728,20 @@ class CommanderRecommendationCommand(Command):
         """Quick check to see if a commander might be synergistic with the input cards."""
         if not input_cards:
             return False
-        
         # Check for artifact synergies
         has_artifacts = any('Artifact' in card.get('type_line', '') for card in input_cards)
         if has_artifacts:
             oracle_text = commander.get('oracle_text', '').lower()
             if any(keyword in oracle_text for keyword in ['artifact', 'equipment', 'vehicle', 'treasure', 'clue', 'food']):
                 return True
-        
-        # Check for tribal synergies
+        # Check for typal synergies
         for card in input_cards:
-            if self._has_tribal_synergy(commander, card):
+            if self._has_typal_synergy(commander, card):
                 return True
-        
         # Check for mana cost synergies
         for card in input_cards:
             if self._has_mana_synergy(commander, card):
                 return True
-        
         # Check for theme keywords in commander name or oracle text
         commander_text = (commander.get('name', '') + ' ' + commander.get('oracle_text', '')).lower()
         card_types = set()
@@ -781,7 +757,6 @@ class CommanderRecommendationCommand(Command):
                 card_types.add('planeswalker')
             if 'instant' in type_line or 'sorcery' in type_line:
                 card_types.add('spell')
-        
         # Check for relevant keywords
         if 'creature' in card_types and any(keyword in commander_text for keyword in ['creature', 'token', 'sacrifice']):
             return True
@@ -793,5 +768,23 @@ class CommanderRecommendationCommand(Command):
             return True
         if 'spell' in card_types and any(keyword in commander_text for keyword in ['instant', 'sorcery', 'cast', 'spell']):
             return True
-        
-        return False 
+        # Robust keyword synergy: check for shared or related keywords (e.g., ninjutsu, commander ninjutsu, etc.)
+        commander_keywords = self._extract_keywords(commander)
+        for card in input_cards:
+            card_keywords = self._extract_keywords(card)
+            for c_kw in commander_keywords:
+                for i_kw in card_keywords:
+                    if c_kw in i_kw or i_kw in c_kw:
+                        return True
+        return False
+
+    def _extract_keywords(self, card: dict) -> Set[str]:
+        """Extracts a set of normalized keywords from a card's oracle text."""
+        keywords = set()
+        oracle = card.get('oracle_text', '').lower()
+        # Find all keyword abilities (e.g., ninjutsu, commander ninjutsu, etc.)
+        # This regex matches words and phrases ending in 'ninjutsu', 'cascade', etc.
+        matches = re.findall(r'([a-z\- ]*ninjutsu|cascade|modular|prowl|mutate|connive|foretell|suspend|cycling|exploit|evoke|proliferate|surveil|flashback|persist|undying|delve|affinity|improvise|outlast|embalm|eternalize|jump-start|escape|adventure)', oracle)
+        for match in matches:
+            keywords.add(match.strip())
+        return keywords 
