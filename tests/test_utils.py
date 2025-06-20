@@ -4,6 +4,9 @@ import logging
 import pytest
 from src.utils import logger as logger_module
 from src.utils.config import Config
+from src.utils.card_utils import normalize_card_name, extract_theme_from_args, extract_card_names_from_args
+from src.commands.image_utils import ImageStitcher
+from unittest.mock import patch, AsyncMock
 
 def test_get_logger_returns_logger_instance():
     log = logger_module.get_logger("test_logger")
@@ -96,4 +99,51 @@ def test_config_validation(monkeypatch):
 def test_config_missing_token(monkeypatch):
     monkeypatch.delenv("DISCORD_TOKEN", raising=False)
     with pytest.raises(ValueError):
-        Config() 
+        Config()
+
+def test_normalize_card_name():
+    assert normalize_card_name("Atraxa, Praetors' Voice") == "atraxa-praetors-voice"
+    assert normalize_card_name("Najeela, the Blade-Blossom") == "najeela-the-blade-blossom"
+    assert normalize_card_name("Yuriko, the Tiger's Shadow") == "yuriko-the-tigers-shadow"
+    assert normalize_card_name("Card Name // Other Name") == "card-name"
+    assert normalize_card_name("O'Kagachi, Vengeful Kami") == "okagachi-vengeful-kami"
+    assert normalize_card_name("Tiger's Claw") == "tigers-claw"
+    assert normalize_card_name("A-B-C's") == "a-b-cs"
+    assert normalize_card_name('"Quoted Name"') == "quoted-name"
+
+def test_extract_theme_from_args():
+    assert extract_theme_from_args('Sol Ring, t:artifacts') == "artifacts"
+    assert extract_theme_from_args('t:dragons, Sol Ring') == "dragons"
+    assert extract_theme_from_args('"Sol Ring, the Great", t:ramp') == "ramp"
+    assert extract_theme_from_args('Sol Ring, "Rampant Growth", t:landfall') == "landfall"
+    assert extract_theme_from_args('Sol Ring, "Rampant Growth"') is None
+
+def test_extract_card_names_from_args():
+    assert extract_card_names_from_args('Sol Ring, t:artifacts') == ["Sol Ring"]
+    assert extract_card_names_from_args('t:dragons, Sol Ring') == ["Sol Ring"]
+    assert extract_card_names_from_args('"Sol Ring, the Great", t:ramp') == ["Sol Ring, the Great"]
+    assert extract_card_names_from_args('Sol Ring, "Rampant Growth", t:landfall') == ["Sol Ring", "Rampant Growth"]
+    assert extract_card_names_from_args('Sol Ring, "Rampant Growth"') == ["Sol Ring", "Rampant Growth"]
+
+def test_image_stitcher_get_cache_path_deterministic():
+    stitcher = ImageStitcher()
+    urls = ["http://a.com/1.png", "http://b.com/2.png"]
+    path1 = stitcher._get_cache_path(urls)
+    path2 = stitcher._get_cache_path(urls)
+    assert path1 == path2
+    # Changing order should change path
+    path3 = stitcher._get_cache_path(list(reversed(urls)))
+    assert path1 != path3
+
+def test_image_stitcher_stitch_partner_images_invalid_url_count():
+    stitcher = ImageStitcher()
+    # Too few URLs
+    with pytest.raises(ValueError):
+        import asyncio
+        asyncio.run(stitcher.stitch_partner_images(["http://a.com/1.png"]))
+    # Too many URLs
+    with pytest.raises(ValueError):
+        import asyncio
+        asyncio.run(stitcher.stitch_partner_images(["a", "b", "c"]))
+
+# Optionally, you could add a test for the happy path with mocked _download_image and file system, but this is sufficient for utility coverage. 

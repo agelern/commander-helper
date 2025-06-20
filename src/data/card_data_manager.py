@@ -1,3 +1,7 @@
+"""
+Card data manager for the Commander Helper Bot.
+Handles downloading, enrichment, and management of MTG card data.
+"""
 import json
 import asyncio
 import aiohttp
@@ -7,6 +11,9 @@ from pathlib import Path
 from typing import Optional, TypedDict, Any
 from datetime import datetime
 import logging
+import sys
+import argparse
+from src.utils.card_utils import normalize_card_name
 
 logger = logging.getLogger(__name__)
 
@@ -30,7 +37,7 @@ class Card(CardRequiredFields, total=False):
     edhrec_data: dict[str, Any]
 
 
-class CardDataDownloader:
+class CardDataManager:
     """Downloads and processes MTG card data from Scryfall."""
 
     SCRYFALL_BULK_API = "https://api.scryfall.com/bulk-data"
@@ -120,7 +127,7 @@ class CardDataDownloader:
     ) -> Optional[dict[str, Any]]:
         """Get EDHREC data for a card, using persistent cache."""
         try:
-            formatted_name = self._format_name_for_edhrec(card_name)
+            formatted_name = normalize_card_name(card_name)
             # Check cache first
             if not force_update and formatted_name in self.edhrec_cache:
                 return self.edhrec_cache[formatted_name]
@@ -215,7 +222,7 @@ class CardDataDownloader:
         total_fetches = len(commander_possibilities)
         async with aiohttp.ClientSession() as session:
             for name in commander_possibilities:
-                formatted_name = self._format_name_for_edhrec(name)
+                formatted_name = normalize_card_name(name)
                 if not force_update and formatted_name in self.edhrec_cache:
                     processed += 1
                     percentage = (processed / total_fetches) * 100
@@ -233,12 +240,11 @@ class CardDataDownloader:
 
     def _save_cards(self, cards: dict[str, Card]):
         """Save processed cards to JSON file."""
-        try:
-            with open(self.data_file, 'w', encoding='utf-8') as f:
-                json.dump(cards, f, indent=2, ensure_ascii=False)
-            print(f"Saved {len(cards)} cards to {self.data_file}")
-        except Exception as e:
-            print(f"Error saving card data: {e}")
+        # Remove non-commander-legal cards before saving
+        cards = self._remove_non_commander_legal_cards(cards)
+        with open(self.data_file, 'w', encoding='utf-8') as f:
+            json.dump(cards, f, indent=2, ensure_ascii=False)
+        print(f"Saved {len(cards)} cards to {self.data_file}")
 
     def _should_update_data(self) -> bool:
         """Check if the data needs to be updated (older than 1 month)."""
@@ -255,9 +261,9 @@ class CardDataDownloader:
             print(f"Error checking last download time: {e}")
             return True
 
-    async def download_bulk_data_if_needed(self):
-        """Download and process all card data if needed."""
-        if not self._should_update_data():
+    async def download_bulk_data_if_needed(self, force=False):
+        """Download and process all card data if needed or if forced."""
+        if not force and not self._should_update_data():
             print("Bulk card data is up to date (less than 30 days old). Skipping bulk download.")
             return
         print("Getting bulk data URL...")
@@ -296,11 +302,11 @@ class CardDataDownloader:
     async def download(self, force_update=False):
         print("=== Commander Helper Card Data Downloader ===")
         print("[Step 1] Checking bulk card data...")
-        await self.download_bulk_data_if_needed()
+        await self.download_bulk_data_if_needed(force=force_update)
         print("[Step 2] Checking EDHREC data for commanders...")
         await self.enrich_with_edhrec_data_if_needed(force_update=force_update)
         print("[Step 3] Checking EDHREC theme data...")
-        theme_updated = await self.download_edhrec_theme_pages()
+        theme_updated = await self.download_edhrec_theme_pages(force=force_update)
         if theme_updated:
             print("[Step 4] Enriching cards with theme usage info...")
             self.enrich_cards_with_theme_usage()
@@ -342,12 +348,10 @@ class CardDataDownloader:
         """Return True if the card is a legal commander."""
         # Check for legendary creature
         if "type_line" in card and "Legendary Creature" in card["type_line"]:
-            if "legalities" in card and card["legalities"].get("commander", "") == "legal":
-                return True
+            return True
         # Check for special rules text
         if "oracle_text" in card and "can be your commander" in card["oracle_text"].lower():
-            if "legalities" in card and card["legalities"].get("commander", "") == "legal":
-                return True
+            return True
         return False
 
     def _get_commander_type(self, card: Card) -> None:
@@ -395,21 +399,6 @@ class CardDataDownloader:
         except Exception as e:
             print(f"Error updating last download timestamp: {e}")
 
-    def _format_name_for_edhrec(self, name: str) -> str:
-        """Format a card or combination name for EDHREC API URLs."""
-        # Use only the front face for double-faced/split cards
-        name = name.split('//')[0].strip()
-        # Lowercase, remove accents, replace spaces and special chars with '-', remove punctuation
-        name = unicodedata.normalize('NFKD', name).encode('ascii', 'ignore').decode('ascii')
-        name = name.lower()
-        # Replace possessive apostrophes (e.g., tiger's -> tigers)
-        name = re.sub(r"([a-z0-9])'s\b", r"\1s", name)
-        name = re.sub(r"[\s'\"]+", '-', name)
-        name = re.sub(r"[^a-z0-9\-]", '', name)
-        name = re.sub(r'-+', '-', name)
-        name = name.strip('-')
-        return name
-
     def _theme_data_dir(self):
         return self.base_path / 'reference' / 'edhrec_themes'
 
@@ -441,13 +430,13 @@ class CardDataDownloader:
         except Exception as e:
             print(f"Error updating last theme download timestamp: {e}")
 
-    async def download_edhrec_theme_pages(self, theme_slugs: list[str] = None) -> bool:
-        """Download all EDHREC theme JSON pages for the given slugs, if out of date. Returns True if updated."""
+    async def download_edhrec_theme_pages(self, theme_slugs: list[str] = None, force: bool = False) -> bool:
+        """Download all EDHREC theme JSON pages for the given slugs, if out of date or if forced. Returns True if updated."""
         if theme_slugs is None:
             theme_slugs = self.THEME_SLUGS
         theme_dir = self._theme_data_dir()
         theme_dir.mkdir(parents=True, exist_ok=True)
-        if not self._should_update_theme_data():
+        if not force and not self._should_update_theme_data():
             print("Theme data is up to date (less than 30 days old). Skipping theme download.")
             return False
         headers = {'User-Agent': 'CommanderHelperBot/1.0'}
@@ -536,10 +525,42 @@ class CardDataDownloader:
             logger.error(f"Error checking/updating card data: {e}")
             raise
 
+    def _remove_non_commander_legal_cards(self, cards: dict[str, Card]) -> dict[str, Card]:
+        """Remove any cards that are not legal in commander format."""
+        filtered = {k: v for k, v in cards.items() if v.get('legalities', {}).get('commander') == 'legal'}
+        removed = len(cards) - len(filtered)
+        if removed > 0:
+            print(f"Removed {removed} non-commander-legal cards from card data.")
+        return filtered
+
 async def main():
     """Main entry point for the downloader."""
-    downloader = CardDataDownloader()
-    await downloader.download()
+    parser = argparse.ArgumentParser(description="Commander Helper Card Data Downloader")
+    parser.add_argument('--bulk', action='store_true', help='Download and process Scryfall bulk card data')
+    parser.add_argument('--edhrec', action='store_true', help='Download and enrich with EDHREC commander data')
+    parser.add_argument('--themes', action='store_true', help='Download and enrich with EDHREC theme data')
+    parser.add_argument('--force', action='store_true', help='Force update all data')
+    args = parser.parse_args()
+
+    downloader = CardDataManager()
+    print("=== Commander Helper Card Data Downloader ===")
+    if not (args.bulk or args.edhrec or args.themes):
+        # Default: do everything
+        args.bulk = args.edhrec = args.themes = True
+
+    if args.bulk:
+        print("[Step 1] Checking bulk card data...")
+        await downloader.download_bulk_data_if_needed(force=args.force)
+    if args.edhrec:
+        print("[Step 2] Checking EDHREC data for commanders...")
+        await downloader.enrich_with_edhrec_data_if_needed(force_update=args.force)
+    if args.themes:
+        print("[Step 3] Checking EDHREC theme data...")
+        theme_updated = await downloader.download_edhrec_theme_pages(force=args.force)
+        if theme_updated:
+            print("[Step 4] Enriching cards with theme usage info...")
+            downloader.enrich_cards_with_theme_usage()
+    print("=== All data checks complete. ===")
 
 if __name__ == "__main__":
     asyncio.run(main())

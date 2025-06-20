@@ -3,19 +3,20 @@ import json
 import tempfile
 import pytest
 from pathlib import Path
-from src.data.card_data_downloader import CardDataDownloader
+from src.data.card_data_manager import CardDataManager
+from src.utils.card_utils import normalize_card_name
 
 @pytest.fixture
 def temp_downloader(tmp_path):
     # Patch the data_dir and edhrec_cache_file to use a temp directory
-    downloader = CardDataDownloader()
+    downloader = CardDataManager()
     downloader.data_dir = tmp_path
     downloader.edhrec_cache_file = tmp_path / 'edhrec_cache.json'
     downloader.edhrec_cache = {'test_card': {'synergies': [], 'potential_decks': 1}}
     return downloader
 
 def test_downloader_initialization_sets_paths():
-    downloader = CardDataDownloader()
+    downloader = CardDataManager()
     assert isinstance(downloader.data_dir, Path)
     assert downloader.data_file.name == 'oracle_cards.json'
     assert downloader.last_download_file.name == 'last_download.json'
@@ -23,7 +24,7 @@ def test_downloader_initialization_sets_paths():
     assert isinstance(downloader.edhrec_cache, dict)
 
 def test_format_name_for_edhrec(temp_downloader):
-    fn = temp_downloader._format_name_for_edhrec
+    fn = normalize_card_name
     assert fn('Atraxa, Praetors\' Voice') == 'atraxa-praetors-voice'
     assert fn('Najeela, the Blade-Blossom') == 'najeela-the-blade-blossom'
     assert fn('Yuriko, the Tiger\'s Shadow') == 'yuriko-the-tigers-shadow'

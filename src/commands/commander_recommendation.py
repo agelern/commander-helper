@@ -2,13 +2,14 @@ from typing import List, Dict, Tuple, Set, Optional
 import discord
 from discord.ui import Button, View
 from src.commands.base import Command
-from src.data.card_data import CardData
+from src.data.card_database import CardData
 from fuzzywuzzy import process
 import re
 from collections import defaultdict
 import math
 from .image_utils import ImageStitcher
 import time
+from src.utils.card_utils import normalize_card_name, extract_theme_from_args, extract_card_names_from_args
 
 class CommanderRecommendationView(View):
     def __init__(self, recommendations: List[Dict], card_data: CardData, card_list_display: str):
@@ -50,37 +51,40 @@ class CommanderRecommendationView(View):
         else:
             formatted_name = commander['name'].lower().replace("'", "").replace(",", "").replace(" ", "-")
         edhrec_link = f"https://www.edhrec.com/commanders/{formatted_name}"
-        commander_name = f"[{commander['name']}]({edhrec_link})"
-        
-        # Get card details
-        mana_cost = commander.get('mana_cost', '')
-        type_line = commander.get('type_line', '')
-        oracle_text = commander.get('oracle_text', '')
-        flavor_text = commander.get('flavor_text', '')
-        power = commander.get('power', None)
-        toughness = commander.get('toughness', None)
-        pt = f"{power}/{toughness}" if power is not None and toughness is not None else None
+        commander_name = commander['name']
 
-        # Create embed
+        # Theme match indicator
+        theme_slug = None
+        if hasattr(self, 'theme_slug'):
+            theme_slug = self.theme_slug
+        elif hasattr(self, 'card_list_display') and '| Theme:' in self.card_list_display:
+            theme_slug = self.card_list_display.split('| Theme:')[-1].strip()
+        is_theme_match = False
+        if theme_slug:
+            if 'partner_names' in commander:
+                is_theme_match = any(
+                    theme_slug in (self.card_data.get_card(normalize_card_name(name)).get('used_in', []) if self.card_data.get_card(normalize_card_name(name)) else [])
+                    for name in commander['partner_names']
+                )
+            else:
+                is_theme_match = 'used_in' in commander and theme_slug in commander['used_in']
+
+        # Title and embed
+        title = f"#{self.current_page + 1} {commander_name}"
         embed = discord.Embed(
-            title=f"#{self.current_page + 1} {commander_name}",
-            description=f"Based on cards: {self.card_list_display}"
+            title=title,
+            url=edhrec_link,
+            description=self._build_embed_description(self.card_list_display, theme_slug, is_theme_match)
         )
 
         # Handle images
         file = None
         if 'partner_names' in commander:
-            # Get partner cards and their image URLs
             partner_images = []
-            details = ""
             for partner_name in commander['partner_names']:
-                partner_card = self.card_data.get_card(partner_name)
-                if partner_card:
-                    if 'image_uris' in partner_card and 'normal' in partner_card['image_uris']:
-                        partner_images.append(partner_card['image_uris']['normal'])
-                    details += f"**{partner_card['name']}**\nMana Cost: {partner_card.get('mana_cost', '')}\nType: {partner_card.get('type_line', '')}\nOracle Text: {partner_card.get('oracle_text', '')}\n\n"
-            
-            # If we have both images, stitch them
+                partner_card = self.card_data.get_card(normalize_card_name(partner_name))
+                if partner_card and 'image_uris' in partner_card and 'normal' in partner_card['image_uris']:
+                    partner_images.append(partner_card['image_uris']['normal'])
             if len(partner_images) == 2:
                 try:
                     stitched_path = await self.image_stitcher.stitch_partner_images(partner_images)
@@ -89,18 +93,11 @@ class CommanderRecommendationView(View):
                     embed.set_image(url=f"attachment://{filename}")
                 except Exception as e:
                     print(f"Error stitching images for partners: {e}")
-                    embed.add_field(name="Details", value=details, inline=False)
-            else:
-                embed.add_field(name="Details", value=details, inline=False)
         elif 'card_faces' in commander and len(commander['card_faces']) == 2:
-            # Dual-sided commander
             face_images = []
-            details = ""
             for face in commander['card_faces']:
                 if 'image_uris' in face and 'normal' in face['image_uris']:
                     face_images.append(face['image_uris']['normal'])
-                details += f"**{face.get('name', '')}**\n{face.get('mana_cost', '')}\n{face.get('type_line', '')}\n{face.get('oracle_text', '')}\n\n"
-
             if len(face_images) == 2:
                 try:
                     stitched_path = await self.image_stitcher.stitch_partner_images(face_images)
@@ -109,28 +106,30 @@ class CommanderRecommendationView(View):
                     embed.set_image(url=f"attachment://{filename}")
                 except Exception as e:
                     print(f"Error stitching images for dual-faced card: {e}")
-                    embed.add_field(name="Card Faces", value=details, inline=False)
-            else:
-                embed.add_field(name="Card Faces", value=details, inline=False)
         else:
-            # Single commander
             if 'image_uris' in commander and 'normal' in commander['image_uris']:
                 embed.set_image(url=commander['image_uris']['normal'])
-            else:
-                details = f"Mana Cost: {mana_cost}\nType: {type_line}\nOracle Text: {oracle_text}\n"
-                embed.add_field(name="Details", value=details, inline=False)
 
-        if pt:
-            embed.add_field(name="Power/Toughness", value=pt, inline=True)
-        if flavor_text:
-            embed.add_field(name="Flavor Text", value=flavor_text, inline=False)
+        # Add scores
         embed.add_field(
             name="Scores",
             value=f"**Synergy:** {synergy_score:.1f} | **Popularity:** {popularity_score:.1f}",
             inline=False
         )
+
+        # Add footnote for recommendation position
         embed.set_footer(text=f"Commander {self.current_page + 1} of {len(self.recommendations)}")
+
         return embed, file
+
+    def _build_embed_description(self, card_list_display, theme_slug, is_theme_match):
+        desc = f"Based on cards: {card_list_display}"
+        if theme_slug:
+            if is_theme_match:
+                desc += f"\nTheme: 🌟 {theme_slug} (Theme Match)"
+            else:
+                desc += f"\nTheme: {theme_slug} (No Match)"
+        return desc
 
     async def on_timeout(self):
         """Clean up resources when the view times out."""
@@ -160,7 +159,7 @@ class CommanderRecommendationCommand(Command):
     
     @property
     def usage(self) -> str:
-        return "/revedh <card1, card2, card3, ...>"
+        return "/revedh <card1, card2, ...[, \"card, with, comma\", ...], t:[theme]>"
     
     def _get_commander_cache(self) -> Dict[str, dict]:
         """Get cached commander data, loading if necessary. Includes all special commander pairings."""
@@ -176,14 +175,14 @@ class CommanderRecommendationCommand(Command):
             # First, add all single commanders and collect special types
             for card in self.card_data.cards.values():
                 if self._is_commander(card):
-                    self._commander_cache[card['name'].lower()] = card
+                    self._commander_cache[normalize_card_name(card['name'])] = card
                     oracle = card.get('oracle_text', '').lower()
                     type_line = card.get('type_line', '').lower()
                     # Partner With
                     partner_with_match = re.findall(r'partner with ([^\n\r]+)', oracle)
                     if partner_with_match:
                         for partner_name in partner_with_match:
-                            partner_with_pairs.add(tuple(sorted([card['name'], partner_name.strip()])))
+                            partner_with_pairs.add(tuple(sorted([normalize_card_name(card['name']), normalize_card_name(partner_name.strip())])))
                     # Only add to generic partners if it is not a 'partner with' card
                     if card.get('legalities', {}).get('commander') == 'legal' and 'partner' in oracle and not partner_with_match:
                         partners.append(card)
@@ -200,7 +199,6 @@ class CommanderRecommendationCommand(Command):
                     # Friends Forever
                     if 'friends forever' in oracle:
                         friends_forever.append(card)
-            
             # Optimize partner combinations - only create pairs for popular partners to prevent explosion
             if len(partners) > 30:
                 # Sort partners by popularity and only use top ones for combinations
@@ -226,10 +224,10 @@ class CommanderRecommendationCommand(Command):
                             'type_line': 'Partner Pair',
                             'oracle_text': f"Partner: {a['name']} and {b['name']}",
                             'edhrec_data': edhrec_data,
-                            'partner_names': [a['name'], b['name']],
+                            'partner_names': [normalize_card_name(a['name']), normalize_card_name(b['name'])],
                             'image_uris': image_uris,
                         }
-                        self._commander_cache[pair_name.lower()] = pair_commander
+                        self._commander_cache[normalize_card_name(pair_name)] = pair_commander
             else:
                 # If we have a reasonable number of partners, create all combinations
                 for i, a in enumerate(partners):
@@ -252,15 +250,14 @@ class CommanderRecommendationCommand(Command):
                             'type_line': 'Partner Pair',
                             'oracle_text': f"Partner: {a['name']} and {b['name']}",
                             'edhrec_data': edhrec_data,
-                            'partner_names': [a['name'], b['name']],
+                            'partner_names': [normalize_card_name(a['name']), normalize_card_name(b['name'])],
                             'image_uris': image_uris,
                         }
-                        self._commander_cache[pair_name.lower()] = pair_commander
-            
+                        self._commander_cache[normalize_card_name(pair_name)] = pair_commander
             # Partner With pairs (only valid pairs) - these are always created
             for a_name, b_name in partner_with_pairs:
-                a = self.card_data.get_card(a_name)
-                b = self.card_data.get_card(b_name)
+                a = self.card_data.get_card(normalize_card_name(a_name))
+                b = self.card_data.get_card(normalize_card_name(b_name))
                 if not a or not b:
                     continue
                 pair_name = f"{a['name']} + {b['name']}"
@@ -279,11 +276,10 @@ class CommanderRecommendationCommand(Command):
                     'type_line': 'Partner With Pair',
                     'oracle_text': f"Partner With: {a['name']} and {b['name']}",
                     'edhrec_data': edhrec_data,
-                    'partner_names': [a['name'], b['name']],
+                    'partner_names': [normalize_card_name(a['name']), normalize_card_name(b['name'])],
                     'image_uris': image_uris,
                 }
-                self._commander_cache[pair_name.lower()] = pair_commander
-            
+                self._commander_cache[normalize_card_name(pair_name)] = pair_commander
             # Background commander + background (limit combinations to prevent explosion)
             if len(background_commanders) <= 15 and len(backgrounds) <= 15:
                 for commander in background_commanders:
@@ -301,11 +297,10 @@ class CommanderRecommendationCommand(Command):
                             'type_line': 'Background Pair',
                             'oracle_text': f"Background: {commander['name']} + {background['name']}",
                             'edhrec_data': edhrec_data,
-                            'partner_names': [commander['name'], background['name']],
+                            'partner_names': [normalize_card_name(commander['name']), normalize_card_name(background['name'])],
                             'image_uris': image_uris,
                         }
-                        self._commander_cache[pair_name.lower()] = pair_commander
-            
+                        self._commander_cache[normalize_card_name(pair_name)] = pair_commander
             # Doctor + Companion (limit combinations)
             if len(doctors) <= 10 and len(companions) <= 10:
                 for doctor in doctors:
@@ -323,52 +318,20 @@ class CommanderRecommendationCommand(Command):
                             'type_line': 'Doctor Companion Pair',
                             'oracle_text': f"Doctor + Companion: {doctor['name']} + {companion['name']}",
                             'edhrec_data': edhrec_data,
-                            'partner_names': [doctor['name'], companion['name']],
+                            'partner_names': [normalize_card_name(doctor['name']), normalize_card_name(companion['name'])],
                             'image_uris': image_uris,
                         }
-                        self._commander_cache[pair_name.lower()] = pair_commander
-            
-            # Friends Forever pairs (unordered) - limit combinations
-            if len(friends_forever) <= 20:
-                for i, a in enumerate(friends_forever):
-                    for b in friends_forever[i+1:]:
-                        if a['name'] == b['name']:
-                            continue
-                        pair_name = f"{a['name']} + {b['name']}"
-                        color_identity = list(set(a.get('color_identity', [])) | set(b.get('color_identity', [])))
-                        edhrec_data = None
-                        image_uris = None
-                        if 'edhrec_data' in a and a['edhrec_data'] and 'friends_data' in a['edhrec_data']:
-                            edhrec_data = a['edhrec_data']['friends_data']
-                            image_uris = edhrec_data.get('image_uris') if edhrec_data else None
-                        elif 'edhrec_data' in b and b['edhrec_data'] and 'friends_data' in b['edhrec_data']:
-                            edhrec_data = b['edhrec_data']['friends_data']
-                            image_uris = edhrec_data.get('image_uris') if edhrec_data else None
-                        pair_commander = {
-                            'name': pair_name,
-                            'color_identity': color_identity,
-                            'type_line': 'Friends Forever Pair',
-                            'oracle_text': f"Friends Forever: {a['name']} and {b['name']}",
-                            'edhrec_data': edhrec_data,
-                            'partner_names': [a['name'], b['name']],
-                            'image_uris': image_uris,
-                        }
-                        self._commander_cache[pair_name.lower()] = pair_commander
+                        self._commander_cache[normalize_card_name(pair_name)] = pair_commander
         return self._commander_cache
-    
+
     def _is_commander(self, card: dict) -> bool:
         """Check if a card can be a commander."""
-        # Check if card is legal in commander
-        if card.get('legalities', {}).get('commander') != 'legal':
-            return False
-        
         type_line = card.get('type_line', '').lower()
         oracle_text = card.get('oracle_text', '').lower()
-        
         # Legendary creatures or cards with "can be your commander"
         return (("legendary" in type_line and "creature" in type_line) or 
                 "can be your commander" in oracle_text)
-    
+
     def _extract_color_identity(self, card: dict) -> Set[str]:
         """Extract color identity from a card."""
         color_identity = card.get('color_identity', [])
@@ -441,13 +404,13 @@ class CommanderRecommendationCommand(Command):
         commander_themes = set()
         if 'partner_names' in commander:
             for partner_name in commander['partner_names']:
-                partner_card = self.card_data.get_card(partner_name)
+                partner_card = self.card_data.get_card(normalize_card_name(partner_name))
                 if partner_card and 'used_in' in partner_card:
                     commander_themes.update(partner_card['used_in'])
         elif 'used_in' in commander:
             commander_themes = set(commander['used_in'])
         else:
-            card = self.card_data.get_card(commander['name'])
+            card = self.card_data.get_card(normalize_card_name(commander['name']))
             if card and 'used_in' in card:
                 commander_themes = set(card['used_in'])
         # Get the set of all themes for the input cards
@@ -487,21 +450,52 @@ class CommanderRecommendationCommand(Command):
         return score * type_bonus
 
     def _calculate_synergy_score(self, commander: dict, input_cards: List[dict]) -> float:
-        """Calculate synergy score between commander and input cards, dominated by theme overlap."""
+        """Calculate synergy score between commander and input cards, dominated by direct EDHREC card match."""
         if not input_cards:
             return 0.0
         # For partner pairs, average the synergy score of each partner
         if 'partner_names' in commander:
             partner_scores = []
             for partner_name in commander['partner_names']:
-                partner_card = self.card_data.get_card(partner_name)
+                partner_card = self.card_data.get_card(normalize_card_name(partner_name))
                 if partner_card:
                     partner_scores.append(self._calculate_synergy_score(partner_card, input_cards))
             if partner_scores:
                 return sum(partner_scores) / len(partner_scores)
-        # Theme overlap is the dominant factor
+
+        # --- 1. Direct EDHREC card match (new, highest weight) ---
+        # Get the commander's normalized name for cache lookup
+        commander_name = normalize_card_name(commander['name'])
+        edhrec_cache = None
+        if hasattr(self.card_data, 'edhrec_cache'):
+            edhrec_cache = getattr(self.card_data, 'edhrec_cache', None)
+        # Only use if it's a dict (not a Mock or None)
+        if not isinstance(edhrec_cache, dict):
+            edhrec_cache = None
+        # Try to get the synergies list from the cache
+        synergy_card_names = set()
+        if edhrec_cache and commander_name in edhrec_cache:
+            entry = edhrec_cache[commander_name]
+            synergies = entry.get('synergies', [])
+            # synergies is a list of cardviews, each with a 'name' field
+            for cardview in synergies:
+                # Some cardviews may have 'cards' (for double-faced), but always have 'name'
+                if 'name' in cardview:
+                    synergy_card_names.add(normalize_card_name(cardview['name']))
+                if 'cards' in cardview:
+                    for subcard in cardview['cards']:
+                        if 'name' in subcard:
+                            synergy_card_names.add(normalize_card_name(subcard['name']))
+        # Compute direct match fraction
+        input_card_names = [normalize_card_name(card['name']) for card in input_cards if 'name' in card]
+        direct_matches = sum(1 for name in input_card_names if name in synergy_card_names)
+        direct_match_score = (direct_matches / len(input_card_names)) * 100 if input_card_names else 0.0
+
+        # --- 2. Theme overlap (current logic, 0-100) ---
         theme_score = self._calculate_theme_overlap_score(commander, input_cards)
-        # Optionally, add a small bonus for typal, mana, or keyword synergy
+        theme_score = max(0.0, min(theme_score, 100.0))
+
+        # --- 3. Typal/mana/keyword bonuses (current logic, 0-100, but will be scaled down) ---
         typal_bonus = 0.0
         mana_bonus = 0.0
         keyword_bonus = 0.0
@@ -518,58 +512,51 @@ class CommanderRecommendationCommand(Command):
                     if c_kw in i_kw or i_kw in c_kw:
                         keyword_bonus += 2.0
                         break
-        # Normalize bonuses
-        bonus = min(typal_bonus + mana_bonus + keyword_bonus, 10.0)
-        # Final synergy score: 90% theme overlap, 10% bonus
-        return min(theme_score * 0.9 + bonus, 100.0)
+        # Normalize bonuses (max 10, then scale to 100)
+        bonus = min(typal_bonus + mana_bonus + keyword_bonus, 10.0) * 10.0
+        bonus = max(0.0, min(bonus, 100.0))
+
+        # --- Final synergy score: 60% direct match, 30% theme, 10% bonus ---
+        synergy_score = 0.6 * direct_match_score + 0.3 * theme_score + 0.1 * bonus
+        return max(0.0, min(synergy_score, 100.0))
     
     def _calculate_popularity_score(self, commander: dict) -> float:
-        """Calculate popularity score for a commander (including pairs) using EDHREC data."""
+        """Calculate popularity score for a commander (including pairs) using EDHREC rank, scaled 0-100. Rank 1 = 100, higher ranks approach 0."""
         # If this is a virtual pair (partners, backgrounds, etc)
         if 'partner_names' in commander:
-            # Use the pair's edhrec_data if available
-            if 'edhrec_data' in commander and commander['edhrec_data']:
-                edhrec_data = commander['edhrec_data']
-                if 'potential_decks' in edhrec_data:
-                    potential_decks = edhrec_data['potential_decks']
-                    if potential_decks > 0:
-                        return min(100.0, 20.0 + math.log10(potential_decks) * 20.0)
-            # Otherwise, average the popularity scores of the individual partners
             partner_scores = []
             for partner_name in commander['partner_names']:
-                partner_card = self.card_data.get_card(partner_name)
+                partner_card = self.card_data.get_card(normalize_card_name(partner_name))
                 if partner_card:
                     partner_scores.append(self._calculate_popularity_score(partner_card))
             if partner_scores:
                 return sum(partner_scores) / len(partner_scores)
-            # Fallback to 0
-            return 0.0
         # Single commander logic
         if 'edhrec_rank' in commander and commander['edhrec_rank'] is not None:
             rank = commander['edhrec_rank']
-            if rank <= 100:
-                return 95.0 + (100 - rank) * 0.05
-            elif rank <= 500:
-                return 85.0 + (500 - rank) * 0.02
-            elif rank <= 1000:
-                return 75.0 + (1000 - rank) * 0.02
-            elif rank <= 5000:
-                return 50.0 + (5000 - rank) * 0.01
-            else:
-                return max(20.0, 50.0 - (rank - 5000) * 0.005)
-        if 'edhrec_data' in commander and commander['edhrec_data']:
-            edhrec_data = commander['edhrec_data']
-            if 'potential_decks' in edhrec_data:
-                potential_decks = edhrec_data['potential_decks']
-                if potential_decks > 0:
-                    return min(100.0, 20.0 + math.log10(potential_decks) * 20.0)
+            # Assume ranks go from 1 (best) to 10000+ (worst)
+            # We'll use a simple linear scale: 1 -> 100, 10000 -> 0
+            max_rank = 10000
+            score = max(0.0, min(100.0, 100.0 * (1 - (rank - 1) / (max_rank - 1))))
+            return score
         return 0.0
     
-    def _parse_card_list(self, args: str) -> List[str]:
-        """Parse comma-separated card list from arguments."""
-        # Split by comma and clean up whitespace
-        cards = [card.strip() for card in args.split(',') if card.strip()]
-        return cards
+    def _parse_card_list_and_theme(self, args: str) -> Tuple[List[str], Optional[str]]:
+        """Parse card list and theme from input, supporting t:[theme] as a comma-separated entry. Quoted card names with commas are supported."""
+        # Split on commas not inside quotes
+        parts = [p.strip() for p in re.findall(r'"[^"]+"|[^,]+', args) if p.strip()]
+        theme = None
+        card_names = []
+        for part in parts:
+            if re.fullmatch(r't:[\w\- ]+', part, re.IGNORECASE):
+                theme = part[2:].strip(' :').strip()
+            else:
+                # Remove quotes if present
+                if part.startswith('"') and part.endswith('"'):
+                    card_names.append(part[1:-1])
+                else:
+                    card_names.append(part)
+        return card_names, theme
     
     def _parse_weights(self, args: str) -> Tuple[float, float]:
         """Parse synergy and popularity weights from arguments."""
@@ -596,6 +583,7 @@ class CommanderRecommendationCommand(Command):
         commanders = self._get_commander_cache()
         # Remove all per-commander (e.g., Yuriko) special handling
         # Color filtering
+        initial_total = len(commanders)
         if not combined_colors:
             colorless_commanders = []
             colored_commanders = []
@@ -609,6 +597,7 @@ class CommanderRecommendationCommand(Command):
         else:
             candidates = [commander for commander in commanders.values() 
                          if self._commander_matches_colors(commander, combined_colors)]
+        after_color_filter = len(candidates)
         # Pre-filtering
         potential_candidates = []
         for commander in candidates:
@@ -618,6 +607,7 @@ class CommanderRecommendationCommand(Command):
                 potential_candidates.append(commander)
             if len(potential_candidates) >= 200:
                 break
+        after_pre_filter = len(potential_candidates)
         # Scoring
         scored_commanders = []
         processed_count = 0
@@ -626,17 +616,28 @@ class CommanderRecommendationCommand(Command):
                 break
             synergy_score = self._calculate_synergy_score(commander, valid_cards)
             popularity_score = self._calculate_popularity_score(commander)
+            # Combined score: 70% synergy, 30% popularity
+            combined_score = 0.6 * synergy_score + 0.4 * popularity_score
+            # Gather input themes for explanation
+            input_themes = set()
+            for card in valid_cards:
+                if 'used_in' in card:
+                    input_themes.update(card['used_in'])
             scored_commanders.append({
                 'commander': commander,
                 'synergy_score': synergy_score,
-                'popularity_score': popularity_score
+                'popularity_score': popularity_score,
+                'combined_score': combined_score,
+                'input_themes': list(input_themes),
+                'input_cards': valid_cards,
             })
             processed_count += 1
             high_synergy_count = sum(1 for sc in scored_commanders if sc['synergy_score'] > 50)
             if high_synergy_count >= 20:
                 break
+        after_scoring = len(scored_commanders)
         # Final recommendations (after sorting and limiting)
-        scored_commanders.sort(key=lambda x: (round(x['synergy_score'], 1), x['popularity_score']), reverse=True)
+        scored_commanders.sort(key=lambda x: (round(x['combined_score'], 2)), reverse=True)
         # Filter out solo 'partner with' commanders
         filtered_commanders = []
         for rec in scored_commanders:
@@ -649,34 +650,45 @@ class CommanderRecommendationCommand(Command):
             ):
                 continue
             filtered_commanders.append(rec)
-        return filtered_commanders
+        # Attach filtering stats for logging
+        filtering_stats = {
+            'initial_total': initial_total,
+            'after_color_filter': after_color_filter,
+            'after_pre_filter': after_pre_filter,
+            'after_scoring': after_scoring,
+            'final': len(filtered_commanders)
+        }
+        return filtered_commanders, filtering_stats
     
     async def execute(self, args: str) -> Tuple[List[discord.Embed], Optional[discord.ui.View], Optional[List[discord.File]]]:
         """Execute the commander recommendation command."""
         try:
+            import time
+            pipeline_start = time.time()
             # Validate arguments
             if not self.validate_args(args):
                 embed = self.create_error_embed("No card list provided. Please provide a comma-separated list of cards.")
                 self.log_command_execution(args, False, "No arguments provided")
                 return [embed], None, []
-            
-            # Parse card list
-            card_names = self._parse_card_list(args)
+
+            # Use utility functions for parsing
+            card_names = extract_card_names_from_args(args)
+            theme_query = extract_theme_from_args(args)
             if not card_names:
                 embed = self.create_error_embed("No valid card names provided. Please provide a comma-separated list of cards.")
                 self.log_command_execution(args, False, "No valid card names")
                 return [embed], None, []
-            
+
             # Find valid cards
             valid_cards = []
             invalid_cards = []
             for card_name in card_names:
-                card = self.card_data.get_card(card_name)
+                card = self.card_data.get_card(normalize_card_name(card_name))
                 if card:
                     valid_cards.append(card)
                 else:
                     card_names_list = list(self.card_data.cards.keys())
-                    matches = process.extract(card_name, card_names_list, limit=1)
+                    matches = process.extract(normalize_card_name(card_name), card_names_list, limit=1)
                     if matches and matches[0][1] >= self.MIN_MATCH_SCORE:
                         best_match = matches[0][0]
                         card = self.card_data.cards[best_match]
@@ -697,24 +709,84 @@ class CommanderRecommendationCommand(Command):
                 )
                 self.logger.warning(f"Invalid cards found: {invalid_cards}")
             
+            # Theme fuzzy matching and filtering
+            theme_slug = None
+            if theme_query:
+                all_themes = list(self.card_data.get_all_themes())
+                theme_matches = process.extract(theme_query, all_themes, limit=1)
+                if theme_matches and theme_matches[0][1] >= self.MIN_MATCH_SCORE:
+                    theme_slug = theme_matches[0][0]
+                else:
+                    embed = self.create_error_embed(f"Could not find a matching theme for '{theme_query}'.")
+                    self.log_command_execution(args, False, f"No matching theme for '{theme_query}'")
+                    return [embed], None, []
+            
             # Find synergistic commanders
+            commander_cache = self._get_commander_cache()
+            num_commanders_considered = len(commander_cache)
             combined_colors = self._aggregate_color_identity(valid_cards)
-            recommendations = self._find_synergistic_commanders(valid_cards, combined_colors)
+            recommendations, filtering_stats = self._find_synergistic_commanders(valid_cards, combined_colors)
+            
+            # Prioritize by theme if specified: theme-matching commanders first, then others
+            if theme_slug:
+                def matches_theme(rec):
+                    c = rec['commander']
+                    if 'partner_names' in c:
+                        return any(
+                            theme_slug in (self.card_data.get_card(normalize_card_name(name)).get('used_in', []) if self.card_data.get_card(normalize_card_name(name)) else [])
+                            for name in c['partner_names']
+                        )
+                    return 'used_in' in c and theme_slug in c['used_in']
+                theme_matches = [rec for rec in recommendations if matches_theme(rec)]
+                non_theme_matches = [rec for rec in recommendations if not matches_theme(rec)]
+                # Two-pass: fill top N with as many theme matches as possible, then fill with high-synergy non-theme matches
+                N = self.MAX_RECOMMENDATIONS
+                theme_matches_sorted = sorted(theme_matches, key=lambda x: (round(x['combined_score'], 2)), reverse=True)
+                non_theme_matches_sorted = sorted(non_theme_matches, key=lambda x: (round(x['combined_score'], 2)), reverse=True)
+                recommendations = theme_matches_sorted[:N] + non_theme_matches_sorted[:N - len(theme_matches_sorted)]
+                recommendations = recommendations[:N]
+                no_theme_match = len(theme_matches_sorted) == 0
+            else:
+                no_theme_match = False
             
             if not recommendations:
-                embed = self.create_error_embed("No commanders found for the given input.")
+                if theme_slug:
+                    embed = self.create_error_embed(f"No commanders found for the given input and theme '{theme_slug}'.")
+                else:
+                    embed = self.create_error_embed("No commanders found for the given input.")
                 self.log_command_execution(args, False, "No commanders found")
                 return [embed], None, []
             
             # Sort and limit recommendations
-            recommendations.sort(key=lambda x: (round(x['synergy_score'], 1), x['popularity_score']), reverse=True)
+            recommendations.sort(key=lambda x: (round(x['combined_score'], 2)), reverse=True)
             top_recommendations = recommendations[:self.MAX_RECOMMENDATIONS]
             
             # Create display
             card_list_display = ', '.join([card['name'] for card in valid_cards])
+            if theme_slug:
+                card_list_display += f" | Theme: {theme_slug}"
             view = CommanderRecommendationView(top_recommendations, self.card_data, card_list_display)
             embed, file = await view._create_recommendation_embed()
             
+            # If no theme match but we have recommendations, add a warning to the embed
+            if no_theme_match:
+                embed.description = (embed.description or "") + f"\n⚠️ No commanders found for the given theme '{theme_slug}', showing best alternatives."
+            
+            pipeline_end = time.time()
+            pipeline_time = pipeline_end - pipeline_start
+            self.logger.info(
+                f"[RECOMMENDATION COMPLETE]\n"
+                f"  Entered cards: {card_names}\n"
+                f"  Entered theme: {theme_query}\n"
+                f"  Perceived color identity: {sorted(combined_colors)}\n"
+                f"  Commanders initially considered: {filtering_stats['initial_total']}\n"
+                f"  After color filter: {filtering_stats['after_color_filter']}\n"
+                f"  After pre-filter: {filtering_stats['after_pre_filter']}\n"
+                f"  After scoring: {filtering_stats['after_scoring']}\n"
+                f"  Final recommendations: {filtering_stats['final']}\n"
+                f"  Recommendations returned: {len(top_recommendations)}\n"
+                f"  Pipeline time: {pipeline_time:.2f} seconds"
+            )
             self.log_command_execution(args, True)
             return [embed], view, [file] if file else []
             

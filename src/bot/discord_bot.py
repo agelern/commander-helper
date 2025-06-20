@@ -10,10 +10,10 @@ from datetime import datetime, timedelta
 from pathlib import Path
 import logging
 
-from src.data.card_data import CardData
+from src.data.card_database import CardData
 from src.commands.card_info import CardInfoCommand
 from src.commands.commander_recommendation import CommanderRecommendationCommand
-from src.data.card_data_downloader import CardDataDownloader
+from src.data.card_data_manager import CardDataManager
 from src.utils.config import Config
 from src.utils.logger import get_logger
 
@@ -47,8 +47,8 @@ class CommanderBot(commands.Bot):
             # Create data directory if it doesn't exist
             self.data_dir.mkdir(exist_ok=True)
             
-            # Use CardDataDownloader to check and update data
-            downloader = CardDataDownloader()
+            # Use CardDataManager to check and update data
+            downloader = CardDataManager()
             await downloader.check_and_update()
             
         except Exception as e:

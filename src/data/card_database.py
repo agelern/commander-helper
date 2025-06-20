@@ -1,5 +1,6 @@
 """
-Card data management for the Commander Helper Bot.
+Card database/repository for the Commander Helper Bot.
+Handles loading and querying MTG card data from local JSON file.
 """
 
 import json
@@ -7,6 +8,7 @@ import time
 from pathlib import Path
 from typing import Dict, List, Optional, Set
 from src.utils.logger import get_logger
+from src.utils.card_utils import normalize_card_name
 
 logger = get_logger(__name__)
 
@@ -73,20 +75,11 @@ class CardData:
     def _add_card_aliases(self) -> None:
         """Add aliases for double-sided cards and other common variations."""
         aliases_to_add = {}
-        
         for name, card in self.cards.items():
-            # Handle double-sided cards (e.g., "Card Name // Other Name")
-            if '//' in name:
-                front_name = name.split('//')[0].strip().lower()
-                if front_name not in self.cards:
-                    aliases_to_add[front_name] = card
-            
-            # Handle cards with special characters
-            clean_name = name.replace("'", "").replace(",", "").replace(" ", "").lower()
-            if clean_name != name and clean_name not in self.cards:
-                aliases_to_add[clean_name] = card
-        
-        # Add all aliases
+            # Use normalize_card_name for all aliases
+            normalized = normalize_card_name(name)
+            if normalized != name and normalized not in self.cards:
+                aliases_to_add[normalized] = card
         self.cards.update(aliases_to_add)
         if aliases_to_add:
             logger.info(f"Added {len(aliases_to_add)} card aliases")
@@ -101,7 +94,7 @@ class CardData:
         Returns:
             The card data if found, None otherwise.
         """
-        name_lower = name.lower().strip()
+        name_lower = normalize_card_name(name).lower().strip()
         
         # Direct lookup
         if name_lower in self.cards:
@@ -128,7 +121,7 @@ class CardData:
         Returns:
             List of matching cards.
         """
-        query = query.lower().strip()
+        query = normalize_card_name(query).lower().strip()
         matches = []
         
         for card in self.cards.values():
@@ -166,21 +159,6 @@ class CardData:
         
         return matches
     
-    def get_commander_legal_cards(self) -> List[dict]:
-        """Get all cards that are legal in Commander format.
-        
-        Returns:
-            List of Commander-legal cards.
-        """
-        commander_cards = []
-        
-        for card in self.cards.values():
-            legalities = card.get('legalities', {})
-            if legalities.get('commander') == 'legal':
-                commander_cards.append(card)
-        
-        return commander_cards
-    
     def get_card_count(self) -> int:
         """Get the total number of cards loaded.
         
@@ -201,4 +179,16 @@ class CardData:
         """Reload the card data from the file."""
         logger.info("Reloading card data...")
         self.cards.clear()
-        self._load_cards() 
+        self._load_cards()
+    
+    def get_all_themes(self) -> Set[str]:
+        """Return a set of all unique EDHREC themes (from 'used_in' fields)."""
+        themes = set()
+        for card in self.cards.values():
+            if 'used_in' in card:
+                themes.update(card['used_in'])
+        return themes
+    
+    def get_commander_legal_cards(self) -> list:
+        """Return a list of all cards that are legal in commander."""
+        return [card for card in self.cards.values() if card.get('legalities', {}).get('commander') == 'legal'] 

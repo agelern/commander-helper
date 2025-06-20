@@ -2,11 +2,12 @@ from typing import List, Tuple, Optional
 import discord
 from discord.ui import Button, View
 from src.commands.base import Command
-from src.data.card_data import CardData
+from src.data.card_database import CardData
 from fuzzywuzzy import process
 import aiohttp
 from datetime import datetime
 from .image_utils import ImageStitcher
+from src.utils.card_utils import normalize_card_name
 
 class CardSuggestionView(View):
     def __init__(self, card_data: CardData, suggestions: List[Tuple[str, int]]):
@@ -68,24 +69,17 @@ class CardInfoCommand(Command):
                 embed = self.create_error_embed("No card name provided. Please provide a card name to search for.")
                 self.log_command_execution(args, False, "No arguments provided")
                 return [embed], None, []
-            
-            # Determine if we should include tokens based on the presence of "token" in args
+
+            # Use normalized card name for lookups
+            normalized_args = normalize_card_name(args)
             include_tokens = "token" in args.lower()
-            
-            # Try exact match first
-            card = self.card_data.get_card(args, include_tokens)
-            
+            card = self.card_data.get_card(normalized_args, include_tokens)
+
             # If no exact match, try fuzzy matching
             if not card:
-                # Get all card names for fuzzy matching
                 card_names_list = list(self.card_data.cards.keys())
-                
-                # Find the best matches
-                matches = process.extract(args, card_names_list, limit=self.MAX_SUGGESTIONS)
-                
-                # Check if we have any good matches
+                matches = process.extract(normalized_args, card_names_list, limit=self.MAX_SUGGESTIONS)
                 good_matches = [match for match in matches if match[1] >= self.MIN_MATCH_SCORE]
-                
                 if not good_matches:
                     embed = self.create_error_embed(f"Could not find a card matching '{args}'")
                     self.log_command_execution(args, False, "No matches found")

@@ -2,7 +2,7 @@ import json
 import tempfile
 import os
 import pytest
-from src.data.card_data import CardData
+from src.data.card_database import CardData
 
 def minimal_card_data():
     return {

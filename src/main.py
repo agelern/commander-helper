@@ -19,7 +19,7 @@ sys.path.append(src_path)
 
 from dotenv import load_dotenv
 from src.bot.discord_bot import CommanderBot
-from src.data.card_data_downloader import CardDataDownloader
+from src.data.card_data_manager import CardDataManager
 from src.utils.config import Config
 from src.utils.logger import setup_logging
 
@@ -43,7 +43,7 @@ async def ensure_card_data(config: Config) -> None:
     if not data_file.exists():
         logging.info("Card data not found. Downloading...")
         try:
-            downloader = CardDataDownloader()
+            downloader = CardDataManager()
             await downloader.download()
             logging.info("Card data download complete.")
         except Exception as e:
@@ -52,7 +52,7 @@ async def ensure_card_data(config: Config) -> None:
     else:
         logging.info("Card data found, checking for updates...")
         try:
-            downloader = CardDataDownloader()
+            downloader = CardDataManager()
             await downloader.check_and_update()
         except Exception as e:
             logging.warning(f"Failed to check for card data updates: {e}")
