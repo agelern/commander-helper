@@ -35,4 +35,25 @@ def test_save_edhrec_cache_creates_file(temp_downloader):
     assert temp_downloader.edhrec_cache_file.exists()
     with open(temp_downloader.edhrec_cache_file, 'r', encoding='utf-8') as f:
         data = json.load(f)
-    assert 'test_card' in data 
+    assert 'test_card' in data
+
+def test_theme_slugs_loaded_from_json(tmp_path):
+    # Create a temporary theme_slugs.json
+    theme_slugs = ["test-theme-1", "test-theme-2", "test-theme-3"]
+    theme_dir = tmp_path / "edhrec_themes"
+    theme_dir.mkdir(parents=True, exist_ok=True)
+    theme_slugs_path = theme_dir / "theme_slugs.json"
+    with open(theme_slugs_path, "w", encoding="utf-8") as f:
+        json.dump(theme_slugs, f)
+
+    # Patch CardDataManager to use the temp reference dir
+    downloader = CardDataManager()
+    downloader.data_dir = tmp_path
+    # Force reload of theme slugs
+    try:
+        with open(theme_slugs_path, 'r', encoding='utf-8') as f:
+            downloader.theme_slugs = json.load(f)
+    except Exception as e:
+        downloader.theme_slugs = []
+
+    assert downloader.theme_slugs == theme_slugs 

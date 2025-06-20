@@ -111,11 +111,17 @@ class CommanderBot(commands.Bot):
                 return
             
             # Send first embed with view and files
-            await interaction.followup.send(
-                embed=embeds[0],
-                view=view,
-                files=files
-            )
+            if view is not None:
+                await interaction.followup.send(
+                    embed=embeds[0],
+                    view=view,
+                    files=files
+                )
+            else:
+                await interaction.followup.send(
+                    embed=embeds[0],
+                    files=files
+                )
             
             # Send additional embeds
             for embed in embeds[1:]:
@@ -140,11 +146,17 @@ class CommanderBot(commands.Bot):
                 return
             
             # Send first embed with view and files
-            await interaction.followup.send(
-                embed=embeds[0],
-                view=view,
-                files=files
-            )
+            if view is not None:
+                await interaction.followup.send(
+                    embed=embeds[0],
+                    view=view,
+                    files=files
+                )
+            else:
+                await interaction.followup.send(
+                    embed=embeds[0],
+                    files=files
+                )
             
             # Send additional embeds
             for embed in embeds[1:]:
@@ -174,11 +186,17 @@ class CommanderBot(commands.Bot):
                 return
             
             if embeds:
-                await interaction.channel.send(
-                    embed=embeds[0],
-                    view=view,
-                    files=files
-                )
+                if view is not None:
+                    await interaction.channel.send(
+                        embed=embeds[0],
+                        view=view,
+                        files=files
+                    )
+                else:
+                    await interaction.channel.send(
+                        embed=embeds[0],
+                        files=files
+                    )
                 
                 for embed in embeds[1:]:
                     await interaction.channel.send(embed=embed)

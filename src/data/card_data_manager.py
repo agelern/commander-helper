@@ -50,49 +50,7 @@ class CardDataManager:
     DOCTORS_COMPANIONS = []
     DOCTORS_COMMANDERS = []
     FRIENDS_FOREVER = []
-    THEME_SLUGS = [
-        "lifegain", "tokens", "proliferate", "spellslinger", "artifacts", "equipment", "sacrifice", 
-        "reanimator", "blink", "dragons", "zombies", "elves", "auras", "landfall", 
-        "storm", "discard", "counters", "voltron", "stax", "group-hug", "aristocrats", 
-        "vehicles", "energy", "plus-1-plus-1-counters", "treasure", "wheels", "lands-matter", 
-        "combo", "mill", "enchantress", "legends", "aggro", "burn", "birthing-pod", "infect", "planeswalkers", 
-        "cantrips", "control", "discard", "ramp", "cedh", "big-mana", "toughness-matters", "midrange", 
-        "exile", "topdeck", "clones", "chaos", "x-spells", "historic", "ninjutsu", "flying", "graveyard", 
-        "sagas", "extra-combats", "forced-combat", "clues", "card-draw", "spell-copy", "theft", "rat-colony", 
-        "group-slug", "energy", "hatebears", "monarch", "good-stuff", "cascade", "deathtouch", "self-mill", 
-        "minus-1-minus-1-counters", "stompy", "snow", "morph", "mutate", "fight", "extra-turns", 
-        "dragons-approach", "sunforger", "party", "pillow-fort", "foretell", "commander-matters", 
-        "toolbox", "land-destruction", "sea-creatures", "tempo", "cheerios", 
-        "counterspells", "politics", "cycling", "curses", "prowess", "power", "shadowborn-apostles", 
-        "dredge", "lifedrain", "persistent-petitioners", "madness", "devotion", "primal-surge", "self-damage", 
-        "etb", "flash", "convoke", "pingers", "keywords", "populate", "polymorph", 
-        "anthems", "defenders", "ad-nauseam", "affinity", "bounce", "attack-triggers", "food", 
-        "relentless-rats", "dungeon", "unnatural", "zoo", "tap-untap", "unblockable", 
-        "activated-abilities", "enrage", "eggs", "discover", "donate", 
-        "exalted", "prison", "aikido", "rock", "multicolor-matters", "triggered-abilities", 
-        "haste", "scry", "modular", "tron", "die-roll", "guildgates", "amass", "the-ring", 
-        "weenies", "impulse-draw", "attractions", "self-discard", "fling", "explore", "land-animation", 
-        "suspend", "glass-cannon", "outlaws", "adventures", "shrines", "blood", "sneak-attack", "delver", 
-        "time-counters", "hand-size", "coin-flip", "crime", "rad-counters", "deserts", 
-        "blue-moon", "stoneblade", "slime-against-humanity", "flashback", "surveil", "connive", "landwalk", 
-        "experience-counters", "extra-upkeeps", "hare-apparent", "myriad", "rooms", "vanilla", "creatureless", 
-        "descend", "old-school", "offspring", "self-destruct", "type-hack", "lure", "charge-counters", 
-        "mount", "saboteurs", "kicker", "turbo-fog", "battles", "reach", "color-hack", "phasing", "hellbent", 
-        "banding", "heroic", "day-night", "oil-counters", "improvise", "delirium", "skulk", "life-exchange", 
-        "spore-counters", "craft", "stickers", "templar-knights", "freerunning", "evoke", "caves", "servos", 
-        "exploit", "squad", "hippos", "dandan", "vampires", "dinosaurs", "humans", "eldrazi", "goblins", "angels",
-        "slivers", "cats", "pirates", "merfolk", "wizards", "phyrexians", "knights", "faeries", "demons", "assassins",
-        "rats", "spirits", "horrors", "soldiers", "saprolings", "hydras", "spiders", "insects", "myr", "shapeshifters", "werewolves",
-        "birds", "rogues", "elementals", "frogs", "ninjas", "bears", "warriors", "dwarves", "tyranids", "treefolk", "mutants", "clerics",
-        "gods", "snakes", "apes", "fungi", "oozes", "beasts", "giants", "wurms", "samurai", "dogs", "lizards", "squirrels",
-        "wolves", "scarecrows", "sphinxes", "halflings", "allies", "bats", "minotaurs", "otters", "mice", "necrons",
-        "rabbits", "druids", "skeletons", "artificers", "golems", "phoenixes", "monks", "raccoons", "crabs", "archers", "devils",
-        "thopters", "praetors", "orcs", "griffins", "wraiths", "illusions", "satyrs", "constructs", "plants",
-        "unicorns", "rebels", "turtles", "avatars", "shamans", "foxes", "horses", "detectives", "time-lords",
-        "robots", "atogs", "elephants", "lhurgoyfs", "kithkin", "elders", "nightmares", "monkeys", "advisors", "gorgons", "astartes",
-        "drakes", "barbarians", "gnomes", "daleks", "mercenaries", "berserkers", "specters", "cybermen", "ogres", "kor",
-        "cephalids", "whales", "goats", "minions", "sharks"
-    ]
+    # THEME_SLUGS removed; now loaded from JSON file
 
     def __init__(self):
         """Initialize the downloader."""
@@ -113,6 +71,14 @@ class CardDataManager:
                 self.edhrec_cache = {}
         else:
             self.edhrec_cache = {}
+        # Load theme slugs from JSON file
+        theme_slugs_path = self.data_dir / 'edhrec_themes' / 'theme_slugs.json'
+        try:
+            with open(theme_slugs_path, 'r', encoding='utf-8') as f:
+                self.theme_slugs = json.load(f)
+        except Exception as e:
+            print(f"Error loading theme slugs from {theme_slugs_path}: {e}")
+            self.theme_slugs = []
 
     def _save_edhrec_cache(self):
         try:
@@ -433,7 +399,7 @@ class CardDataManager:
     async def download_edhrec_theme_pages(self, theme_slugs: list[str] = None, force: bool = False) -> bool:
         """Download all EDHREC theme JSON pages for the given slugs, if out of date or if forced. Returns True if updated."""
         if theme_slugs is None:
-            theme_slugs = self.THEME_SLUGS
+            theme_slugs = self.theme_slugs
         theme_dir = self._theme_data_dir()
         theme_dir.mkdir(parents=True, exist_ok=True)
         if not force and not self._should_update_theme_data():
