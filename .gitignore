@@ -43,6 +43,7 @@ htmlcov/
 # Card data files
 reference/*.json
 reference/last_download.json
+cache/
 
 # Docker
 .docker/

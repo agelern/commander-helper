@@ -2,7 +2,10 @@
 """
 Test runner script for the Commander Helper Discord Bot.
 
-This script provides an easy way to run different types of tests:
+See README.md for full usage instructions.
+This script is the recommended way to run tests and coverage for the project.
+
+Provides an easy way to run different types of tests:
 - Unit tests only
 - Integration tests only
 - All tests
@@ -64,7 +67,7 @@ def main():
     args = parser.parse_args()
     
     # Base pytest command
-    base_cmd = ["python", "-m", "pytest"]
+    base_cmd = [sys.executable, "-m", "pytest"]
     
     if args.verbose:
         base_cmd.append("-v")

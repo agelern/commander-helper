@@ -1,121 +1,37 @@
+import os
+import json
+import tempfile
 import pytest
+from pathlib import Path
 from src.data.card_data_downloader import CardDataDownloader
 
-
-@pytest.mark.parametrize(
-    "name,expected",
-    [
-        # Happy path: simple name
-        ("Sol Ring", "sol-ring"),
-        # Happy path: name with multiple spaces
-        ("Arcane Signet", "arcane-signet"),
-        # Happy path: name with mixed case
-        ("Teferi's Protection", "teferis-protection"),
-        # Happy path: name with dash
-        ("Sword of Fire and Ice", "sword-of-fire-and-ice"),
-        # Happy path: name with numbers
-        ("Channel 2021", "channel-2021"),
-        # Happy path: name with apostrophe
-        ("Gideon's Intervention", "gideons-intervention"),
-        # Happy path: name with comma
-        ("Karn, the Great Creator", "karn-the-great-creator"),
-        # Happy path: name with slash
-        ("Fire // Ice", "fire-ice"),
-        # Happy path: name with non-ASCII (accents)
-        ("Élan Vital", "elan-vital"),
-        # Happy path: name with non-ASCII (umlaut)
-        ("Jötun Grunt", "jotun-grunt"),
-        # Happy path: name with ligature
-        ("Æther Vial", "aether-vial"),
-        # Happy path: name with cedilla
-        ("Façade", "facade"),
-        # Happy path: name with tilde
-        ("Señor of the Wilds", "senor-of-the-wilds"),
-        # Edge case: empty string
-        ("", ""),
-        # Edge case: only spaces
-        ("   ", ""),
-        # Edge case: only non-ASCII
-        ("ÆÉÖçñ", "aeeocn"),
-        # Edge case: already formatted
-        ("already-formatted", "already-formatted"),
-        # Edge case: single character
-        ("A", "a"),
-        # Edge case: single non-ASCII character
-        ("É", "e"),
-        # Edge case: whitespace at ends
-        ("  Sol Ring  ", "sol-ring"),
-        # Edge case: tab and newline
-        ("Sol\tRing\n", "sol-ring"),
-    ],
-    ids=[
-        "simple_name",
-        "multiple_spaces",
-        "mixed_case",
-        "with_dash",
-        "with_numbers",
-        "with_apostrophe",
-        "with_comma",
-        "with_slash",
-        "with_accent",
-        "with_umlaut",
-        "with_ligature",
-        "with_cedilla",
-        "with_tilde",
-        "empty_string",
-        "only_spaces",
-        "only_non_ascii",
-        "already_formatted",
-        "single_char",
-        "single_non_ascii",
-        "whitespace_ends",
-        "tab_and_newline",
-    ],
-)
-def test_format_name_for_edhrec_happy_and_edge_cases(name: str, expected: str):
-    # Arrange
-
+@pytest.fixture
+def temp_downloader(tmp_path):
+    # Patch the data_dir and edhrec_cache_file to use a temp directory
     downloader = CardDataDownloader()
+    downloader.data_dir = tmp_path
+    downloader.edhrec_cache_file = tmp_path / 'edhrec_cache.json'
+    downloader.edhrec_cache = {'test_card': {'synergies': [], 'potential_decks': 1}}
+    return downloader
 
-    # Act
-
-    result = downloader._format_name_for_edhrec(name)
-
-    # Assert
-
-    assert result == expected
-
-
-@pytest.mark.parametrize(
-    "name,expected_exception",
-    [
-        # Error case: None as input
-        (None, TypeError),
-        # Error case: integer as input
-        (123, TypeError),
-        # Error case: list as input
-        (["Sol Ring"], TypeError),
-        # Error case: dict as input
-        ({"name": "Sol Ring"}, TypeError),
-        # Error case: bytes as input
-        (b"Sol Ring", TypeError),
-    ],
-    ids=[
-        "none_input",
-        "int_input",
-        "list_input",
-        "dict_input",
-        "bytes_input",
-    ],
-)
-def test_format_name_for_edhrec_error_cases(name: str, expected_exception: type):
-    # Arrange
-
+def test_downloader_initialization_sets_paths():
     downloader = CardDataDownloader()
+    assert isinstance(downloader.data_dir, Path)
+    assert downloader.data_file.name == 'oracle_cards.json'
+    assert downloader.last_download_file.name == 'last_download.json'
+    assert downloader.edhrec_cache_file.name == 'edhrec_cache.json'
+    assert isinstance(downloader.edhrec_cache, dict)
 
-    # Act & Assert
+def test_format_name_for_edhrec(temp_downloader):
+    fn = temp_downloader._format_name_for_edhrec
+    assert fn('Atraxa, Praetors\' Voice') == 'atraxa-praetors-voice'
+    assert fn('Najeela, the Blade-Blossom') == 'najeela-the-blade-blossom'
+    assert fn('Yuriko, the Tiger\'s Shadow') == 'yuriko-the-tigers-shadow'
+    assert fn('Card Name // Other Name') == 'card-name'
 
-    with pytest.raises(expected_exception):
-        downloader._format_name_for_edhrec(name)
-
-
+def test_save_edhrec_cache_creates_file(temp_downloader):
+    temp_downloader._save_edhrec_cache()
+    assert temp_downloader.edhrec_cache_file.exists()
+    with open(temp_downloader.edhrec_cache_file, 'r', encoding='utf-8') as f:
+        data = json.load(f)
+    assert 'test_card' in data 

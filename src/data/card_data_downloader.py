@@ -397,9 +397,13 @@ class CardDataDownloader:
 
     def _format_name_for_edhrec(self, name: str) -> str:
         """Format a card or combination name for EDHREC API URLs."""
+        # Use only the front face for double-faced/split cards
+        name = name.split('//')[0].strip()
         # Lowercase, remove accents, replace spaces and special chars with '-', remove punctuation
         name = unicodedata.normalize('NFKD', name).encode('ascii', 'ignore').decode('ascii')
         name = name.lower()
+        # Replace possessive apostrophes (e.g., tiger's -> tigers)
+        name = re.sub(r"([a-z0-9])'s\b", r"\1s", name)
         name = re.sub(r"[\s'\"]+", '-', name)
         name = re.sub(r"[^a-z0-9\-]", '', name)
         name = re.sub(r'-+', '-', name)
